@@ -1,18 +1,21 @@
 import { hummingbirdAnimation } from './assets/hummingbird_data.js';
 import { lesson, starterCode, STORAGE_KEY } from './page-content.js';
 
-const MOTION_KEY = 'kolibri-motion-v1';
+// v2: the v1 default could leave the signature hummingbird permanently static,
+// so old stored values are ignored rather than migrated.
+const MOTION_KEY = 'kolibri-motion-v2';
 const systemReducesMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function storedMotionChoice() {
   try { return localStorage.getItem(MOTION_KEY); } catch { return null; }
 }
 
-// The system preference is the default, but a visitor can deliberately opt in or
-// out with the control beside the hummingbird; that choice wins.
+// The hummingbird flaps for everyone by default; the control beside it turns the
+// flap off and that choice is remembered. A reduced-motion request still removes
+// the pointer parallax and the rotating armature, and halves the flap rate.
 const motionChoice = storedMotionChoice();
-const motionEnabled = motionChoice ? motionChoice === 'on' : !systemReducesMotion;
-const reduceMotion = !motionEnabled;
+const flapEnabled = motionChoice ? motionChoice === 'on' : true;
+const reduceMotion = systemReducesMotion;
 
 // Braille art has no fixed advance width across platforms, so measure the block
 // at its CSS baseline size and scale it to fill the column exactly.
@@ -70,7 +73,7 @@ function initBird() {
   const birdWrap = document.getElementById('bird-wrap');
   const toggle = document.getElementById('motion-toggle');
   const frames = hummingbirdAnimation.frames;
-  const FRAME_MS = 1000 / 12;
+  const FRAME_MS = 1000 / (reduceMotion ? 6 : 12);
   if (frames && frames.length && birdEl) {
     let i = 0;
     let timer = 0;
@@ -86,7 +89,7 @@ function initBird() {
       }
       fitAsciiArt();
     };
-    setFlapping(!reduceMotion);
+    setFlapping(flapEnabled);
     toggle?.addEventListener('click', () => {
       const on = toggle.getAttribute('aria-pressed') !== 'true';
       setFlapping(on);

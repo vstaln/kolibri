@@ -16,6 +16,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=1a35b2f4ea" />
+  <!-- Ships with the markup so a stale cached stylesheet can never let the
+       painting escape its section and cover the hero. -->
+  <style>#lessons{position:relative;overflow:hidden}.lesson-painting{position:absolute;inset:0;z-index:0}#lessons>h2,.lesson-stage{position:relative;z-index:1}</style>
 </head>
 <body>
   <header class="nav-shell">
@@ -410,6 +413,6 @@
     <style>.lesson-shell textarea{display:none}</style>
     <p class="noscript-note">JavaScript is required for the interactive lesson demonstration. The rest of this page remains readable without it.</p>
   </noscript>
-  <script type="module" src="/app.js?v=16038408d1"></script>
+  <script type="module" src="/app.js?v=b6c6db1ce9"></script>
 </body>
 </html>

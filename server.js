@@ -229,8 +229,10 @@ function selftest() {
   const appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
   const styles = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
   assert.ok(appJs.includes('setInterval(tick, FRAME_MS)'), 'hummingbird animation loop present');
-  assert.ok(appJs.includes("localStorage.setItem(MOTION_KEY"), 'motion opt-in is remembered');
-  assert.ok(appJs.includes('systemReducesMotion'), 'system reduced-motion preference still honoured by default');
+  assert.ok(appJs.includes("localStorage.setItem(MOTION_KEY"), 'motion choice is remembered');
+  assert.ok(appJs.includes("const flapEnabled = motionChoice ? motionChoice === 'on' : true"), 'hummingbird flaps by default');
+  assert.ok(appJs.includes('systemReducesMotion'), 'reduced-motion request still drops parallax and slows the flap');
+  assert.ok(indexHtml.includes('#lessons{position:relative;overflow:hidden}'), 'inline guard keeps the painting inside its section');
   assert.ok(appJs.includes('fitAsciiArt'), 'ascii art is measured and fitted to its column');
   assert.ok(indexHtml.includes('id="motion-toggle"'), 'motion control present beside the hummingbird');
   assert.ok(!/overflow-x:\s*(auto|scroll)/.test(styles), 'no horizontal scrollbars in stylesheet');
