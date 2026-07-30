@@ -55,8 +55,11 @@ const html = `<!doctype html>
   <main>
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-grid">
-        <div class="bird-wrap" id="bird-wrap">
-          <pre class="bird" id="bird" aria-hidden="true">${esc(bird)}</pre>
+        <div class="bird-column">
+          <div class="bird-wrap" id="bird-wrap">
+            <pre class="bird" id="bird" aria-hidden="true" data-ascii-fit data-ascii-max="11">${esc(bird)}</pre>
+          </div>
+          <button type="button" class="motion-toggle" id="motion-toggle" aria-pressed="false" aria-label="Hummingbird motion">Motion</button>
         </div>
         <div class="hero-text">
           <p class="eyebrow">KOLIBRI</p>
@@ -91,15 +94,16 @@ const html = `<!doctype html>
     </section>
 
     <section class="section section-wide" id="lessons" aria-labelledby="lesson-title">
+      <!-- Claude Monet, Impression, Sunrise (1872).
+           Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Monet_-_Impression,_Sunrise.jpg
+           Public domain (PD-old-95-1996, CC-PD-Mark, attribution not required);
+           local 1400px derivative, decorative use behind the lesson panel.
+           Lives directly inside the section so it can never paint over the next one. -->
+      <div class="lesson-painting" aria-hidden="true">
+        <img src="/assets/monet-impression-sunrise.webp" alt="" width="1400" height="1086" loading="lazy" decoding="async" />
+      </div>
       <h2 id="lesson-title">The example is only the beginning</h2>
       <div class="lesson-stage">
-        <!-- Claude Monet, Impression, Sunrise (1872).
-             Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Monet_-_Impression,_Sunrise.jpg
-             Public domain (PD-old-95-1996, CC-PD-Mark, attribution not required);
-             local 1400px derivative, decorative use behind the lesson panel. -->
-        <div class="lesson-painting" aria-hidden="true">
-          <img src="/assets/monet-impression-sunrise.webp" alt="" width="1400" height="1086" loading="lazy" decoding="async" />
-        </div>
         <div class="lesson-shell">
         <article class="lesson-panel">
           <p class="panel-kicker">Concept</p>
@@ -287,9 +291,7 @@ const html = `<!doctype html>
           <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
         </div>
         <div class="waitlist-wave" aria-hidden="true">
-          <div class="waitlist-wave-scroll">
-            <pre class="waitlist-wave-art">${esc(wave)}</pre>
-          </div>
+          <pre class="waitlist-wave-art" data-ascii-fit>${esc(wave)}</pre>
         </div>
       </div>
     </section>

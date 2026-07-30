@@ -1,7 +1,44 @@
 import { hummingbirdAnimation } from './assets/hummingbird_data.js';
 import { lesson, starterCode, STORAGE_KEY } from './page-content.js';
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MOTION_KEY = 'kolibri-motion-v1';
+const systemReducesMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function storedMotionChoice() {
+  try { return localStorage.getItem(MOTION_KEY); } catch { return null; }
+}
+
+// The system preference is the default, but a visitor can deliberately opt in or
+// out with the control beside the hummingbird; that choice wins.
+const motionChoice = storedMotionChoice();
+const motionEnabled = motionChoice ? motionChoice === 'on' : !systemReducesMotion;
+const reduceMotion = !motionEnabled;
+
+// Braille art has no fixed advance width across platforms, so measure the block
+// at its CSS baseline size and scale it to fill the column exactly.
+function fitAsciiArt() {
+  for (const pre of document.querySelectorAll('[data-ascii-fit]')) {
+    const available = pre.parentElement?.clientWidth || 0;
+    if (!available) continue;
+    pre.style.fontSize = '';
+    const base = parseFloat(getComputedStyle(pre).fontSize);
+    const content = pre.getBoundingClientRect().width;
+    if (!base || !content) continue;
+    const max = Number(pre.dataset.asciiMax) || Infinity;
+    const fitted = Math.min(max, Math.max(3, (base * available) / content * 0.995));
+    pre.style.fontSize = `${fitted.toFixed(2)}px`;
+  }
+}
+
+function initAsciiFit() {
+  fitAsciiArt();
+  document.fonts?.ready.then(fitAsciiArt).catch(() => {});
+  let pending = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(pending);
+    pending = requestAnimationFrame(fitAsciiArt);
+  }, { passive: true });
+}
 
 function renderBirdFrame(frame) {
   const CONTRAST_BOOST = 1.8;
@@ -31,13 +68,30 @@ function renderBirdFrame(frame) {
 function initBird() {
   const birdEl = document.getElementById('bird');
   const birdWrap = document.getElementById('bird-wrap');
+  const toggle = document.getElementById('motion-toggle');
   const frames = hummingbirdAnimation.frames;
   const FRAME_MS = 1000 / 12;
   if (frames && frames.length && birdEl) {
     let i = 0;
+    let timer = 0;
     const tick = () => { birdEl.innerHTML = renderBirdFrame(frames[i]); i = (i + 1) % frames.length; };
     tick();
-    if (!reduceMotion) setInterval(tick, FRAME_MS);
+    const setFlapping = (on) => {
+      clearInterval(timer);
+      timer = on ? setInterval(tick, FRAME_MS) : 0;
+      if (birdWrap) birdWrap.dataset.motion = on ? 'on' : 'off';
+      if (toggle) {
+        toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+        toggle.textContent = on ? 'Motion on' : 'Motion off';
+      }
+      fitAsciiArt();
+    };
+    setFlapping(!reduceMotion);
+    toggle?.addEventListener('click', () => {
+      const on = toggle.getAttribute('aria-pressed') !== 'true';
+      setFlapping(on);
+      try { localStorage.setItem(MOTION_KEY, on ? 'on' : 'off'); } catch {}
+    });
   }
   if (!reduceMotion && birdWrap) {
     let mx = 0, my = 0, sx = 0, sy = 0;
@@ -289,6 +343,7 @@ function initWaitlist() {
   });
 }
 
+initAsciiFit();
 initBird();
 initLesson();
 initConceptMap();

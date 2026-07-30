@@ -8,6 +8,11 @@
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
   --page-pad: clamp(1.25rem, 4vw, 2.5rem);
   --max: 1120px;
+  /* The art is drawn in Braille glyphs, which no mono webfont covers, so the
+     browser substitutes a system font whose advance varies by platform (~0.74em
+     on Chrome/Windows). 0.8 is the safe no-JS baseline; app.js measures the real
+     advance and grows each block to fill its column exactly. */
+  --ascii-advance: 0.8;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -145,6 +150,7 @@ a { color: inherit; }
 }
 
 .hero-grid {
+  container-type: inline-size;
   max-width: var(--max);
   margin: 0 auto;
   display: grid;
@@ -153,17 +159,48 @@ a { color: inherit; }
   gap: clamp(1.5rem, 4vw, 3.5rem);
 }
 
+.bird-column {
+  display: grid;
+  justify-items: start;
+  gap: 0.6rem;
+  min-width: 0;
+  margin-left: clamp(-1rem, -3vw, 0);
+}
+
 .bird-wrap {
   position: relative;
-  justify-self: start;
-  margin-left: clamp(-1rem, -3vw, 0);
+  align-self: start;
+  width: 100%;
   transition: transform 0.45s ease;
   will-change: transform;
 }
 
+/* Opt-in for visitors whose system asks for reduced motion but who want the
+   hummingbird to fly anyway. Deliberately quiet and never over the art. */
+.motion-toggle {
+  border: 1px solid rgba(201, 169, 98, 0.4);
+  background: transparent;
+  color: rgba(201, 169, 98, 0.8);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.motion-toggle:hover,
+.motion-toggle:focus-visible { opacity: 1; color: #e2d3a4; border-color: rgba(201, 169, 98, 0.75); }
+.motion-toggle[aria-pressed="true"] { opacity: 0.75; }
+
 .bird {
+  --cols: 69;
   font-family: var(--font-mono);
   font-size: clamp(4.5px, 1.05vw, 10px);
+  /* 0.44 of the hero grid is the bird column once the gap is taken out. */
+  font-size: min(10px, calc(44cqw / (var(--cols) * var(--ascii-advance))));
   font-weight: 500;
   line-height: 1;
   white-space: pre;
@@ -311,9 +348,21 @@ a { color: inherit; }
   background: rgba(201, 169, 98, 0.08);
 }
 
+/* The painting is a child of this section and the section clips it, so the
+   atmosphere can never bleed into the section that follows. */
+#lessons {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+#lessons > h2,
 .lesson-stage {
   position: relative;
-  isolation: isolate;
+  z-index: 1;
+}
+
+.lesson-stage {
   max-width: var(--max);
   margin: 1.5rem auto 0;
 }
@@ -324,7 +373,7 @@ a { color: inherit; }
    effect — if this ever competes with the code, lower the opacity. */
 .lesson-painting {
   position: absolute;
-  inset: -14% -7% -18%;
+  inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
@@ -345,8 +394,9 @@ a { color: inherit; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(125% 115% at 50% 45%, rgba(5, 5, 5, 0) 30%, rgba(5, 5, 5, 0.5) 68%, rgba(5, 5, 5, 0.96) 94%),
-    linear-gradient(180deg, rgba(5, 5, 5, 0.96), rgba(5, 5, 5, 0) 30%, rgba(5, 5, 5, 0) 70%, rgba(5, 5, 5, 0.96));
+    radial-gradient(105% 105% at 50% 50%, rgba(5, 5, 5, 0) 22%, rgba(5, 5, 5, 0.45) 62%, rgba(5, 5, 5, 1) 92%),
+    linear-gradient(180deg, rgba(5, 5, 5, 1) 1%, rgba(5, 5, 5, 0) 24%, rgba(5, 5, 5, 0) 76%, rgba(5, 5, 5, 1) 99%),
+    linear-gradient(90deg, rgba(5, 5, 5, 1), rgba(5, 5, 5, 0) 14%, rgba(5, 5, 5, 0) 86%, rgba(5, 5, 5, 1));
 }
 
 .lesson-shell {
@@ -869,21 +919,23 @@ a { color: inherit; }
 .form-status.ok { color: var(--accent-gold); }
 .form-status.err { color: #f87171; }
 
-.waitlist-wave-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
+/* ASCII art is sized from its own character grid so it always fits its column:
+   columns x advance width x font-size = container width. No scrollbars, no
+   cropping, no scaleX squashing — see --ascii-advance in :root. */
+.waitlist-wave {
+  container-type: inline-size;
+  min-width: 0;
   max-width: 100%;
 }
 
-.waitlist-wave { min-width: 0; max-width: 100%; }
-
 .waitlist-wave-art {
-  display: inline-block;
+  --cols: 121;
+  display: block;
   margin: 0;
   padding: 0;
   font-family: var(--font-mono);
   font-size: clamp(4px, 0.55vw, 7px);
+  font-size: calc(100cqw / (var(--cols) * var(--ascii-advance)));
   line-height: 1.3;
   white-space: pre;
   color: rgba(210, 202, 188, 0.72);
@@ -892,6 +944,7 @@ a { color: inherit; }
 }
 
 .final-grid {
+  container-type: inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(1.5rem, 4vw, 3rem);
@@ -899,8 +952,10 @@ a { color: inherit; }
 }
 
 .bird-small {
+  --cols: 69;
   font-family: var(--font-mono);
   font-size: clamp(3.5px, 0.7vw, 6px);
+  font-size: min(6px, calc(24cqw / (var(--cols) * var(--ascii-advance))));
   line-height: 1;
   white-space: pre;
   color: rgba(255, 255, 255, 0.22);
@@ -974,7 +1029,8 @@ a { color: inherit; }
   .progress-composition {
     grid-template-columns: 1fr;
   }
-  .bird-wrap { justify-self: center; margin-left: 0; order: -1; }
+  .bird-column { justify-items: center; margin-left: 0; order: -1; }
+  .bird { font-size: min(9px, calc(96cqw / (var(--cols) * var(--ascii-advance)))); }
   .lesson-panel { border-right: 0; border-bottom: 1px solid var(--line); }
   #nav-links-desktop { display: none; }
   .nav-menu-btn { display: inline-flex; }
@@ -982,8 +1038,7 @@ a { color: inherit; }
   .bird-small { display: none; }
   .painting-starry { min-height: 18rem; max-height: 24rem; }
   .armature-viewport { aspect-ratio: 2 / 1; }
-  .lesson-painting { inset: -3% -3% -5%; }
-  .lesson-painting img { opacity: 0.26; }
+  .lesson-painting img { opacity: 0.3; }
   .lesson-shell { background: rgba(10, 10, 9, 0.88); }
 }
 
@@ -1002,5 +1057,5 @@ a { color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .bird-wrap { transform: none !important; }
+  .bird-wrap:not([data-motion="on"]) { transform: none !important; }
 }

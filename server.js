@@ -220,7 +220,15 @@ function selftest() {
   assert.ok(!indexHtml.includes('class="closing-art"'), 'standalone closing art removed');
 
   const appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
-  assert.ok(appJs.includes('if (!reduceMotion) setInterval(tick, FRAME_MS)'), 'hummingbird animation loop present');
+  const styles = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
+  assert.ok(appJs.includes('setInterval(tick, FRAME_MS)'), 'hummingbird animation loop present');
+  assert.ok(appJs.includes("localStorage.setItem(MOTION_KEY"), 'motion opt-in is remembered');
+  assert.ok(appJs.includes('systemReducesMotion'), 'system reduced-motion preference still honoured by default');
+  assert.ok(appJs.includes('fitAsciiArt'), 'ascii art is measured and fitted to its column');
+  assert.ok(indexHtml.includes('id="motion-toggle"'), 'motion control present beside the hummingbird');
+  assert.ok(!/overflow-x:\s*(auto|scroll)/.test(styles), 'no horizontal scrollbars in stylesheet');
+  assert.ok(!styles.includes('waitlist-wave-scroll'), 'wave scroll wrapper removed');
+  assert.ok(/#lessons\s*\{[^}]*overflow:\s*hidden/.test(styles), 'lesson section clips its painting');
   assert.ok(appJs.includes('STORAGE_KEY'), 'expense lesson persistence wiring present');
   const pageContent = fs.readFileSync(path.join(ROOT, 'page-content.js'), 'utf8');
   assert.ok(pageContent.includes('kolibri-expense-demo-v1'), 'expense lesson storage key present');
