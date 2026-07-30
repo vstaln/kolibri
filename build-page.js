@@ -16,7 +16,9 @@ const hash = (...files) => crypto
   .slice(0, 10);
 
 const cssVersion = hash('styles.css');
-const jsVersion = hash('app.js', 'scene.js', 'page-content.js');
+// app.js hands its own ?v= to the hummingbird dataset, so the dataset has to be
+// part of this hash: new frames must produce a new URL for both.
+const jsVersion = hash('app.js', 'scene.js', 'page-content.js', 'assets/hummingbird_data.js');
 const bird = fs.readFileSync(path.join(ROOT, 'assets/kolibri-hummingbird.txt'), 'utf8');
 const wave = fs.readFileSync(path.join(ROOT, 'assets/kolibri-closing-art.txt'), 'utf8');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');

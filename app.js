@@ -1,5 +1,10 @@
-import { hummingbirdAnimation } from './assets/hummingbird_data.js';
 import { lesson, starterCode, STORAGE_KEY } from './page-content.js';
+
+// This module is served as /app.js?v=<hash of its sources, the dataset included>.
+// The frame data is a plain /assets URL that Cloudflare and the browser are both
+// allowed to cache, so it has to inherit that same version or a new animation
+// keeps losing to the copy already in the cache.
+const birdDataUrl = new URL(`./assets/hummingbird_data.js${new URL(import.meta.url).search}`, import.meta.url);
 
 // v2: the v1 default could leave the signature hummingbird permanently static,
 // so old stored values are ignored rather than migrated.
@@ -75,10 +80,29 @@ function renderBirdFrame(frame) {
   return html;
 }
 
-function initBird() {
+async function initBird() {
   const birdEl = document.getElementById('bird');
   const birdWrap = document.getElementById('bird-wrap');
   const toggle = document.getElementById('motion-toggle');
+  if (!reduceMotion && birdWrap) {
+    let mx = 0, my = 0, sx = 0, sy = 0;
+    const apply = () => {
+      sx += (mx - sx) * 0.08;
+      sy += (my - sy) * 0.08;
+      birdWrap.style.transform = `translate3d(${sx.toFixed(2)}px, ${sy.toFixed(2)}px, 0)`;
+      requestAnimationFrame(apply);
+    };
+    window.addEventListener('pointermove', (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      mx = ((e.clientX - cx) / cx) * 10;
+      my = ((e.clientY - cy) / cy) * 6;
+    }, { passive: true });
+    requestAnimationFrame(apply);
+  }
+  // The page already shows frame 0 from the markup, so a failed dataset fetch
+  // costs the motion, not the bird.
+  const { hummingbirdAnimation } = await import(birdDataUrl.href).catch(() => ({ hummingbirdAnimation: { frames: [] } }));
   const frames = hummingbirdAnimation.frames;
   // 24 fps is the hover rate the frames were stabilised at; slower reads as a stutter.
   const FRAME_MS = 1000 / 24;
@@ -103,22 +127,6 @@ function initBird() {
       setFlapping(on);
       try { localStorage.setItem(MOTION_KEY, on ? 'on' : 'off'); } catch {}
     });
-  }
-  if (!reduceMotion && birdWrap) {
-    let mx = 0, my = 0, sx = 0, sy = 0;
-    const apply = () => {
-      sx += (mx - sx) * 0.08;
-      sy += (my - sy) * 0.08;
-      birdWrap.style.transform = `translate3d(${sx.toFixed(2)}px, ${sy.toFixed(2)}px, 0)`;
-      requestAnimationFrame(apply);
-    };
-    window.addEventListener('pointermove', (e) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      mx = ((e.clientX - cx) / cx) * 10;
-      my = ((e.clientY - cy) / cy) * 6;
-    }, { passive: true });
-    requestAnimationFrame(apply);
   }
 }
 

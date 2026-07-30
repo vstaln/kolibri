@@ -236,6 +236,12 @@ function selftest() {
   );
   assert.ok(appJs.includes('systemReducesMotion'), 'reduced-motion request still drops the parallax');
   assert.ok(appJs.includes('hsl(200, 95%,') && appJs.includes('text-shadow: 0 0 '), 'blue hue and per-glyph glow ported from the source viewer');
+  // /assets is cacheable, so the dataset only reaches visitors if its URL moves
+  // with its contents — the reason a first deploy of these frames served the old
+  // animation from cache.
+  assert.ok(appJs.includes('new URL(import.meta.url).search'), 'frame data inherits the versioned app.js URL');
+  const buildPage = fs.readFileSync(path.join(ROOT, 'build-page.js'), 'utf8');
+  assert.ok(/jsVersion = hash\([^)]*hummingbird_data\.js/.test(buildPage), 'frame data is part of the script version hash');
   assert.ok(indexHtml.includes('#lessons{position:relative;overflow:hidden}'), 'inline guard keeps the painting inside its section');
   assert.ok(appJs.includes('fitAsciiArt'), 'ascii art is measured and fitted to its column');
   assert.ok(indexHtml.includes('id="motion-toggle"'), 'motion control present beside the hummingbird');
