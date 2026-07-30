@@ -161,6 +161,10 @@ a { color: inherit; }
 
 .bird-column {
   display: grid;
+  /* Without an explicit track the column is sized to the ASCII block's
+     max-content, so the art escapes the hero column and hands fitAsciiArt a
+     width it just inflated — each measure grows the bird a little more. */
+  grid-template-columns: minmax(0, 1fr);
   justify-items: start;
   gap: 0.6rem;
   min-width: 0;
@@ -195,18 +199,23 @@ a { color: inherit; }
 .motion-toggle:hover,
 .motion-toggle:focus-visible { color: #e2d3a4; border-color: rgba(201, 169, 98, 0.75); }
 
+/* Hovering-hummingbird frames are 90 columns wide. Weight, line-height and the
+   blue glow below come from the source viewer; app.js repaints each glyph with
+   its own brightness-scaled shade of the same hue, so this rule is what a
+   visitor without JavaScript sees. */
 .bird {
-  --cols: 69;
+  --cols: 90;
   font-family: var(--font-mono);
   font-size: clamp(4.5px, 1.05vw, 10px);
   /* 0.44 of the hero grid is the bird column once the gap is taken out. */
   font-size: min(10px, calc(44cqw / (var(--cols) * var(--ascii-advance))));
-  font-weight: 500;
-  line-height: 1;
+  font-weight: 700;
+  line-height: 0.96;
   white-space: pre;
   display: inline-block;
   margin: 0;
-  color: rgba(255, 255, 255, 0.3);
+  color: hsl(200, 95%, 62%);
+  text-shadow: 0 0 0.24em currentColor;
   user-select: none;
 }
 
@@ -952,13 +961,13 @@ a { color: inherit; }
 }
 
 .bird-small {
-  --cols: 69;
+  --cols: 90;
   font-family: var(--font-mono);
   font-size: clamp(3.5px, 0.7vw, 6px);
   font-size: min(6px, calc(24cqw / (var(--cols) * var(--ascii-advance))));
-  line-height: 1;
+  line-height: 0.96;
   white-space: pre;
-  color: rgba(255, 255, 255, 0.22);
+  color: hsl(200, 55%, 46%);
   user-select: none;
   margin: 0;
 }

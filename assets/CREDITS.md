@@ -49,6 +49,14 @@ WebP derivative used decoratively (`aria-hidden` / empty `alt`).
 
 ## ASCII art
 
-`kolibri-hummingbird.txt` and `kolibri-closing-art.txt` are project-owned ASCII
-renderings and are preserved byte-for-byte by the page build; the wave is
-derived from Hokusai's *The Great Wave off Kanagawa* (1831, public domain).
+`kolibri-hummingbird.txt`, `hummingbird_data.js` and `kolibri-closing-art.txt`
+are project-owned ASCII renderings and are preserved byte-for-byte by the page
+build; the wave is derived from Hokusai's *The Great Wave off Kanagawa* (1831,
+public domain).
+
+`hummingbird_data.js` holds the hero animation: 118 motion-stabilised frames of
+a hovering hummingbird, 90x29 characters over the palette `" .:-=+*#%@"`, each
+frame paired with a 0-255 brightness grid that `app.js` turns into the blue
+per-glyph glow. Imported verbatim from the standalone renderer output by
+`course/scripts/import-hummingbird.js`; `kolibri-hummingbird.txt` is frame 0 of
+that same set, used as the no-JavaScript and pre-hydration frame.

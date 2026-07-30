@@ -10,11 +10,12 @@ function storedMotionChoice() {
   try { return localStorage.getItem(MOTION_KEY); } catch { return null; }
 }
 
-// The hummingbird flaps for everyone by default; the control beside it turns the
-// flap off and that choice is remembered. A reduced-motion request still removes
-// the pointer parallax and the rotating armature, and halves the flap rate.
+// The hummingbird hovers for everyone by default — including desktop, which a
+// stored-default bug used to leave frozen. Only a system reduced-motion request
+// changes the default, and then to a single static frame; the control beside the
+// bird flips it either way and that choice is remembered.
 const motionChoice = storedMotionChoice();
-const flapEnabled = motionChoice ? motionChoice === 'on' : true;
+const flapEnabled = motionChoice ? motionChoice === 'on' : !systemReducesMotion;
 const reduceMotion = systemReducesMotion;
 
 // Braille art has no fixed advance width across platforms, so measure the block
@@ -43,8 +44,15 @@ function initAsciiFit() {
   }, { passive: true });
 }
 
+// "Vibrant Glow" treatment from the source viewer: per-glyph brightness drives a
+// single blue hue, its lightness, its opacity and the size of its own halo.
+// Constants are the viewer's defaults — changing them changes the look.
+const CONTRAST_BOOST = 1.8;
+// The viewer glows `brightness / 30` px at its own 17px type. The hero sets the
+// bird far smaller, so the halo is carried in em: same proportions at any size.
+const GLOW_EM_PER_UNIT = 1 / (30 * 17);
+
 function renderBirdFrame(frame) {
-  const CONTRAST_BOOST = 1.8;
   const lines = frame.ascii.split('\n');
   const bGrid = frame.brightness;
   let html = '';
@@ -57,11 +65,10 @@ function renderBirdFrame(frame) {
       if (char === ' ' || val === 0) { html += ' '; continue; }
       val = Math.min(255, Math.round(val * CONTRAST_BOOST));
       const norm = val / 255;
-      const opacity = Math.max(0.3, norm).toFixed(2);
-      const lightness = (20 + norm * 72).toFixed(0);
-      const sat = (18 + norm * 38).toFixed(0);
-      const glow = val > 200 ? ` text-shadow: 0 0 ${(val / 40).toFixed(1)}px currentColor;` : '';
-      html += `<span style="color: hsl(42, ${sat}%, ${lightness}%); opacity: ${opacity};${glow}">${char}</span>`;
+      const opacity = Math.max(0.25, norm).toFixed(2);
+      const lightness = (25 + norm * 75).toFixed(0);
+      const glow = (val * GLOW_EM_PER_UNIT).toFixed(4);
+      html += `<span style="color: hsl(200, 95%, ${lightness}%); opacity: ${opacity}; text-shadow: 0 0 ${glow}em currentColor;">${char}</span>`;
     }
     html += '\n';
   }
@@ -73,7 +80,8 @@ function initBird() {
   const birdWrap = document.getElementById('bird-wrap');
   const toggle = document.getElementById('motion-toggle');
   const frames = hummingbirdAnimation.frames;
-  const FRAME_MS = 1000 / (reduceMotion ? 6 : 12);
+  // 24 fps is the hover rate the frames were stabilised at; slower reads as a stutter.
+  const FRAME_MS = 1000 / 24;
   if (frames && frames.length && birdEl) {
     let i = 0;
     let timer = 0;
