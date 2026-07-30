@@ -257,7 +257,8 @@ function initArmature() {
   if (!gl) return;
   gl.getExtension('WEBGL_lose_context')?.loseContext();
 
-  const load = () => import('./scene.js')
+  const version = new URL(import.meta.url).searchParams.get('v');
+  const load = () => import(version ? `./scene.js?v=${version}` : './scene.js')
     .then(({ mountArmature }) => mountArmature({ canvas, driver, reduceMotion }))
     .then((instance) => { if (instance) plate.dataset.ready = 'true'; })
     .catch(() => {});

@@ -3,8 +3,20 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const ROOT = __dirname;
+
+// Cloudflare caches /styles.css and /app.js in front of this origin, so a deploy
+// alone does not reach visitors. Version the URLs by content instead.
+const hash = (...files) => crypto
+  .createHash('md5')
+  .update(files.map((f) => fs.readFileSync(path.join(ROOT, f))).reduce((a, b) => Buffer.concat([a, b])))
+  .digest('hex')
+  .slice(0, 10);
+
+const cssVersion = hash('styles.css');
+const jsVersion = hash('app.js', 'scene.js', 'page-content.js');
 const bird = fs.readFileSync(path.join(ROOT, 'assets/kolibri-hummingbird.txt'), 'utf8');
 const wave = fs.readFileSync(path.join(ROOT, 'assets/kolibri-closing-art.txt'), 'utf8');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -26,7 +38,7 @@ const html = `<!doctype html>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=${cssVersion}" />
 </head>
 <body>
   <header class="nav-shell">
@@ -322,7 +334,7 @@ const html = `<!doctype html>
     <style>.lesson-shell textarea{display:none}</style>
     <p class="noscript-note">JavaScript is required for the interactive lesson demonstration. The rest of this page remains readable without it.</p>
   </noscript>
-  <script type="module" src="/app.js"></script>
+  <script type="module" src="/app.js?v=${jsVersion}"></script>
 </body>
 </html>`;
 

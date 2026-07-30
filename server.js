@@ -86,8 +86,15 @@ function serveStatic(req, res) {
     }
     const ext = path.extname(filePath).toLowerCase();
     const headers = { 'content-type': CONTENT_TYPES[ext] || 'application/octet-stream' };
-    if (ext === '.js' && filePath.includes(`${path.sep}assets${path.sep}`)) {
-      headers['cache-control'] = 'public, max-age=3600';
+    // Cloudflare fronts this origin and honours these. The page and its
+    // hand-edited sources must revalidate every time or a deploy never lands;
+    // /assets is content-stable and the vendored build is version-named.
+    if (filePath.includes(`${path.sep}vendor${path.sep}`)) {
+      headers['cache-control'] = 'public, max-age=31536000, immutable';
+    } else if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+      headers['cache-control'] = 'public, max-age=86400';
+    } else {
+      headers['cache-control'] = 'no-cache';
     }
     res.writeHead(200, headers);
     res.end(data);
@@ -242,7 +249,9 @@ function selftest() {
 
   // WebGL is an enhancement: three.js must stay lazy, decorative and local.
   const sceneJs = fs.readFileSync(path.join(ROOT, 'scene.js'), 'utf8');
-  assert.ok(appJs.includes("import('./scene.js')"), 'three.js scene is dynamically imported');
+  assert.ok(appJs.includes("'./scene.js'"), 'three.js scene is dynamically imported');
+  assert.ok(/styles\.css\?v=[0-9a-f]{10}/.test(indexHtml), 'stylesheet URL is content-versioned past the CDN');
+  assert.ok(/app\.js\?v=[0-9a-f]{10}/.test(indexHtml), 'script URL is content-versioned past the CDN');
   assert.ok(appJs.includes("getContext('webgl2')"), 'WebGL is feature-detected before loading three.js');
   assert.ok(sceneJs.includes('reduceMotion'), 'scene respects reduced motion');
   assert.ok(sceneJs.includes('setPixelRatio'), 'scene caps device pixel ratio');
