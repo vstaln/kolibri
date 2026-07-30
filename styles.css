@@ -127,6 +127,8 @@ a { color: inherit; }
   cursor: pointer;
 }
 
+.nav-menu-panel[hidden] { display: none; }
+
 .nav-menu-panel {
   max-width: var(--max);
   margin: 0.5rem auto 0;
@@ -300,6 +302,7 @@ a { color: inherit; }
   padding: 0.55rem 0.7rem;
   cursor: pointer;
   font-family: var(--font-sans);
+  min-height: 44px;
 }
 
 .situation-btn[aria-pressed="true"] {
@@ -308,15 +311,59 @@ a { color: inherit; }
   background: rgba(201, 169, 98, 0.08);
 }
 
-.lesson-shell {
+.lesson-stage {
+  position: relative;
+  isolation: isolate;
   max-width: var(--max);
   margin: 1.5rem auto 0;
+}
+
+/* Monet sits behind the lesson panel as atmosphere only: pushed dark, warmed
+   toward the page gold, and scrimmed so its edges dissolve into the background
+   instead of ending in a rectangle. Legibility of the panel wins over the
+   effect — if this ever competes with the code, lower the opacity. */
+.lesson-painting {
+  position: absolute;
+  inset: -14% -7% -18%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lesson-painting img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+  filter: grayscale(0.28) sepia(0.38) saturate(0.8) contrast(0.88) brightness(0.72);
+  opacity: 0.8;
+}
+
+.lesson-painting::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(125% 115% at 50% 45%, rgba(5, 5, 5, 0) 30%, rgba(5, 5, 5, 0.5) 68%, rgba(5, 5, 5, 0.96) 94%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.96), rgba(5, 5, 5, 0) 30%, rgba(5, 5, 5, 0) 70%, rgba(5, 5, 5, 0.96));
+}
+
+.lesson-shell {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(12rem, 0.42fr) minmax(0, 1.58fr);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 4px;
   overflow: hidden;
-  background: #0a0a09;
+  background: rgba(10, 10, 9, 0.82);
+  backdrop-filter: blur(16px) saturate(0.85);
+  -webkit-backdrop-filter: blur(16px) saturate(0.85);
+}
+
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .lesson-shell { background: #0a0a09; }
 }
 
 .lesson-panel {
@@ -353,6 +400,7 @@ a { color: inherit; }
   letter-spacing: 0.04em;
   padding: 0.45rem 0.65rem;
   cursor: pointer;
+  min-height: 44px;
 }
 
 .concept-button.primary {
@@ -377,7 +425,7 @@ a { color: inherit; }
   gap: 0.5rem;
   padding: 0.55rem 0.75rem;
   border-bottom: 1px solid var(--line);
-  background: #0e0e0c;
+  background: rgba(14, 14, 12, 0.6);
 }
 
 .workspace-tab {
@@ -393,7 +441,7 @@ a { color: inherit; }
   width: 100%;
   min-height: 14rem;
   border: 0;
-  background: #070706;
+  background: rgba(7, 7, 6, 0.96);
   color: #e8e4dc;
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -449,41 +497,148 @@ a { color: inherit; }
   color: #b5b0a7;
 }
 
-.guidance-stages {
-  margin-top: 1.5rem;
+.armature-plate {
+  margin: 1.75rem 0 0;
   border: 1px solid var(--line);
-  border-radius: 4px;
-  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 45%, rgba(201, 169, 98, 0.05), transparent 70%),
+    #070706;
 }
 
-.guidance-tabs { display: flex; border-bottom: 1px solid var(--line); }
+.armature-viewport {
+  position: relative;
+  aspect-ratio: 3 / 1;
+  min-height: 11rem;
+}
 
-.guidance-tab {
-  flex: 1;
-  border: 0;
-  background: #0a0a09;
-  color: #9f9a91;
+.armature-viewport canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Static reference marks while three.js has not taken over (or cannot). */
+.armature-plate:not([data-ready]) .armature-viewport::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8rem;
+  height: 8rem;
+  max-width: 60%;
+  max-height: 60%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(201, 169, 98, 0.3);
+  border-radius: 50%;
+}
+
+.armature-scale {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(201, 169, 98, 0.7);
+}
+
+.armature-scale span { padding: 0.5rem 0.75rem; }
+.armature-scale span + span { border-left: 1px solid var(--line); }
+
+.armature-plate figcaption {
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid var(--line);
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.65rem;
-  cursor: pointer;
+  color: var(--text-muted);
 }
 
-.guidance-tab[aria-pressed="true"] {
-  background: rgba(201, 169, 98, 0.1);
-  color: #f4f1ea;
+.guidance-composition {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: stretch;
+  margin-top: 1.75rem;
+}
+
+.painting-atmosphere {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(201, 169, 98, 0.2);
+  background: #090908;
+}
+
+.painting-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 5, 0.08), rgba(5, 5, 5, 0.5)),
+    rgba(201, 169, 98, 0.08);
+  mix-blend-mode: multiply;
+}
+
+.painting-atmosphere img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.78) sepia(0.28) saturate(0.58) contrast(1.08) brightness(0.58);
+  opacity: 0.72;
+}
+
+.painting-starry { min-height: 24rem; }
+
+.guidance-stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  background: #0a0a09;
 }
 
 .guidance-panel {
+  position: relative;
+  min-width: 0;
   padding: 1rem;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: #aaa59c;
 }
 
-.guidance-panel ul { padding-left: 1.1rem; }
-.guidance-panel li { margin-bottom: 0.35rem; }
+.guidance-panel + .guidance-panel { border-left: 1px solid var(--line); }
+
+.guidance-panel h3 {
+  margin-bottom: 0.8rem;
+  color: #f4f1ea;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guidance-panel ul { padding-left: 1.05rem; }
+.guidance-panel li { margin-bottom: 0.5rem; }
+.guidance-panel-partial { background: rgba(255, 255, 255, 0.015); }
+.guidance-panel-open {
+  background: rgba(201, 169, 98, 0.055);
+  color: #c7c2b9;
+}
+
+.guidance-panel::before {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: rgba(201, 169, 98, 0.72);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+.guidance-panel-guided::before { content: "course decides"; }
+.guidance-panel-partial::before { content: "learner investigates"; }
+.guidance-panel-open::before { content: "learner frames"; }
 
 .help-dialogue {
   margin-top: 1.5rem;
@@ -585,7 +740,26 @@ a { color: inherit; }
   font-size: 0.7rem;
 }
 
-.progress-view { margin-top: 1.25rem; }
+.progress-composition {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(18rem, 1.2fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: stretch;
+  margin-top: 1.5rem;
+}
+
+.progress-view {
+  align-self: center;
+  padding: 0.25rem 1rem;
+  border-left: 1px solid rgba(201, 169, 98, 0.35);
+}
+
+.painting-monet {
+  min-height: 14rem;
+  max-height: 20rem;
+}
+
+.painting-monet img { object-position: center 48%; }
 
 .state-grid {
   display: grid;
@@ -698,8 +872,11 @@ a { color: inherit; }
 .waitlist-wave-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  width: 100%;
   max-width: 100%;
 }
+
+.waitlist-wave { min-width: 0; max-width: 100%; }
 
 .waitlist-wave-art {
   display: inline-block;
@@ -792,7 +969,9 @@ a { color: inherit; }
   .lesson-shell,
   .state-grid,
   .waitlist-layout,
-  .final-grid {
+  .final-grid,
+  .guidance-composition,
+  .progress-composition {
     grid-template-columns: 1fr;
   }
   .bird-wrap { justify-self: center; margin-left: 0; order: -1; }
@@ -801,12 +980,24 @@ a { color: inherit; }
   .nav-menu-btn { display: inline-flex; }
   .nav-action { display: none; }
   .bird-small { display: none; }
+  .painting-starry { min-height: 18rem; max-height: 24rem; }
+  .armature-viewport { aspect-ratio: 2 / 1; }
+  .lesson-painting { inset: -3% -3% -5%; }
+  .lesson-painting img { opacity: 0.26; }
+  .lesson-shell { background: rgba(10, 10, 9, 0.88); }
 }
 
 @media (max-width: 560px) {
   .waitlist-row { flex-direction: column; }
   .waitlist button { width: 100%; }
   .code-editor { min-height: 12rem; }
+  .guidance-stages { grid-template-columns: 1fr; }
+  .guidance-panel + .guidance-panel {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .painting-starry, .painting-monet { min-height: 12rem; max-height: 15rem; }
+  .armature-viewport { aspect-ratio: 5 / 4; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,5 @@
 import { hummingbirdAnimation } from './assets/hummingbird_data.js';
-import { lesson, helpDialogue, starterCode, STORAGE_KEY } from './page-content.js';
+import { lesson, starterCode, STORAGE_KEY } from './page-content.js';
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -57,21 +57,22 @@ function initBird() {
   }
 }
 
-function normalizeCategory(value) {
-  return String(value || '').trim().toLowerCase();
-}
-
 function evaluateRule(code) {
-  const expenses = [
-    { name: 'Food', category: 'food', amount: 45000 },
-    { name: 'Transport', category: 'transport', amount: 20000 },
-    { name: 'Streaming', category: 'streaming', amount: 59000 },
-    { name: 'Housing', category: 'housing', amount: 1500000 },
-    { name: 'Coffee', category: 'coffee', amount: 28000 },
-  ];
-  let isEssential;
   try {
-    const runner = new Function(`${code}\nif (typeof isEssential !== 'function' || typeof expenses === 'undefined') return null;\nreturn expenses.map((expense) => ({ name: expense.name, category: expense.category, essential: !!isEssential(expense.category) }));`);
+    const runner = new Function(`${code}
+if (typeof isEssential !== 'function') return null;
+const checks = [
+  { name: 'Food', category: 'FOOD' },
+  { name: 'Transport', category: 'Transport' },
+  { name: 'Streaming', category: 'streaming' },
+  { name: 'Housing', category: 'housing' },
+  { name: 'Coffee', category: 'coffee' },
+];
+return checks.map((expense) => ({
+  name: expense.name,
+  category: expense.category,
+  essential: !!isEssential(expense.category),
+}));`);
     const results = runner();
     if (!Array.isArray(results)) return { error: 'none' };
     const byName = Object.fromEntries(results.map((r) => [r.name, r.essential]));
@@ -117,7 +118,8 @@ function initLesson() {
   let hintIndex = 0;
   let passed = false;
 
-  const saved = localStorage.getItem(STORAGE_KEY);
+  let saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch {}
   if (saved) {
     try {
       const data = JSON.parse(saved);
@@ -188,17 +190,30 @@ function initConceptMap() {
   update(situations[0]);
 }
 
-function initGuidancePanels() {
-  const root = document.getElementById('guidance-stages');
-  if (!root) return;
-  root.querySelectorAll('[data-stage]').forEach((btn, idx, all) => {
-    btn.addEventListener('click', () => {
-      all.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-      root.querySelectorAll('[data-panel]').forEach((panel) => {
-        panel.hidden = panel.dataset.panel !== btn.dataset.stage;
-      });
-    });
-  });
+// The armature diagram is optional: without WebGL (or IntersectionObserver) the
+// plate keeps its static CSS marks and three.js is never downloaded.
+function initArmature() {
+  const plate = document.getElementById('armature-plate');
+  const canvas = document.getElementById('armature-canvas');
+  const driver = document.getElementById('independent');
+  if (!plate || !canvas || !driver || !('IntersectionObserver' in window)) return;
+
+  const probe = document.createElement('canvas');
+  const gl = probe.getContext('webgl2') || probe.getContext('webgl');
+  if (!gl) return;
+  gl.getExtension('WEBGL_lose_context')?.loseContext();
+
+  const load = () => import('./scene.js')
+    .then(({ mountArmature }) => mountArmature({ canvas, driver, reduceMotion }))
+    .then((instance) => { if (instance) plate.dataset.ready = 'true'; })
+    .catch(() => {});
+
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    observer.disconnect();
+    load();
+  }, { rootMargin: '400px' });
+  observer.observe(plate);
 }
 
 function initNav() {
@@ -277,6 +292,6 @@ function initWaitlist() {
 initBird();
 initLesson();
 initConceptMap();
-initGuidancePanels();
+initArmature();
 initNav();
 initWaitlist();

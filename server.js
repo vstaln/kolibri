@@ -209,6 +209,11 @@ function selftest() {
   assert.strictEqual((indexHtml.match(/<form class="waitlist"/g) || []).length, 1, 'one waitlist form present');
   assert.ok(indexHtml.includes('Follow the online course build'), 'waitlist heading present');
   assert.ok(indexHtml.includes('waitlist-wave-art'), 'wave beside waitlist');
+  assert.ok(indexHtml.includes('aria-hidden="true"'), 'decorative art is hidden from assistive technology');
+  assert.ok(indexHtml.includes('van-gogh-starry-night-rhone.webp'), 'Van Gogh painting referenced');
+  assert.ok(indexHtml.includes('monet-water-lilies.webp'), 'Monet painting referenced');
+  assert.ok(indexHtml.includes('monet-impression-sunrise.webp'), 'Monet behind lesson panel referenced');
+  assert.ok(indexHtml.includes('<canvas id="armature-canvas" aria-hidden="true">'), 'armature canvas present and decorative');
   assert.ok(indexHtml.includes('vibe-coding-dari-nol-poster.png'), 'poster asset referenced');
   assert.ok(indexHtml.includes('vstal.in/portfolio'), 'portfolio link present');
   assert.ok(!indexHtml.includes('Small cohorts near UI'), 'in-person-first positioning removed');
@@ -219,7 +224,25 @@ function selftest() {
   assert.ok(appJs.includes('STORAGE_KEY'), 'expense lesson persistence wiring present');
   const pageContent = fs.readFileSync(path.join(ROOT, 'page-content.js'), 'utf8');
   assert.ok(pageContent.includes('kolibri-expense-demo-v1'), 'expense lesson storage key present');
-  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'kolibri-closing-art.txt')), 'closing art source file exists');
+  const wave = fs.readFileSync(path.join(ROOT, 'assets', 'kolibri-closing-art.txt'), 'utf8');
+  const bird = fs.readFileSync(path.join(ROOT, 'assets', 'kolibri-hummingbird.txt'), 'utf8');
+  assert.ok(indexHtml.includes(wave), 'closing art preserved byte-for-byte');
+  assert.ok(indexHtml.includes(bird), 'static hummingbird preserved byte-for-byte');
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'van-gogh-starry-night-rhone.webp')), 'Van Gogh asset exists');
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'monet-water-lilies.webp')), 'Monet asset exists');
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'monet-impression-sunrise.webp')), 'lesson-panel Monet asset exists');
+
+  // WebGL is an enhancement: three.js must stay lazy, decorative and local.
+  const sceneJs = fs.readFileSync(path.join(ROOT, 'scene.js'), 'utf8');
+  assert.ok(appJs.includes("import('./scene.js')"), 'three.js scene is dynamically imported');
+  assert.ok(appJs.includes("getContext('webgl2')"), 'WebGL is feature-detected before loading three.js');
+  assert.ok(sceneJs.includes('reduceMotion'), 'scene respects reduced motion');
+  assert.ok(sceneJs.includes('setPixelRatio'), 'scene caps device pixel ratio');
+  assert.ok(sceneJs.includes('visibilitychange') && sceneJs.includes('IntersectionObserver'), 'scene pauses off-screen and when hidden');
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'vendor', 'three.module.min.js')), 'three.js is vendored locally');
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'vendor', 'three-LICENSE.txt')), 'three.js MIT licence shipped with the copy');
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'CREDITS.md')), 'asset credits recorded');
+  assert.ok(!sceneJs.includes('examples/jsm'), 'no three.js examples modules pulled in');
 
   const poster = path.join(ROOT, 'assets', 'vibe-coding-dari-nol-poster.png');
   assert.ok(fs.existsSync(poster), 'poster file exists');

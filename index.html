@@ -109,7 +109,15 @@
 
     <section class="section section-wide" id="lessons" aria-labelledby="lesson-title">
       <h2 id="lesson-title">The example is only the beginning</h2>
-      <div class="lesson-shell">
+      <div class="lesson-stage">
+        <!-- Claude Monet, Impression, Sunrise (1872).
+             Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Monet_-_Impression,_Sunrise.jpg
+             Public domain (PD-old-95-1996, CC-PD-Mark, attribution not required);
+             local 1400px derivative, decorative use behind the lesson panel. -->
+        <div class="lesson-painting" aria-hidden="true">
+          <img src="/assets/monet-impression-sunrise.webp" alt="" width="1400" height="1086" loading="lazy" decoding="async" />
+        </div>
+        <div class="lesson-shell">
         <article class="lesson-panel">
           <p class="panel-kicker">Concept</p>
           <p>A condition represents a decision. This small expense tool should treat food, transport, and housing differently from optional spending.</p>
@@ -138,6 +146,7 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
     </section>
 
@@ -160,20 +169,33 @@
       <p>Early lessons can identify the relevant file, concept, and expected result. Later work should provide less of that structure. A learner may receive a system that behaves incorrectly without being told where the problem is. Another task may have several reasonable solutions. A project may begin with a situation rather than a technical instruction.</p>
       <p>Outside a course, problems rarely arrive with a task description that names the correct concept. Part of learning to program is learning how to create that structure yourself. You need to decide what the problem is, what information matters, what can be ignored for now, and what a useful first version would prove.</p>
       <p>Kolibri should become less helpful as the learner becomes more capable. It should not disappear completely, but the responsibility for making decisions should gradually move from the course to the learner.</p>
-      <div class="guidance-stages" id="guidance-stages">
-        <div class="guidance-tabs">
-          <button type="button" class="guidance-tab" data-stage="guided" aria-pressed="true">Guided</button>
-          <button type="button" class="guidance-tab" data-stage="partial" aria-pressed="false">Partial</button>
-          <button type="button" class="guidance-tab" data-stage="open" aria-pressed="false">Open</button>
+      <figure class="armature-plate" id="armature-plate">
+        <div class="armature-viewport">
+          <canvas id="armature-canvas" aria-hidden="true"></canvas>
         </div>
-        <div class="guidance-panel" data-panel="guided">
-          <ul><li>Relevant file highlighted</li><li>Detailed task</li><li>Visible expected output</li><li>Clear automated check</li></ul>
+        <div class="armature-scale" aria-hidden="true"><span>guided</span><span>partial</span><span>open</span></div>
+        <figcaption>Diagram: the support structure is withdrawn as you scroll, and the instrument keeps turning without it.</figcaption>
+      </figure>
+      <div class="guidance-composition">
+        <!-- Vincent van Gogh, Starry Night Over the Rhône (1888).
+             Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg
+             Public Domain Mark 1.0; local 1280px derivative, decorative use. -->
+        <div class="painting-atmosphere painting-starry" aria-hidden="true">
+          <img src="/assets/van-gogh-starry-night-rhone.webp" alt="" width="1280" height="989" loading="lazy" decoding="async" />
         </div>
-        <div class="guidance-panel" data-panel="partial" hidden>
-          <ul><li>Description of incorrect behavior</li><li>Several files without naming which one matters</li><li>Test result</li><li>Optional hints</li></ul>
-        </div>
-        <div class="guidance-panel" data-panel="open" hidden>
-          <ul><li>Short account of a person's problem</li><li>Imperfect existing system</li><li>No named programming concept</li><li>No prescribed implementation</li></ul>
+        <div class="guidance-stages" id="guidance-stages" aria-label="How lesson guidance is gradually removed">
+          <article class="guidance-panel guidance-panel-guided">
+            <h3>Guided</h3>
+            <ul><li>Relevant file highlighted</li><li>Detailed task</li><li>Visible expected output</li><li>Clear automated check</li></ul>
+          </article>
+          <article class="guidance-panel guidance-panel-partial">
+            <h3>Partial</h3>
+            <ul><li>Description of incorrect behavior</li><li>Several files without naming which one matters</li><li>Test result</li><li>Optional hints</li></ul>
+          </article>
+          <article class="guidance-panel guidance-panel-open">
+            <h3>Open</h3>
+            <ul><li>Short account of a person's problem</li><li>Imperfect existing system</li><li>No named programming concept</li><li>No prescribed implementation</li></ul>
+          </article>
         </div>
       </div>
     </section>
@@ -233,10 +255,18 @@
       <p>Finishing lessons matters, but it is not the final measure of progress. A learner is making progress when they can recognize an idea in a new setting, investigate a failure without immediately asking for the answer, reduce an oversized plan, and complete a useful version of something they chose.</p>
       <p>Kolibri can still remember completed lessons, saved work, project status, and where someone stopped. Those records should help the learner return to the work. They should not become the reason the learner continues.</p>
       <p>Do not add daily streaks, points, rankings, completion pressure, artificial scarcity, or engagement notifications.</p>
-      <div class="progress-view" aria-label="Progress records concept">
-        <div class="work-item"><span>Recognize a condition in a new setting</span><span>IN PROGRESS</span></div>
-        <div class="work-item"><span>Shared expense checker draft</span><span>SAVED</span></div>
-        <div class="work-item"><span>Return to unfinished lesson</span><span>RESUME</span></div>
+      <div class="progress-composition">
+        <div class="progress-view" aria-label="Progress records concept">
+          <div class="work-item"><span>Recognize a condition in a new setting</span><span>IN PROGRESS</span></div>
+          <div class="work-item"><span>Shared expense checker draft</span><span>SAVED</span></div>
+          <div class="work-item"><span>Return to unfinished lesson</span><span>RESUME</span></div>
+        </div>
+        <!-- Claude Monet, Water Lilies (1922).
+             Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Claude_Monet_-_Water_Lilies_-_Google_Art_Project.jpg
+             Public Domain Mark 1.0; local 1280px derivative, decorative use. -->
+        <div class="painting-atmosphere painting-monet" aria-hidden="true">
+          <img src="/assets/monet-water-lilies.webp" alt="" width="1280" height="1202" loading="lazy" decoding="async" />
+        </div>
       </div>
     </section>
 
