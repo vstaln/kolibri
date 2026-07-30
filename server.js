@@ -199,11 +199,22 @@ function selftest() {
 
   const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   assert.ok(indexHtml.includes('/api/waitlist'), 'page posts to waitlist');
-  assert.ok(indexHtml.includes('Join early access'), 'early access CTA present');
+  assert.ok(indexHtml.includes('Learn by changing something'), 'online course direction present');
+  assert.ok(indexHtml.includes('Interactive lesson interface'), 'interactive lesson concept present');
+  assert.ok(indexHtml.includes('The curriculum gets less helpful over time'), 'curriculum direction present');
+  assert.ok(indexHtml.includes('Projects begin inside the course'), 'portfolio projects present');
+  assert.ok(indexHtml.includes('AI is available, but it does not complete the course for you'), 'AI learning direction present');
+  assert.strictEqual((indexHtml.match(/<form class="waitlist"/g) || []).length, 1, 'one waitlist form present');
+  assert.ok(indexHtml.includes('Follow the build'), 'online course CTA present');
   assert.ok(indexHtml.includes('kolibri.alignment.id'), 'canonical domain present');
   assert.ok(indexHtml.includes('vibe-coding-dari-nol-poster.png'), 'poster asset referenced');
   assert.ok(indexHtml.includes('vstal.in/portfolio'), 'portfolio link present');
   assert.ok(!indexHtml.includes('Notify me'), 'old notify CTA removed');
+  assert.ok(!indexHtml.includes('Small cohorts near UI'), 'in-person-first positioning removed');
+  assert.ok(indexHtml.includes("if (!reduceMotion) setInterval(tick, FRAME_MS)"), 'hummingbird animation loop present');
+
+  assert.ok(indexHtml.includes('class="closing-art"'), 'closing ASCII art present');
+  assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'kolibri-closing-art.txt')), 'closing art source file exists');
 
   const poster = path.join(ROOT, 'assets', 'vibe-coding-dari-nol-poster.png');
   assert.ok(fs.existsSync(poster), 'poster file exists');
