@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kolibri — learn programming by making something work</title>
+    <meta name="description" content="Kolibri by alignment.id — small in-person programming cohorts in Depok, with early access to a broader course later." />
+
+    <meta property="og:title" content="Kolibri — kolibri.alignment.id" />
+    <meta property="og:description" content="Learn programming by making something work. Small in-person cohorts first. A broader course later." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kolibri.alignment.id" />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="icon" type="image/svg+xml" href="/assets/alignmentlogo.svg" />
+    <link rel="canonical" href="https://kolibri.alignment.id/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        --bg-dark: #050505;
+        --text-primary: #f4f1ea;
+        --text-muted: #9a958c;
+        --accent-gold: #c9a962;
+        --line: rgba(255, 255, 255, 0.1);
+        --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+        --page-pad: clamp(1.25rem, 4vw, 2.5rem);
+        --max: 1120px;
+      }
+
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.7;
+      }
+
+      a { color: inherit; }
+
+      .sr-only {
+        position: absolute;
+        width: 1px; height: 1px;
+        padding: 0; margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent-gold);
+        outline-offset: 3px;
+      }
+
+      /* ── Header ── */
+      .nav-shell {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 0.65rem var(--page-pad);
+        background: rgba(5, 5, 5, 0.86);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .nav-bar {
+        margin-inline: auto;
+        max-width: var(--max);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-height: 2.75rem;
+      }
+
+      .nav-logo {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      .nav-logo img { height: 24px; width: auto; display: block; }
+
+      .nav-primary {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        gap: clamp(0.85rem, 2vw, 1.4rem);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.75rem, 2vw, 1.15rem);
+      }
+
+      .nav-link {
+        position: relative;
+        font-size: 0.78rem;
+        color: rgba(244, 241, 234, 0.62);
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        text-decoration: none;
+        padding: 0.35rem 0.1rem;
+        transition: color 0.2s ease;
+        font-family: var(--font-mono);
+      }
+
+      .nav-link:hover { color: #fff; }
+      .nav-link[aria-current="page"] { color: #fff; }
+      .nav-link[aria-current="page"]::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: -0.2rem;
+        height: 1px;
+        background: var(--accent-gold);
+      }
+
+      .nav-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(201, 169, 98, 0.55);
+        color: var(--accent-gold);
+        text-decoration: none;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.45rem 0.8rem;
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      }
+
+      .nav-action:hover {
+        background: rgba(201, 169, 98, 0.12);
+        border-color: var(--accent-gold);
+        color: #f4f1ea;
+      }
+
+      /* ── Layout ── */
+      .hero {
+        padding: clamp(2.5rem, 7vh, 4.5rem) var(--page-pad) clamp(3rem, 8vh, 5rem);
+        overflow: hidden;
+      }
+
+      .hero-grid {
+        max-width: var(--max);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        align-items: center;
+        gap: clamp(1.5rem, 4vw, 3.5rem);
+      }
+
+      .bird-wrap {
+        position: relative;
+        justify-self: start;
+        margin-left: clamp(-1rem, -3vw, 0);
+        transition: transform 0.45s ease;
+        will-change: transform;
+      }
+
+      .bird {
+        font-family: var(--font-mono);
+        font-size: clamp(4.5px, 1.05vw, 10px);
+        font-weight: 500;
+        line-height: 1.0;
+        letter-spacing: 0;
+        white-space: pre;
+        display: inline-block;
+        text-align: left;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.3);
+        user-select: none;
+      }
+
+      .hero-text { max-width: 34rem; }
+
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--accent-gold);
+        margin-bottom: 1.15rem;
+      }
+
+      .tagline {
+        font-size: clamp(2rem, 4.2vw, 3.35rem);
+        font-weight: 600;
+        line-height: 1.12;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.35rem;
+      }
+
+      .tagline::after {
+        content: "";
+        display: block;
+        width: 3.2rem;
+        height: 2px;
+        margin-top: 1rem;
+        background: var(--accent-gold);
+      }
+
+      .bio {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        margin: 0 0 1.1rem;
+      }
+
+      .quiet {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        color: rgba(244, 241, 234, 0.55);
+        letter-spacing: 0.02em;
+        margin: 0 0 1.6rem;
+      }
+
+      .waitlist {
+        display: flex;
+        gap: 0.65rem;
+        align-items: stretch;
+        max-width: 28rem;
+        margin: 0;
+      }
+
+      .waitlist input {
+        flex: 1;
+        min-width: 0;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 2px;
+        padding: 0.75rem 0.95rem;
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+        color: var(--text-primary);
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .waitlist input::placeholder { color: rgba(255, 255, 255, 0.32); }
+      .waitlist input:focus { border-color: rgba(201, 169, 98, 0.7); }
+
+      .waitlist button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 2px;
+        background: #f4f1ea;
+        color: #111;
+        padding: 0.75rem 1.15rem;
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .waitlist button:hover { background: #fff; transform: translateY(-1px); }
+      .waitlist button:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+      .privacy {
+        margin-top: 0.85rem;
+        font-size: 0.88rem;
+        color: rgba(244, 241, 234, 0.48);
+      }
+
+      .form-status {
+        margin-top: 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        color: rgba(255, 255, 255, 0.55);
+        min-height: 1.3em;
+      }
+
+      .form-status.ok { color: var(--accent-gold); }
+      .form-status.err { color: #f87171; }
+
+      /* ── Sections ── */
+      .page {
+        padding: 0 var(--page-pad) clamp(4rem, 10vh, 6rem);
+      }
+
+      .section {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: clamp(2.75rem, 6vh, 4.25rem) 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .section-label {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(244, 241, 234, 0.42);
+        margin-bottom: 0.85rem;
+      }
+
+      .section h2 {
+        font-size: clamp(1.55rem, 2.8vw, 2.15rem);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin-bottom: 1.25rem;
+        max-width: 22ch;
+      }
+
+      .section p {
+        font-size: 1.02rem;
+        color: var(--text-muted);
+        max-width: 42rem;
+        margin: 0 0 1.05rem;
+      }
+
+      .section p:last-child { margin-bottom: 0; }
+
+      .origin-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        gap: clamp(1.5rem, 4vw, 2.75rem);
+        align-items: start;
+      }
+
+      .poster-figure {
+        margin: 0;
+      }
+
+      .poster-figure img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--line);
+        background: #111;
+      }
+
+      .poster-figure figcaption {
+        margin-top: 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.04em;
+        color: rgba(244, 241, 234, 0.45);
+      }
+
+      .portfolio-link {
+        display: inline-flex;
+        margin-top: 0.35rem;
+        color: var(--accent-gold);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(201, 169, 98, 0.35);
+        padding-bottom: 0.1rem;
+        transition: border-color 0.2s ease, color 0.2s ease;
+      }
+
+      .portfolio-link:hover {
+        color: #f4f1ea;
+        border-color: rgba(244, 241, 234, 0.55);
+      }
+
+      .early-access {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 1.5rem;
+        align-items: end;
+      }
+
+      .early-access .bird-small {
+        font-family: var(--font-mono);
+        font-size: clamp(3.5px, 0.7vw, 6px);
+        line-height: 1;
+        white-space: pre;
+        color: rgba(255, 255, 255, 0.22);
+        user-select: none;
+        opacity: 0.85;
+      }
+
+      /* ── Footer ── */
+      .site-footer {
+        border-top: 1px solid var(--line);
+        padding: clamp(2.5rem, 6vh, 3.5rem) var(--page-pad) 2rem;
+        background: #000;
+      }
+
+      .site-footer__inner {
+        max-width: var(--max);
+        margin: 0 auto;
+        display: grid;
+        gap: 1.75rem;
+      }
+
+      .site-footer__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.25rem;
+      }
+
+      .site-footer__column-title {
+        margin: 0 0 0.45rem;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-weight: 600;
+        color: #fff;
+        font-family: var(--font-mono);
+      }
+
+      .site-footer__column-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        align-items: flex-start;
+      }
+
+      .site-footer__column-link {
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 0.92rem;
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: color 0.2s ease, border-color 0.2s ease;
+      }
+
+      .site-footer__column-link:hover {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
+      .site-footer__social-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding-top: 0.5rem;
+      }
+
+      .site-footer__social-links {
+        display: inline-flex;
+        gap: 0.85rem;
+        align-items: center;
+      }
+
+      .site-footer__social-link {
+        display: inline-flex;
+        color: rgba(255, 255, 255, 0.8);
+        transition: transform 0.2s ease, color 0.2s ease;
+      }
+
+      .site-footer__social-link:hover {
+        transform: translateY(-1px);
+        color: #fff;
+      }
+
+      .site-footer__social-icon { width: 18px; height: 18px; display: block; }
+
+      .site-footer__meta {
+        font-size: 0.82rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid,
+        .origin-grid,
+        .early-access {
+          grid-template-columns: 1fr;
+        }
+        .bird-wrap {
+          justify-self: center;
+          margin-left: 0;
+          order: -1;
+        }
+        .bird {
+          font-size: clamp(4.5px, 1.7vw, 7px);
+          max-width: 100%;
+        }
+        .hero-text { max-width: none; }
+        .early-access .bird-small { display: none; }
+        .nav-action { display: none; }
+      }
+
+      @media (max-width: 560px) {
+        .waitlist { flex-direction: column; }
+        .waitlist button { width: 100%; }
+        .nav-links .nav-link { font-size: 0.68rem; letter-spacing: 0.12em; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .bird-wrap { transition: none !important; transform: none !important; }
+        .waitlist button, .nav-link, .nav-action, .site-footer__social-link, .portfolio-link { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav-shell">
+      <nav class="nav-bar" aria-label="Primary">
+        <a href="https://alignment.id" class="nav-logo">
+          <span class="sr-only">Alignment</span>
+          <img src="/assets/alignmentlogo.svg" alt="Alignment" width="120" height="32" />
+        </a>
+        <div class="nav-primary">
+          <div class="nav-links">
+            <a href="https://gray.alignment.id" class="nav-link">Gray</a>
+            <a href="https://alignment.id/#research" class="nav-link">Research</a>
+            <a href="/" class="nav-link" aria-current="page">Course</a>
+          </div>
+          <a href="#early-access" class="nav-action">Join early access</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-grid">
+          <div class="bird-wrap" id="bird-wrap">
+            <!-- Static fallback frame; JS replaces with the 72-frame animation -->
+            <pre class="bird" id="bird" aria-hidden="true">                                                                  .:.
+                                                              .:::.
+                                                          .:-:.
+                                                      .-==:
+                                             :--==+**%#-
+                                         :+#%%%@%@@@@*
+                                        *%%%%%#%%%%%%.
+                                       *@%%%%%%%@%%%#
+                                      .%%%%%@@@@%%%%#
+                                      :%%%@@%%@%%%%@+
+                                ..:--=#%%#+=++*####*:
+                                  ..-*%#%#+-::::::-:.
+                             ..::--+########*+=--::::
+                         ...:::::-+#*****##%##*+==-.
+                     ......:::::=*********#####**+=-
+                        ....:::+***************##*+.
+                             .*######*****#*******-
+                            .*##############****=.
+                           .##############***+=.
+                          :########*##*****=:
+                         =#######**++****++.
+                        +#####***++=--=**#-
+                       *#*##***+=-.   -+=:
+                      *####++++-.
+                     *##%#+--:
+                    .##%%+.
+                   .#%%+
+                   =%*:
+                   --</pre>
+          </div>
+
+          <div class="hero-text">
+            <p class="eyebrow">KOLIBRI / EARLY ACCESS</p>
+            <h1 class="tagline" id="hero-title">Learn programming by making something work.</h1>
+            <p class="bio">
+              Kolibri grew out of the small classes I currently teach in Depok. People arrive with an idea, a half-built project, or code they generated but cannot fix. We work through the parts that tutorials usually skip: choosing a manageable scope, reading unfamiliar code, using Git, debugging broken dependencies, and getting something online. AI is part of the process, but it does not remove the need to understand what the system is doing.
+            </p>
+            <p class="quiet">Small in-person cohorts first. A broader course later.</p>
+
+            <form class="waitlist" id="waitlist-form-hero" novalidate>
+              <label for="waitlist-email-hero" class="sr-only">Email address</label>
+              <input id="waitlist-email-hero" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Email address" required maxlength="254" />
+              <button type="submit">Join early access</button>
+            </form>
+            <p class="privacy">We will only email you about Kolibri and upcoming sessions.</p>
+            <p class="form-status" id="form-status-hero" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <div class="page">
+        <section class="section" aria-labelledby="becoming-title">
+          <p class="section-label">Kolibri</p>
+          <h2 id="becoming-title">What Kolibri is becoming</h2>
+          <p>
+            The current version is still a class I teach directly. Some people join without a programming background. Others have followed tutorials or generated entire applications with AI, but do not know where to look when the output stops working. The sessions are built around that point: not the first prompt, but everything that comes afterward.
+          </p>
+          <p>
+            Teaching it in person has exposed problems I would not have noticed while writing the material alone. An explanation that seemed obvious to me may confuse everyone else. An exercise may require too much setup before anything useful happens. A project may sound reasonable until someone tries to finish it within the available time. The material changes whenever those problems become visible.
+          </p>
+          <p>
+            I want Kolibri to grow beyond the current sessions, with kolibri.alignment.id as its home, but the online format has not been decided yet. I do not want to record several hours of lectures, upload them, and pretend the difficult part has been solved. The difficult part is preserving the feedback, debugging, and decision-making that currently happen in the room.
+          </p>
+        </section>
+
+        <section class="section" aria-labelledby="session-title">
+          <p class="section-label">In the room</p>
+          <h2 id="session-title">What happens during a session</h2>
+          <p>
+            We begin with something small enough to finish. This usually means removing more ideas than adding them. Once the project is clear, we set it up, decide what AI should handle, inspect the code it produces, and keep track of the work with Git. Eventually something breaks. That is expected.
+          </p>
+          <p>
+            The rest of the session may involve reading an error message properly, replacing a bad dependency, changing the structure of the project, tracing data through several files, or realizing that the original plan was wrong. The goal is not to avoid those moments. It is to become less helpless when they happen.
+          </p>
+          <p>
+            The exact project may differ between cohorts. The language may differ too. Kolibri may use Python, JavaScript, Go, Rust, or something else when the project calls for it. The course is not meant to make someone collect syntax from several languages. It is meant to make unfamiliar technical work less intimidating.
+          </p>
+        </section>
+
+        <section class="section" aria-labelledby="practice-title">
+          <p class="section-label">Practice</p>
+          <h2 id="practice-title">What you will practice</h2>
+          <p>
+            You will practice turning an unclear idea into a smaller project, working inside a codebase you did not memorize, using Git without treating it as an emergency tool, and changing AI-generated code without repeatedly asking the model to rewrite everything.
+          </p>
+          <p>
+            You will also deal with APIs, configuration, external services, deployment, and the ordinary mistakes that appear when several parts of a system have to work together. By the end, you should be able to explain what you made, where it is weak, and what you would change next.
+          </p>
+          <p>
+            That does not mean you will understand every line perfectly. It means you should know enough to keep moving, investigate what you do not understand, and notice when the generated answer is making the project worse.
+          </p>
+        </section>
+
+        <section class="section" aria-labelledby="build-title">
+          <p class="section-label">Projects</p>
+          <h2 id="build-title">The kinds of things people may build</h2>
+          <p>
+            The projects will depend on the cohort and the people in it. A useful automation, a browser extension, a small AI tool, a data project, an API-backed application, or an internal tool for a real organization could all make sense. A large social network or a vague “AI assistant for everything” probably would not.
+          </p>
+          <p>
+            Projects are chosen because they expose useful problems, not because they look impressive in a course thumbnail. Some will be visually plain. Some may remain rough after deployment. They should still do something another person can use or inspect.
+          </p>
+        </section>
+
+        <section class="section" aria-labelledby="origin-title">
+          <p class="section-label">Origin</p>
+          <div class="origin-grid">
+            <div>
+              <h2 id="origin-title">Where the course came from</h2>
+              <p>
+                Before it was called Kolibri, this was just the class I ran as “vibe coding dari nol” through <a class="portfolio-link" href="https://vstal.in/form">vstal.in/form</a>. Same room, same kind of work, a simpler name.
+              </p>
+              <p>
+                Kolibri is partly a response to mistakes I made while building my own products. AI made it much easier to begin, but it also made it easy to create code I could not explain, dependencies I had not chosen carefully, and products whose scope grew faster than I could maintain them.
+              </p>
+              <p>
+                Gray was the clearest example. I built and released a working proactive AI product, but it became too broad and messy for one person to keep developing properly. I eventually parked it. The experience taught me more than a clean tutorial would have, but it also made the weaknesses of “just let AI build it” fairly obvious.
+              </p>
+              <p>
+                Kolibri is not meant to remove that mess. It is meant to make the mess easier to work through without losing control of the project.
+              </p>
+              <p>
+                <a class="portfolio-link" href="https://vstal.in/portfolio">See previous work at vstal.in/portfolio</a>
+              </p>
+            </div>
+            <figure class="poster-figure">
+              <img
+                src="/assets/vibe-coding-dari-nol-poster.png"
+                alt="Instagram promo poster for the earlier vibe coding dari nol class, advertising a hands-on programming session"
+                width="1080"
+                height="1350"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>Earlier class poster for vibe coding dari nol</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="who-title">
+          <p class="section-label">Fit</p>
+          <h2 id="who-title">Who it may be useful for</h2>
+          <p>
+            Kolibri may be useful if you have tried tutorials, copied code, or used AI to generate projects but still feel unable to work independently once something breaks. Complete beginners can join if they are willing to spend time inside unfamiliar material instead of waiting for every concept to be explained first.
+          </p>
+          <p>
+            It may also be useful if you already know some programming but have never carried a project from an unclear idea through version control, debugging, and deployment.
+          </p>
+          <p>
+            It is probably not useful if you mainly want a certificate, a passive video library, or a guaranteed route into a programming job. Kolibri will not remove the frustrating parts of learning to build software. A lot of the course is about becoming better at staying with those parts.
+          </p>
+        </section>
+
+        <section class="section" aria-labelledby="now-title">
+          <p class="section-label">Now</p>
+          <h2 id="now-title">What exists now</h2>
+          <p>
+            Kolibri currently exists as small, hands-on sessions taught directly in Depok. There is course material, a registration and payment flow, and several rounds of observations from teaching people in person. There is no finished online platform yet, and the final curriculum, price, and schedule may change as the course develops.
+          </p>
+          <p>
+            The first cohorts will remain small because I still need to see what holds up when different people use the material. The online version will come after that, not before.
+          </p>
+        </section>
+
+        <section class="section" id="early-access" aria-labelledby="access-title">
+          <div class="early-access">
+            <div>
+              <p class="section-label">List</p>
+              <h2 id="access-title">Early access</h2>
+              <p>
+                Kolibri is still being developed. Joining the list does not commit you to buying anything. I will email when the next in-person session or the first version of the online course is ready, along with the format, dates, and price.
+              </p>
+              <form class="waitlist" id="waitlist-form-footer" novalidate>
+                <label for="waitlist-email-footer" class="sr-only">Email address</label>
+                <input id="waitlist-email-footer" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Email address" required maxlength="254" />
+                <button type="submit">Join early access</button>
+              </form>
+              <p class="quiet" style="margin-top: 1rem; margin-bottom: 0;">Small cohorts near UI and Depok first. Online access later.</p>
+              <p class="form-status" id="form-status-footer" role="status" aria-live="polite"></p>
+            </div>
+            <pre class="bird-small" aria-hidden="true">                                                                  .:.
+                                                              .:::.
+                                                          .:-:.
+                                                      .-==:
+                                             :--==+**%#-
+                                         :+#%%%@%@@@@*
+                                        *%%%%%#%%%%%%.
+                                       *@%%%%%%%@%%%#
+                                      .%%%%%@@@@%%%%#
+                                      :%%%@@%%@%%%%@+
+                                ..:--=#%%#+=++*####*:
+                                  ..-*%#%#+-::::::-:.
+                             ..::--+########*+=--::::
+                         ...:::::-+#*****##%##*+==-.
+                     ......:::::=*********#####**+=-
+                        ....:::+***************##*+.
+                             .*######*****#*******-
+                            .*##############****=.
+                           .##############***+=.
+                          :########*##*****=:
+                         =#######**++****++.
+                        +#####***++=--=**#-
+                       *#*##***+=-.   -+=:
+                      *####++++-.
+                     *##%#+--:
+                    .##%%+.
+                   .#%%+
+                   =%*:
+                   --</pre>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <div class="site-footer__grid">
+          <div>
+            <p class="site-footer__column-title">Alignment</p>
+            <div class="site-footer__column-stack">
+              <a href="https://alignment.id" class="site-footer__column-link">Home</a>
+              <a href="https://gray.alignment.id" class="site-footer__column-link">Gray</a>
+              <a href="https://alignment.id/#research" class="site-footer__column-link">Research</a>
+              <a href="/" class="site-footer__column-link">Course</a>
+            </div>
+          </div>
+          <div>
+            <p class="site-footer__column-title">Kolibri</p>
+            <div class="site-footer__column-stack">
+              <a href="https://vstal.in/form" class="site-footer__column-link">vstal.in/form</a>
+              <a href="https://vstal.in/portfolio" class="site-footer__column-link">vstal.in/portfolio</a>
+              <a href="mailto:hi@alignment.id" class="site-footer__column-link">hi@alignment.id</a>
+            </div>
+          </div>
+          <div>
+            <p class="site-footer__column-title">Policies</p>
+            <div class="site-footer__column-stack">
+              <a href="https://alignment.id/policies/tos" class="site-footer__column-link">Terms</a>
+              <a href="https://alignment.id/policies/privacy" class="site-footer__column-link">Privacy</a>
+              <a href="https://alignment.id/policies/refund" class="site-footer__column-link">Refund policy</a>
+            </div>
+          </div>
+        </div>
+        <div class="site-footer__social-row">
+          <div class="site-footer__social-links">
+            <a href="https://instagram.com/alignmentid" target="_blank" rel="noreferrer" class="site-footer__social-link">
+              <img src="/assets/instagramwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" />
+              <span class="sr-only">Instagram</span>
+            </a>
+            <a href="https://x.com/alignmentid" target="_blank" rel="noreferrer" class="site-footer__social-link">
+              <img src="/assets/xwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" />
+              <span class="sr-only">X</span>
+            </a>
+            <a href="https://www.linkedin.com/in/vstalingrady/" target="_blank" rel="noreferrer" class="site-footer__social-link">
+              <span class="sr-only">LinkedIn</span>
+              <svg class="site-footer__social-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.24 8.25h4.52V24H.24V8.25zM8.34 8.25h4.33v2.14h.06c.6-1.14 2.08-2.34 4.28-2.34 4.58 0 5.42 3.01 5.42 6.93V24h-4.52v-7.75c0-1.85-.03-4.22-2.57-4.22-2.57 0-2.96 2.01-2.96 4.09V24H8.34V8.25z"/></svg>
+            </a>
+          </div>
+          <p class="site-footer__meta">© 2026 Alignment. kolibri.alignment.id</p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { hummingbirdAnimation } from './assets/hummingbird_data.js';
+
+      const birdEl = document.getElementById('bird');
+      const birdWrap = document.getElementById('bird-wrap');
+      const frames = hummingbirdAnimation.frames;
+      const FRAME_MS = 1000 / 12;
+      const CONTRAST_BOOST = 1.8;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function renderFrame(frame) {
+        const lines = frame.ascii.split('\n');
+        const bGrid = frame.brightness;
+        let html = '';
+        for (let y = 0; y < lines.length; y++) {
+          const line = lines[y];
+          const bRow = bGrid[y] || [];
+          for (let x = 0; x < line.length; x++) {
+            const char = line[x];
+            let val = bRow[x] || 0;
+            if (char === ' ' || val === 0) { html += ' '; continue; }
+            val = Math.min(255, Math.round(val * CONTRAST_BOOST));
+            const norm = val / 255;
+            const opacity = Math.max(0.3, norm).toFixed(2);
+            const lightness = (20 + norm * 72).toFixed(0);
+            const sat = (18 + norm * 38).toFixed(0);
+            const glow = val > 200 ? ` text-shadow: 0 0 ${(val / 40).toFixed(1)}px currentColor;` : '';
+            html += `<span style="color: hsl(42, ${sat}%, ${lightness}%); opacity: ${opacity};${glow}">${char}</span>`;
+          }
+          html += '\n';
+        }
+        return html;
+      }
+
+      if (frames && frames.length) {
+        let i = 0;
+        const tick = () => { birdEl.innerHTML = renderFrame(frames[i]); i = (i + 1) % frames.length; };
+        tick();
+        if (!reduceMotion) setInterval(tick, FRAME_MS);
+      }
+
+      if (!reduceMotion && birdWrap) {
+        let mx = 0, my = 0, sx = 0, sy = 0, raf = 0;
+        const apply = () => {
+          sx += (mx - sx) * 0.08;
+          sy += (my - sy) * 0.08;
+          birdWrap.style.transform = `translate3d(${sx.toFixed(2)}px, ${sy.toFixed(2)}px, 0)`;
+          raf = requestAnimationFrame(apply);
+        };
+        window.addEventListener('pointermove', (e) => {
+          const cx = window.innerWidth / 2;
+          const cy = window.innerHeight / 2;
+          mx = ((e.clientX - cx) / cx) * 10;
+          my = ((e.clientY - cy) / cy) * 6;
+        }, { passive: true });
+        raf = requestAnimationFrame(apply);
+      }
+
+      async function submitWaitlist(form, statusEl) {
+        const input = form.querySelector('input[type="email"]');
+        const btn = form.querySelector('button[type="submit"]');
+        const setStatus = (msg, cls) => {
+          statusEl.textContent = msg;
+          statusEl.className = 'form-status' + (cls ? ' ' + cls : '');
+        };
+        const email = input.value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setStatus('Enter a valid email.', 'err');
+          return;
+        }
+        btn.disabled = true;
+        setStatus('Sending…');
+        try {
+          const res = await fetch('/api/waitlist', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          if (res.ok) {
+            form.reset();
+            setStatus("You're on the list.", 'ok');
+          } else if (res.status === 429) {
+            setStatus('Slow down — try again later.', 'err');
+          } else {
+            setStatus('Something broke. Try again.', 'err');
+          }
+        } catch {
+          setStatus('Network error. Try again.', 'err');
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      const heroForm = document.getElementById('waitlist-form-hero');
+      const footerForm = document.getElementById('waitlist-form-footer');
+      heroForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitWaitlist(heroForm, document.getElementById('form-status-hero'));
+      });
+      footerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitWaitlist(footerForm, document.getElementById('form-status-footer'));
+      });
+    </script>
+  </body>
+</html>

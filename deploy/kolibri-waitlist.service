@@ -1,0 +1,19 @@
+[Unit]
+Description=kolibri.alignment.id early access + waitlist
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/gray/repo/course
+Environment=PORT=3001
+Environment=HOST=127.0.0.1
+# Shared production env. DISCORD_WEBHOOK_URL must be the same value used by
+# the vstal.in/form service; no webhook secret belongs in this unit.
+EnvironmentFile=/home/ubuntu/gray/repo/.env
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
