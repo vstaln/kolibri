@@ -1,0 +1,282 @@
+import { hummingbirdAnimation } from './assets/hummingbird_data.js';
+import { lesson, helpDialogue, starterCode, STORAGE_KEY } from './page-content.js';
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function renderBirdFrame(frame) {
+  const CONTRAST_BOOST = 1.8;
+  const lines = frame.ascii.split('\n');
+  const bGrid = frame.brightness;
+  let html = '';
+  for (let y = 0; y < lines.length; y++) {
+    const line = lines[y];
+    const bRow = bGrid[y] || [];
+    for (let x = 0; x < line.length; x++) {
+      const char = line[x];
+      let val = bRow[x] || 0;
+      if (char === ' ' || val === 0) { html += ' '; continue; }
+      val = Math.min(255, Math.round(val * CONTRAST_BOOST));
+      const norm = val / 255;
+      const opacity = Math.max(0.3, norm).toFixed(2);
+      const lightness = (20 + norm * 72).toFixed(0);
+      const sat = (18 + norm * 38).toFixed(0);
+      const glow = val > 200 ? ` text-shadow: 0 0 ${(val / 40).toFixed(1)}px currentColor;` : '';
+      html += `<span style="color: hsl(42, ${sat}%, ${lightness}%); opacity: ${opacity};${glow}">${char}</span>`;
+    }
+    html += '\n';
+  }
+  return html;
+}
+
+function initBird() {
+  const birdEl = document.getElementById('bird');
+  const birdWrap = document.getElementById('bird-wrap');
+  const frames = hummingbirdAnimation.frames;
+  const FRAME_MS = 1000 / 12;
+  if (frames && frames.length && birdEl) {
+    let i = 0;
+    const tick = () => { birdEl.innerHTML = renderBirdFrame(frames[i]); i = (i + 1) % frames.length; };
+    tick();
+    if (!reduceMotion) setInterval(tick, FRAME_MS);
+  }
+  if (!reduceMotion && birdWrap) {
+    let mx = 0, my = 0, sx = 0, sy = 0;
+    const apply = () => {
+      sx += (mx - sx) * 0.08;
+      sy += (my - sy) * 0.08;
+      birdWrap.style.transform = `translate3d(${sx.toFixed(2)}px, ${sy.toFixed(2)}px, 0)`;
+      requestAnimationFrame(apply);
+    };
+    window.addEventListener('pointermove', (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      mx = ((e.clientX - cx) / cx) * 10;
+      my = ((e.clientY - cy) / cy) * 6;
+    }, { passive: true });
+    requestAnimationFrame(apply);
+  }
+}
+
+function normalizeCategory(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function evaluateRule(code) {
+  const expenses = [
+    { name: 'Food', category: 'food', amount: 45000 },
+    { name: 'Transport', category: 'transport', amount: 20000 },
+    { name: 'Streaming', category: 'streaming', amount: 59000 },
+    { name: 'Housing', category: 'housing', amount: 1500000 },
+    { name: 'Coffee', category: 'coffee', amount: 28000 },
+  ];
+  let isEssential;
+  try {
+    const runner = new Function(`${code}\nif (typeof isEssential !== 'function' || typeof expenses === 'undefined') return null;\nreturn expenses.map((expense) => ({ name: expense.name, category: expense.category, essential: !!isEssential(expense.category) }));`);
+    const results = runner();
+    if (!Array.isArray(results)) return { error: 'none' };
+    const byName = Object.fromEntries(results.map((r) => [r.name, r.essential]));
+    const food = byName.Food;
+    const transport = byName.Transport;
+    const housing = byName.Housing;
+    const streaming = byName.Streaming;
+    if (food !== true) return { error: 'food' };
+    if (transport === true && housing !== true) return { error: 'transport' };
+    if (housing !== true || transport !== true) return { error: 'none' };
+    if (streaming === true) return { error: 'streaming' };
+    if (byName.Coffee === true) return { error: 'streaming' };
+    return { pass: true, results };
+  } catch {
+    return { error: 'none' };
+  }
+}
+
+function renderExpensePreview(results) {
+  const el = document.getElementById('expense-preview');
+  if (!el) return;
+  if (!results) {
+    el.textContent = 'Run the check to preview how each expense is classified.';
+    return;
+  }
+  el.textContent = results.map((r) => `${r.name}: ${r.essential ? 'essential' : 'optional'}`).join('\n');
+}
+
+function initLesson() {
+  const codeEditor = document.getElementById('expense-code');
+  const resultEl = document.getElementById('expense-result');
+  const reflectionEl = document.getElementById('expense-reflection');
+  const hintEl = document.getElementById('expense-hint-text');
+  const taskEl = document.getElementById('expense-task');
+  if (!codeEditor || !resultEl) return;
+
+  if (taskEl) taskEl.textContent = lesson.task;
+  const reflQ = document.querySelector('.reflection-q');
+  const reflF = document.querySelector('.reflection-follow');
+  if (reflQ) reflQ.textContent = lesson.reflection;
+  if (reflF) reflF.textContent = lesson.followUp;
+
+  let hintIndex = 0;
+  let passed = false;
+
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data.code) codeEditor.value = data.code;
+      if (data.passed) passed = true;
+    } catch {}
+  }
+
+  const persist = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ code: codeEditor.value, passed }));
+    } catch {}
+  };
+
+  const runCheck = () => {
+    const outcome = evaluateRule(codeEditor.value);
+    resultEl.dataset.status = '';
+    reflectionEl.hidden = true;
+    if (outcome.pass) {
+      resultEl.textContent = lesson.feedback.pass;
+      resultEl.dataset.status = 'pass';
+      passed = true;
+      reflectionEl.hidden = false;
+      renderExpensePreview(outcome.results);
+    } else {
+      const key = outcome.error || 'none';
+      resultEl.textContent = lesson.feedback[key] || lesson.feedback.none;
+      resultEl.dataset.status = 'fail';
+      renderExpensePreview(null);
+    }
+    persist();
+  };
+
+  document.getElementById('expense-run')?.addEventListener('click', runCheck);
+  document.getElementById('expense-hint')?.addEventListener('click', () => {
+    hintEl.textContent = lesson.hints[Math.min(hintIndex, lesson.hints.length - 1)];
+    hintIndex += 1;
+  });
+  document.getElementById('expense-reset')?.addEventListener('click', () => {
+    codeEditor.value = starterCode;
+    passed = false;
+    hintIndex = 0;
+    hintEl.textContent = '';
+    resultEl.textContent = 'Not checked yet. Change the rule, then run the check.';
+    resultEl.dataset.status = '';
+    reflectionEl.hidden = true;
+    renderExpensePreview(null);
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  });
+
+  codeEditor.addEventListener('input', persist);
+  if (!codeEditor.value) codeEditor.value = starterCode;
+  renderExpensePreview(null);
+}
+
+function initConceptMap() {
+  const map = document.getElementById('concept-map');
+  if (!map) return;
+  const situations = map.querySelectorAll('[data-situation]');
+  const update = (btn) => {
+    situations.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+    const input = btn.dataset.input || '';
+    const action = btn.dataset.action || '';
+    map.querySelector('[data-decision-input]').textContent = input;
+    map.querySelector('[data-decision-action]').textContent = action;
+  };
+  situations.forEach((btn) => btn.addEventListener('click', () => update(btn)));
+  update(situations[0]);
+}
+
+function initGuidancePanels() {
+  const root = document.getElementById('guidance-stages');
+  if (!root) return;
+  root.querySelectorAll('[data-stage]').forEach((btn, idx, all) => {
+    btn.addEventListener('click', () => {
+      all.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+      root.querySelectorAll('[data-panel]').forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== btn.dataset.stage;
+      });
+    });
+  });
+}
+
+function initNav() {
+  const links = document.querySelectorAll('[data-nav]');
+  const sections = [...links].map((l) => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+  const onScroll = () => {
+    const y = window.scrollY + 120;
+    let current = sections[0];
+    for (const section of sections) {
+      if (section.offsetTop <= y) current = section;
+    }
+    links.forEach((l) => {
+      const active = l.getAttribute('href') === `#${current.id}`;
+      l.classList.toggle('is-active', active);
+      if (active) l.setAttribute('aria-current', 'true');
+      else l.removeAttribute('aria-current');
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  const menuBtn = document.getElementById('nav-menu-btn');
+  const menuPanel = document.getElementById('nav-menu-panel');
+  menuBtn?.addEventListener('click', () => {
+    const open = menuPanel.hidden;
+    menuPanel.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}
+
+async function submitWaitlist(form, statusEl) {
+  const input = form.querySelector('input[type="email"]');
+  const btn = form.querySelector('button[type="submit"]');
+  const setStatus = (msg, cls) => {
+    statusEl.textContent = msg;
+    statusEl.className = 'form-status' + (cls ? ` ${cls}` : '');
+  };
+  const email = input.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setStatus('Enter a valid email.', 'err');
+    return;
+  }
+  btn.disabled = true;
+  setStatus('Sending…');
+  try {
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (res.ok) {
+      form.reset();
+      setStatus("You're on the list.", 'ok');
+    } else if (res.status === 429) {
+      setStatus('Slow down. Try again later.', 'err');
+    } else {
+      setStatus('Something broke. Try again.', 'err');
+    }
+  } catch {
+    setStatus('Network error. Try again.', 'err');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function initWaitlist() {
+  const form = document.getElementById('waitlist-form');
+  const status = document.getElementById('form-status');
+  if (!form || !status) return;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitWaitlist(form, status);
+  });
+}
+
+initBird();
+initLesson();
+initConceptMap();
+initGuidancePanels();
+initNav();
+initWaitlist();

@@ -199,21 +199,26 @@ function selftest() {
 
   const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   assert.ok(indexHtml.includes('/api/waitlist'), 'page posts to waitlist');
-  assert.ok(indexHtml.includes('Learn by changing something'), 'online course direction present');
-  assert.ok(indexHtml.includes('Interactive lesson interface'), 'interactive lesson concept present');
-  assert.ok(indexHtml.includes('The curriculum gets less helpful over time'), 'curriculum direction present');
-  assert.ok(indexHtml.includes('Projects begin inside the course'), 'portfolio projects present');
-  assert.ok(indexHtml.includes('AI is available, but it does not complete the course for you'), 'AI learning direction present');
+  assert.ok(indexHtml.includes('Learn programming by solving a problem you already have.'), 'hero headline present');
+  assert.ok(indexHtml.includes('Programming concepts are tools'), 'concepts section present');
+  assert.ok(indexHtml.includes('The example is only the beginning'), 'lesson section present');
+  assert.ok(indexHtml.includes('Eventually, nobody tells you which concept applies'), 'independence section present');
+  assert.ok(indexHtml.includes('Help without taking over'), 'help section present');
+  assert.ok(indexHtml.includes('SHARED EXPENSE CHECKER'), 'project concept present');
+  assert.ok(indexHtml.includes('What exists now'), 'current state section present');
   assert.strictEqual((indexHtml.match(/<form class="waitlist"/g) || []).length, 1, 'one waitlist form present');
-  assert.ok(indexHtml.includes('Follow the build'), 'online course CTA present');
-  assert.ok(indexHtml.includes('kolibri.alignment.id'), 'canonical domain present');
+  assert.ok(indexHtml.includes('Follow the online course build'), 'waitlist heading present');
+  assert.ok(indexHtml.includes('waitlist-wave-art'), 'wave beside waitlist');
   assert.ok(indexHtml.includes('vibe-coding-dari-nol-poster.png'), 'poster asset referenced');
   assert.ok(indexHtml.includes('vstal.in/portfolio'), 'portfolio link present');
-  assert.ok(!indexHtml.includes('Notify me'), 'old notify CTA removed');
   assert.ok(!indexHtml.includes('Small cohorts near UI'), 'in-person-first positioning removed');
-  assert.ok(indexHtml.includes("if (!reduceMotion) setInterval(tick, FRAME_MS)"), 'hummingbird animation loop present');
+  assert.ok(!indexHtml.includes('class="closing-art"'), 'standalone closing art removed');
 
-  assert.ok(indexHtml.includes('class="closing-art"'), 'closing ASCII art present');
+  const appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
+  assert.ok(appJs.includes('if (!reduceMotion) setInterval(tick, FRAME_MS)'), 'hummingbird animation loop present');
+  assert.ok(appJs.includes('STORAGE_KEY'), 'expense lesson persistence wiring present');
+  const pageContent = fs.readFileSync(path.join(ROOT, 'page-content.js'), 'utf8');
+  assert.ok(pageContent.includes('kolibri-expense-demo-v1'), 'expense lesson storage key present');
   assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'kolibri-closing-art.txt')), 'closing art source file exists');
 
   const poster = path.join(ROOT, 'assets', 'vibe-coding-dari-nol-poster.png');
