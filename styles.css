@@ -199,12 +199,12 @@ a { color: inherit; }
 .motion-toggle:hover,
 .motion-toggle:focus-visible { color: #e2d3a4; border-color: rgba(201, 169, 98, 0.75); }
 
-/* Hovering-hummingbird frames are 90 columns wide. Weight, line-height and the
-   blue glow below come from the source viewer; app.js repaints each glyph with
-   its own brightness-scaled shade of the same hue, so this rule is what a
-   visitor without JavaScript sees. */
+/* Hero bird: the feeding-at-flower frames are 95 columns wide. Weight,
+   line-height and the blue glow below come from the source viewer; app.js
+   repaints each glyph with its own brightness-scaled shade of the same hue, so
+   this rule is what a visitor without JavaScript sees. */
 .bird {
-  --cols: 90;
+  --cols: 95;
   font-family: var(--font-mono);
   font-size: clamp(4.5px, 1.05vw, 10px);
   /* 0.44 of the hero grid is the bird column once the gap is taken out. */
@@ -955,19 +955,37 @@ a { color: inherit; }
 .final-grid {
   container-type: inline-size;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  /* Both tracks are bounded: an `auto` second track would be sized to the ASCII
+     block's max-content and let the closing bird push the grid wider than the
+     section. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
   gap: clamp(1.5rem, 4vw, 3rem);
   align-items: end;
 }
 
+.bird-closing-wrap {
+  container-type: inline-size;
+  min-width: 0;
+  justify-self: end;
+  width: 100%;
+}
+
+/* Closing bird: the hovering-in-flight frames are 90 columns wide and carry the
+   same blue glow as the hero, a shade quieter so the section still ends on the
+   copy. app.js repaints each glyph from its own brightness once the dataset
+   arrives; this rule is what a visitor without JavaScript sees. */
 .bird-small {
   --cols: 90;
   font-family: var(--font-mono);
-  font-size: clamp(3.5px, 0.7vw, 6px);
-  font-size: min(6px, calc(24cqw / (var(--cols) * var(--ascii-advance))));
+  font-size: clamp(3.5px, 0.7vw, 9px);
+  /* Sized against the wrap, not the section: 100cqw of .bird-closing-wrap. */
+  font-size: min(8px, calc(100cqw / (var(--cols) * var(--ascii-advance))));
+  font-weight: 700;
   line-height: 0.96;
   white-space: pre;
-  color: hsl(200, 55%, 46%);
+  display: inline-block;
+  color: hsl(200, 95%, 56%);
+  text-shadow: 0 0 0.24em currentColor;
   user-select: none;
   margin: 0;
 }
@@ -1044,7 +1062,10 @@ a { color: inherit; }
   #nav-links-desktop { display: none; }
   .nav-menu-btn { display: inline-flex; }
   .nav-action { display: none; }
-  .bird-small { display: none; }
+  .bird-closing-wrap { justify-self: center; }
+  .bird-small {
+    font-size: min(7px, calc(100cqw / (var(--cols) * var(--ascii-advance))));
+  }
   .painting-starry { min-height: 18rem; max-height: 24rem; }
   .armature-viewport { aspect-ratio: 2 / 1; }
   .lesson-painting img { opacity: 0.3; }

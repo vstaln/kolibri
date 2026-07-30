@@ -1,10 +1,11 @@
 import { lesson, starterCode, STORAGE_KEY } from './page-content.js';
 
-// This module is served as /app.js?v=<hash of its sources, the dataset included>.
-// The frame data is a plain /assets URL that Cloudflare and the browser are both
-// allowed to cache, so it has to inherit that same version or a new animation
+// This module is served as /app.js?v=<hash of its sources, the datasets included>.
+// The frame data are plain /assets URLs that Cloudflare and the browser are both
+// allowed to cache, so they have to inherit that same version or a new animation
 // keeps losing to the copy already in the cache.
-const birdDataUrl = new URL(`./assets/hummingbird_data.js${new URL(import.meta.url).search}`, import.meta.url);
+const assetVersion = new URL(import.meta.url).search;
+const birdDataUrl = (slug) => new URL(`./assets/${slug}_data.js${assetVersion}`, import.meta.url).href;
 
 // v2: the v1 default could leave the signature hummingbird permanently static,
 // so old stored values are ignored rather than migrated.
@@ -15,12 +16,11 @@ function storedMotionChoice() {
   try { return localStorage.getItem(MOTION_KEY); } catch { return null; }
 }
 
-// The hummingbird hovers for everyone by default — including desktop, which a
-// stored-default bug used to leave frozen. Only a system reduced-motion request
-// changes the default, and then to a single static frame; the control beside the
-// bird flips it either way and that choice is remembered.
+// Both hummingbirds flap for everyone by default; the control beside the hero
+// turns them off and that choice is remembered. A reduced-motion request removes
+// the pointer parallax and halves the flap rate, but does not freeze the birds.
 const motionChoice = storedMotionChoice();
-const flapEnabled = motionChoice ? motionChoice === 'on' : !systemReducesMotion;
+const flapEnabled = motionChoice ? motionChoice === 'on' : true;
 const reduceMotion = systemReducesMotion;
 
 // Braille art has no fixed advance width across platforms, so measure the block
@@ -49,13 +49,19 @@ function initAsciiFit() {
   }, { passive: true });
 }
 
-// "Vibrant Glow" treatment from the source viewer: per-glyph brightness drives a
-// single blue hue, its lightness, its opacity and the size of its own halo.
-// Constants are the viewer's defaults — changing them changes the look.
+// "Vibrant Glow" treatment, identical in both source viewers: per-glyph
+// brightness drives a single blue hue, its lightness, its opacity and the size
+// of its own halo. Constants are the viewers' defaults — changing them changes
+// the look.
 const CONTRAST_BOOST = 1.8;
-// The viewer glows `brightness / 30` px at its own 17px type. The hero sets the
-// bird far smaller, so the halo is carried in em: same proportions at any size.
+// The viewers glow `brightness / 30` px at their own 17px type. This page sets
+// the birds far smaller, so the halo is carried in em and keeps its proportions
+// at any size.
 const GLOW_EM_PER_UNIT = 1 / (30 * 17);
+// Both datasets are already boomeranged — 37 distinct frames arrive as 72, 60 as
+// 118 — so playing them straight through on a loop gives the intended there-and-
+// back wingbeat. 24 fps is the rate the frames were stabilised at.
+const FRAME_MS = 1000 / (reduceMotion ? 12 : 24);
 
 function renderBirdFrame(frame) {
   const lines = frame.ascii.split('\n');
@@ -80,10 +86,78 @@ function renderBirdFrame(frame) {
   return html;
 }
 
-async function initBird() {
-  const birdEl = document.getElementById('bird');
+// Drives one <pre> from one dataset. The markup already carries that dataset's
+// first frame, so a dataset that never arrives costs the motion, not the bird.
+function makeBird(el, slug) {
+  let frames = null;
+  let timer = 0;
+  let index = 0;
+  let wanted = false;
+  const tick = () => {
+    el.innerHTML = renderBirdFrame(frames[index]);
+    index = (index + 1) % frames.length;
+  };
+  const sync = () => {
+    clearInterval(timer);
+    timer = frames && wanted ? setInterval(tick, FRAME_MS) : 0;
+  };
+  return {
+    set(on) { wanted = on; sync(); },
+    load() {
+      return import(birdDataUrl(slug))
+        .then((mod) => {
+          const data = mod.default || Object.values(mod)[0];
+          if (!data?.frames?.length) return;
+          frames = data.frames;
+          tick();
+          fitAsciiArt();
+          sync();
+        })
+        .catch(() => {});
+    },
+  };
+}
+
+function initBirds() {
   const birdWrap = document.getElementById('bird-wrap');
   const toggle = document.getElementById('motion-toggle');
+  const birds = [
+    [document.getElementById('bird'), 'hummingbird-feeding'],
+    [document.getElementById('bird-closing'), 'hummingbird-hover'],
+  ]
+    .filter(([el]) => el)
+    .map(([el, slug]) => makeBird(el, slug));
+
+  const setFlapping = (on) => {
+    for (const bird of birds) bird.set(on);
+    if (birdWrap) birdWrap.dataset.motion = on ? 'on' : 'off';
+    if (toggle) {
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      toggle.textContent = on ? 'Motion on' : 'Motion off';
+    }
+    fitAsciiArt();
+  };
+  setFlapping(flapEnabled);
+  toggle?.addEventListener('click', () => {
+    const on = toggle.getAttribute('aria-pressed') !== 'true';
+    setFlapping(on);
+    try { localStorage.setItem(MOTION_KEY, on ? 'on' : 'off'); } catch {}
+  });
+
+  // The hero bird is above the fold; the closing one is a whole page down and
+  // its dataset is the larger of the two, so it waits until it is nearly in view
+  // rather than competing with the hero for bandwidth.
+  birds[0]?.load();
+  const closing = document.getElementById('bird-closing');
+  if (birds.length > 1 && closing) {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      observer.disconnect();
+      birds[1].load();
+    }, { rootMargin: '400px' });
+    observer.observe(closing);
+  }
+
   if (!reduceMotion && birdWrap) {
     let mx = 0, my = 0, sx = 0, sy = 0;
     const apply = () => {
@@ -99,34 +173,6 @@ async function initBird() {
       my = ((e.clientY - cy) / cy) * 6;
     }, { passive: true });
     requestAnimationFrame(apply);
-  }
-  // The page already shows frame 0 from the markup, so a failed dataset fetch
-  // costs the motion, not the bird.
-  const { hummingbirdAnimation } = await import(birdDataUrl.href).catch(() => ({ hummingbirdAnimation: { frames: [] } }));
-  const frames = hummingbirdAnimation.frames;
-  // 24 fps is the hover rate the frames were stabilised at; slower reads as a stutter.
-  const FRAME_MS = 1000 / 24;
-  if (frames && frames.length && birdEl) {
-    let i = 0;
-    let timer = 0;
-    const tick = () => { birdEl.innerHTML = renderBirdFrame(frames[i]); i = (i + 1) % frames.length; };
-    tick();
-    const setFlapping = (on) => {
-      clearInterval(timer);
-      timer = on ? setInterval(tick, FRAME_MS) : 0;
-      if (birdWrap) birdWrap.dataset.motion = on ? 'on' : 'off';
-      if (toggle) {
-        toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
-        toggle.textContent = on ? 'Motion on' : 'Motion off';
-      }
-      fitAsciiArt();
-    };
-    setFlapping(flapEnabled);
-    toggle?.addEventListener('click', () => {
-      const on = toggle.getAttribute('aria-pressed') !== 'true';
-      setFlapping(on);
-      try { localStorage.setItem(MOTION_KEY, on ? 'on' : 'off'); } catch {}
-    });
   }
 }
 
@@ -364,7 +410,7 @@ function initWaitlist() {
 }
 
 initAsciiFit();
-initBird();
+initBirds();
 initLesson();
 initConceptMap();
 initArmature();

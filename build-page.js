@@ -16,10 +16,19 @@ const hash = (...files) => crypto
   .slice(0, 10);
 
 const cssVersion = hash('styles.css');
-// app.js hands its own ?v= to the hummingbird dataset, so the dataset has to be
-// part of this hash: new frames must produce a new URL for both.
-const jsVersion = hash('app.js', 'scene.js', 'page-content.js', 'assets/hummingbird_data.js');
-const bird = fs.readFileSync(path.join(ROOT, 'assets/kolibri-hummingbird.txt'), 'utf8');
+// app.js hands its own ?v= to the hummingbird datasets, so they have to be part
+// of this hash: new frames must produce a new URL for the script and the data.
+const jsVersion = hash(
+  'app.js',
+  'scene.js',
+  'page-content.js',
+  'assets/hummingbird-feeding_data.js',
+  'assets/hummingbird-hover_data.js'
+);
+// Each bird ships its animation's own first frame, so the page reads the same
+// before hydration and without JavaScript as it does once the frames arrive.
+const bird = fs.readFileSync(path.join(ROOT, 'assets/hummingbird-feeding-frame0.txt'), 'utf8');
+const birdClosing = fs.readFileSync(path.join(ROOT, 'assets/hummingbird-hover-frame0.txt'), 'utf8');
 const wave = fs.readFileSync(path.join(ROOT, 'assets/kolibri-closing-art.txt'), 'utf8');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
@@ -319,7 +328,9 @@ const html = `<!doctype html>
           <h2 id="final-title">The course should make itself less necessary</h2>
           <p>Kolibri will have succeeded when a learner can encounter a problem, decide whether code could help, and make a reasonable first attempt without waiting for a course to describe every step. They may still need documentation, other people, or AI. The difference is that those tools support their judgment instead of replacing it.</p>
         </div>
-        <pre class="bird-small" aria-hidden="true">${esc(bird)}</pre>
+        <div class="bird-closing-wrap">
+          <pre class="bird-small" id="bird-closing" aria-hidden="true" data-ascii-fit data-ascii-max="8">${esc(birdClosing)}</pre>
+        </div>
       </div>
     </section>
   </main>

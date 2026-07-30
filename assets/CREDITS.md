@@ -49,14 +49,20 @@ WebP derivative used decoratively (`aria-hidden` / empty `alt`).
 
 ## ASCII art
 
-`kolibri-hummingbird.txt`, `hummingbird_data.js` and `kolibri-closing-art.txt`
-are project-owned ASCII renderings and are preserved byte-for-byte by the page
-build; the wave is derived from Hokusai's *The Great Wave off Kanagawa* (1831,
-public domain).
+The hummingbird datasets and `kolibri-closing-art.txt` are project-owned ASCII
+renderings, preserved byte-for-byte by the page build; the wave is derived from
+Hokusai's *The Great Wave off Kanagawa* (1831, public domain).
 
-`hummingbird_data.js` holds the hero animation: 118 motion-stabilised frames of
-a hovering hummingbird, 90x29 characters over the palette `" .:-=+*#%@"`, each
-frame paired with a 0-255 brightness grid that `app.js` turns into the blue
-per-glyph glow. Imported verbatim from the standalone renderer output by
-`course/scripts/import-hummingbird.js`; `kolibri-hummingbird.txt` is frame 0 of
-that same set, used as the no-JavaScript and pre-hydration frame.
+Two hummingbird animations drive the page, both motion-stabilised over the
+palette `" .:-=+*#%@"` and both already boomeranged, so playing them straight
+through on a loop gives the there-and-back wingbeat:
+
+- `hummingbird-feeding_data.js` — hero: feeding at a flower, 72 frames, 95x39.
+- `hummingbird-hover_data.js` — closing section: hovering in flight, 118 frames,
+  90x29.
+
+Each frame pairs its ASCII with a 0-255 brightness grid that `app.js` turns into
+the blue per-glyph glow. Both were imported verbatim from the standalone
+renderer output by `course/scripts/import-hummingbird.js`, which also writes the
+matching `*-frame0.txt` used as each bird's no-JavaScript and pre-hydration
+frame.

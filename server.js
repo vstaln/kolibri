@@ -231,17 +231,26 @@ function selftest() {
   assert.ok(appJs.includes('setInterval(tick, FRAME_MS)'), 'hummingbird animation loop present');
   assert.ok(appJs.includes("localStorage.setItem(MOTION_KEY"), 'motion choice is remembered');
   assert.ok(
-    appJs.includes("const flapEnabled = motionChoice ? motionChoice === 'on' : !systemReducesMotion"),
-    'hummingbird hovers by default on every viewport, static only when the system asks for reduced motion'
+    appJs.includes("const flapEnabled = motionChoice ? motionChoice === 'on' : true"),
+    'both hummingbirds flap by default'
   );
-  assert.ok(appJs.includes('systemReducesMotion'), 'reduced-motion request still drops the parallax');
-  assert.ok(appJs.includes('hsl(200, 95%,') && appJs.includes('text-shadow: 0 0 '), 'blue hue and per-glyph glow ported from the source viewer');
-  // /assets is cacheable, so the dataset only reaches visitors if its URL moves
-  // with its contents — the reason a first deploy of these frames served the old
+  assert.ok(
+    appJs.includes('FRAME_MS = 1000 / (reduceMotion ? 12 : 24)'),
+    'reduced motion halves the flap rate rather than freezing it'
+  );
+  assert.ok(appJs.includes('if (!reduceMotion && birdWrap)'), 'reduced-motion request drops the pointer parallax');
+  assert.ok(appJs.includes('hsl(200, 95%,') && appJs.includes('text-shadow: 0 0 '), 'blue hue and per-glyph glow ported from the source viewers');
+  assert.ok(/\.bird\s*\{[^}]*hsl\(200, 95%/.test(styles), 'hero bird glows blue before hydration');
+  assert.ok(/\.bird-small\s*\{[^}]*hsl\(200, 95%/.test(styles), 'closing bird glows blue before hydration');
+  // /assets is cacheable, so a dataset only reaches visitors if its URL moves
+  // with its contents — the reason a first deploy of new frames served the old
   // animation from cache.
   assert.ok(appJs.includes('new URL(import.meta.url).search'), 'frame data inherits the versioned app.js URL');
   const buildPage = fs.readFileSync(path.join(ROOT, 'build-page.js'), 'utf8');
-  assert.ok(/jsVersion = hash\([^)]*hummingbird_data\.js/.test(buildPage), 'frame data is part of the script version hash');
+  assert.ok(
+    /jsVersion = hash\([^)]*hummingbird-feeding_data\.js[^)]*hummingbird-hover_data\.js/s.test(buildPage),
+    'both datasets are part of the script version hash'
+  );
   assert.ok(indexHtml.includes('#lessons{position:relative;overflow:hidden}'), 'inline guard keeps the painting inside its section');
   assert.ok(appJs.includes('fitAsciiArt'), 'ascii art is measured and fitted to its column');
   assert.ok(indexHtml.includes('id="motion-toggle"'), 'motion control present beside the hummingbird');
@@ -252,25 +261,31 @@ function selftest() {
   const pageContent = fs.readFileSync(path.join(ROOT, 'page-content.js'), 'utf8');
   assert.ok(pageContent.includes('kolibri-expense-demo-v1'), 'expense lesson storage key present');
   const wave = fs.readFileSync(path.join(ROOT, 'assets', 'kolibri-closing-art.txt'), 'utf8');
-  const bird = fs.readFileSync(path.join(ROOT, 'assets', 'kolibri-hummingbird.txt'), 'utf8');
   assert.ok(indexHtml.includes(wave), 'closing art preserved byte-for-byte');
-  assert.ok(indexHtml.includes(bird), 'static hummingbird preserved byte-for-byte');
+  assert.ok(indexHtml.includes('id="bird"') && indexHtml.includes('id="bird-closing"'), 'a bird in the hero and another closing the page');
 
-  // The hero animation is only as alive as its data: a truncated or collapsed
-  // dataset renders a bird that never moves, which is the bug this page keeps
-  // regressing into. Parse the asset and prove it holds real, varied frames.
-  const dataSrc = fs.readFileSync(path.join(ROOT, 'assets', 'hummingbird_data.js'), 'utf8');
-  const dataStart = dataSrc.indexOf('{', dataSrc.indexOf('hummingbirdAnimation ='));
-  const animation = JSON.parse(dataSrc.slice(dataStart, dataSrc.lastIndexOf('};') + 1));
-  assert.ok(animation.frames.length > 1, 'hummingbird dataset holds more than one frame');
-  assert.ok(new Set(animation.frames.map((f) => f.ascii)).size > 1, 'hummingbird frames actually differ from each other');
-  for (const frame of animation.frames) {
-    const lines = frame.ascii.split('\n');
-    assert.strictEqual(lines.length, animation.height, 'every frame is the declared height');
-    assert.ok(lines.every((l) => l.length === animation.width), 'every row is the declared width');
-    assert.strictEqual(frame.brightness.length, animation.height, 'every frame carries a full brightness grid');
+  // An animation is only as alive as its data: a truncated or collapsed dataset
+  // renders a bird that never moves, which is the bug this page keeps regressing
+  // into. Parse both assets and prove they hold real, varied frames, and that
+  // each bird's markup ships its own animation's first frame.
+  for (const [slug, exportName] of [
+    ['hummingbird-feeding', 'hummingbirdFeeding'],
+    ['hummingbird-hover', 'hummingbirdHover'],
+  ]) {
+    const dataSrc = fs.readFileSync(path.join(ROOT, 'assets', `${slug}_data.js`), 'utf8');
+    const animation = JSON.parse(dataSrc.slice(dataSrc.indexOf('{', dataSrc.indexOf(`${exportName} =`)), dataSrc.lastIndexOf('};') + 1));
+    assert.ok(animation.frames.length > 1, `${slug} holds more than one frame`);
+    assert.ok(new Set(animation.frames.map((f) => f.ascii)).size > 1, `${slug} frames actually differ from each other`);
+    for (const frame of animation.frames) {
+      const lines = frame.ascii.split('\n');
+      assert.strictEqual(lines.length, animation.height, `every ${slug} frame is the declared height`);
+      assert.ok(lines.every((l) => l.length === animation.width), `every ${slug} row is the declared width`);
+      assert.strictEqual(frame.brightness.length, animation.height, `every ${slug} frame carries a full brightness grid`);
+    }
+    const frame0 = fs.readFileSync(path.join(ROOT, 'assets', `${slug}-frame0.txt`), 'utf8');
+    assert.strictEqual(animation.frames[0].ascii, frame0, `${slug}'s no-JS frame is its own first frame`);
+    assert.ok(indexHtml.includes(frame0), `${slug}'s first frame is in the page byte-for-byte`);
   }
-  assert.strictEqual(animation.frames[0].ascii, bird, 'the no-JS frame is the animation\'s own first frame');
   assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'van-gogh-starry-night-rhone.webp')), 'Van Gogh asset exists');
   assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'monet-water-lilies.webp')), 'Monet asset exists');
   assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'monet-impression-sunrise.webp')), 'lesson-panel Monet asset exists');
