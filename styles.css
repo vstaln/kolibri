@@ -178,22 +178,22 @@ a { color: inherit; }
 /* Opt-in for visitors whose system asks for reduced motion but who want the
    hummingbird to fly anyway. Deliberately quiet and never over the art. */
 .motion-toggle {
-  border: 1px solid rgba(201, 169, 98, 0.4);
+  border: 1px solid rgba(201, 169, 98, 0.28);
   background: transparent;
-  color: rgba(201, 169, 98, 0.8);
+  /* Full-strength gold: the control stays quiet through its size and faint
+     border, not through low contrast. */
+  color: var(--accent-gold);
   font-family: var(--font-mono);
   font-size: 0.66rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 0.3rem 0.55rem;
   cursor: pointer;
-  opacity: 0.55;
-  transition: opacity 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .motion-toggle:hover,
-.motion-toggle:focus-visible { opacity: 1; color: #e2d3a4; border-color: rgba(201, 169, 98, 0.75); }
-.motion-toggle[aria-pressed="true"] { opacity: 0.75; }
+.motion-toggle:focus-visible { color: #e2d3a4; border-color: rgba(201, 169, 98, 0.75); }
 
 .bird {
   --cols: 69;
