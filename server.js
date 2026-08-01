@@ -207,7 +207,11 @@ function selftest() {
   const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   assert.ok(indexHtml.includes('/api/waitlist'), 'page posts to waitlist');
   assert.ok(indexHtml.includes('Learn programming by solving a problem you already have.'), 'hero headline present');
-  assert.ok(indexHtml.includes('Programming concepts are tools'), 'concepts section present');
+  assert.ok(indexHtml.includes('AI can write the code.'), 'concepts section present');
+  assert.ok(indexHtml.includes('id="moire-visual"'), 'moire concepts visual present');
+  assert.ok(indexHtml.includes('data-field="a"') && indexHtml.includes('data-field="b"'), 'moire fields both targeted');
+  assert.ok(!indexHtml.includes('moire-index'), 'moire instrument caption removed');
+  assert.ok(!indexHtml.includes('data-situation'), 'interactive concept map removed');
   assert.ok(indexHtml.includes('The example is only the beginning'), 'lesson section present');
   assert.ok(indexHtml.includes('Eventually, nobody tells you which concept applies'), 'independence section present');
   assert.ok(indexHtml.includes('Help without taking over'), 'help section present');
@@ -225,6 +229,27 @@ function selftest() {
   assert.ok(indexHtml.includes('vstal.in/portfolio'), 'portfolio link present');
   assert.ok(!indexHtml.includes('Small cohorts near UI'), 'in-person-first positioning removed');
   assert.ok(!indexHtml.includes('class="closing-art"'), 'standalone closing art removed');
+  assert.ok(indexHtml.includes('https://alignment.id/gray'), 'nav GRAY link present');
+  assert.ok(indexHtml.includes('https://alignment.id/#research'), 'nav RESEARCH link present');
+  assert.ok(indexHtml.includes('class="nav-separator"'), 'nav separator present');
+  assert.ok(!indexHtml.includes('nav-action'), 'nav action pill removed');
+  assert.ok(indexHtml.includes('grayaiwhitenotspinning.svg'), 'gray workspace CTA icon present');
+  assert.strictEqual((indexHtml.match(/data-nav/g) || []).length, 8, 'scroll-spy links duplicated in the menu panel');
+  assert.ok(indexHtml.includes('site-footer__overlay'), 'marketing footer overlay present');
+  assert.ok(indexHtml.includes('site-footer__social-row'), 'footer social row present');
+  assert.ok(indexHtml.includes('/logos/xwhite.svg'), 'footer social icons present');
+  assert.ok(!indexHtml.includes('site-footer__language'), 'language toggle omitted on EN-only page');
+  assert.ok(indexHtml.includes('/astronaut.jpg'), 'footer background image present');
+  for (const asset of [
+    'logos/xwhite.svg',
+    'logos/youtubewhite.svg',
+    'logos/instagramwhite.svg',
+    'logos/discordwhite.svg',
+    'astronaut.jpg',
+    'assets/grayaiwhitenotspinning.svg',
+  ]) {
+    assert.ok(fs.existsSync(path.join(ROOT, asset)), `${asset} exists`);
+  }
 
   const appJs = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
   const styles = fs.readFileSync(path.join(ROOT, 'styles.css'), 'utf8');
@@ -239,6 +264,12 @@ function selftest() {
     'reduced motion halves the flap rate rather than freezing it'
   );
   assert.ok(appJs.includes('if (!reduceMotion && birdWrap)'), 'reduced-motion request drops the pointer parallax');
+  assert.ok(appJs.includes('makeMoireFrames'), 'moire warp generator ported into the page');
+  assert.ok(appJs.includes('if (reduceMotion) return;'), 'moire pointer parallax respects reduced motion');
+  assert.ok(!styles.includes('situation-btn'), 'concept map styles removed');
+  assert.ok(!styles.includes('nav-action'), 'nav action pill styles removed');
+  assert.ok(styles.includes('nav-separator'), 'nav separator styles present');
+  assert.ok(styles.includes('site-footer__overlay'), 'marketing footer styles present');
   assert.ok(appJs.includes('hsl(200, 95%,') && appJs.includes('text-shadow: 0 0 '), 'blue hue and per-glyph glow ported from the source viewers');
   assert.ok(/\.bird\s*\{[^}]*hsl\(200, 95%/.test(styles), 'hero bird glows blue before hydration');
   assert.ok(/\.bird-small\s*\{[^}]*hsl\(200, 95%/.test(styles), 'closing bird glows blue before hydration');

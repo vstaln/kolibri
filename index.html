@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=61d88bc172" />
+  <link rel="stylesheet" href="/styles.css?v=eb405a63e4" />
   <!-- Ships with the markup so a stale cached stylesheet can never let the
        painting escape its section and cover the hero. -->
   <style>#lessons{position:relative;overflow:hidden}.lesson-painting{position:absolute;inset:0;z-index:0}#lessons>h2,.lesson-stage{position:relative;z-index:1}</style>
@@ -25,22 +25,31 @@
     <nav class="nav-bar" aria-label="Primary">
       <a href="https://alignment.id" class="nav-logo"><span class="sr-only">Alignment</span><img src="/assets/alignmentlogo.svg" alt="Alignment" width="120" height="32" /></a>
       <div class="nav-primary">
-        <div class="nav-links" id="nav-links-desktop">
+        <div class="nav-links">
+          <a href="https://alignment.id/gray" class="nav-link">GRAY</a>
+          <a href="https://alignment.id/#research" class="nav-link">RESEARCH</a>
+          <span class="nav-separator" aria-hidden="true"></span>
           <a href="#how" class="nav-link" data-nav>How it works</a>
           <a href="#lessons" class="nav-link" data-nav>Lessons</a>
           <a href="#projects" class="nav-link" data-nav>Projects</a>
           <a href="#current-state" class="nav-link" data-nav>Current state</a>
         </div>
-        <a href="#how" class="nav-action">How Kolibri works</a>
-        <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-menu-panel">Menu</button>
+        <a href="https://gray.alignment.id" class="nav-cta" target="_blank" rel="noreferrer">
+          <span class="sr-only">Open Gray workspace</span><img src="/assets/grayaiwhitenotspinning.svg" alt="" width="20" height="20" class="nav-cta__icon" aria-hidden="true" />
+        </a>
       </div>
+      <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-menu-panel">Menu</button>
     </nav>
     <div class="nav-menu-panel" id="nav-menu-panel" hidden>
+      <a href="https://alignment.id/gray" class="nav-link">GRAY</a>
+      <a href="https://alignment.id/#research" class="nav-link">RESEARCH</a>
       <a href="#how" class="nav-link" data-nav>How it works</a>
       <a href="#lessons" class="nav-link" data-nav>Lessons</a>
       <a href="#projects" class="nav-link" data-nav>Projects</a>
       <a href="#current-state" class="nav-link" data-nav>Current state</a>
-      <a href="#how" class="nav-action">How Kolibri works</a>
+      <a href="https://gray.alignment.id" class="nav-cta nav-cta--panel" target="_blank" rel="noreferrer">
+        <span class="sr-only">Open Gray workspace</span><img src="/assets/grayaiwhitenotspinning.svg" alt="" width="20" height="20" class="nav-cta__icon" aria-hidden="true" />
+      </a>
     </div>
   </header>
 
@@ -92,34 +101,41 @@
           <button type="button" class="motion-toggle" id="motion-toggle" aria-pressed="false" aria-label="Hummingbird motion">Motion</button>
         </div>
         <div class="hero-text">
-          <p class="eyebrow">KOLIBRI</p>
           <h1 class="tagline" id="hero-title">Learn programming by solving a problem you already have.</h1>
           <p class="bio">Kolibri is an interactive course about the ideas underneath programming and what those ideas let you do. You will work with examples, change working systems, investigate mistakes, and then look for somewhere the same idea could be useful in your own life. The point is not to remember the example. It is to understand it well enough to use the concept somewhere the course did not choose for you.</p>
-          <a class="text-link" href="#how">See how it works</a>
         </div>
       </div>
     </section>
 
-    <section class="section" id="how" aria-labelledby="concepts-title">
-      <div class="section-grid concepts-grid">
-        <div class="section-copy">
-          <h2 id="concepts-title">Programming concepts are tools</h2>
-          <p>A concept is easier to understand when it has a job to do. Variables become useful when something needs to be remembered. Conditions matter when a program has to make a decision. Functions help when the same kind of work appears in several places. Data structures matter when information needs to remain organized as it changes. An API becomes relevant when a program needs something outside itself.</p>
-          <p>Kolibri introduces these ideas inside small working systems. You inspect what the system is doing, change part of it, and see what your decision affected. The lesson then asks you to find a different situation where the same idea might help. Sometimes that becomes code. Sometimes the first useful step is describing the problem more clearly.</p>
+    <section class="section moire-section" id="how" aria-labelledby="concepts-title">
+      <div class="moire-copy">
+        <p class="moire-eyebrow">How Kolibri teaches</p>
+        <h2 id="concepts-title" class="moire-title">AI can write the code.<br />You still have to make the decisions.</h2>
+        <div class="moire-body">
+          <p>You begin with something small that already runs: a reminder that fires too late, a form that accepts the wrong thing, or a tool that almost solves a problem you actually have.</p>
+          <p>Ask AI to change it. Watch what happens. Trace the mistake far enough to understand it. Keep what works, reject what does not, and decide what the system should do next.</p>
+          <p>Later, the same idea returns somewhere else&mdash;under another name, inside another problem. Kolibri does not test whether you remember the syntax. It tests whether you can recognize what is needed, direct the work, and notice when the answer is not good enough.</p>
+          <p class="moire-closing">The prompt disappears. The problem remains yours.</p>
         </div>
-        <div class="concept-map" id="concept-map" aria-label="Concept reuse demonstration">
-          <div class="concept-map-core">
-            <p class="panel-kicker">Decision</p>
-            <div class="decision-block">if condition<br>then action</div>
-            <p class="decision-io"><span data-decision-input></span> → <span data-decision-action></span></p>
-          </div>
-          <div class="concept-map-situations">
-            <button type="button" class="situation-btn" data-situation data-input="expense category" data-action="essential or optional">An expense is essential or optional</button>
-            <button type="button" class="situation-btn" data-situation data-input="due date" data-action="send reminder">A reminder is due or not due</button>
-            <button type="button" class="situation-btn" data-situation data-input="form fields" data-action="allow submit">A form is complete or incomplete</button>
-            <button type="button" class="situation-btn" data-situation data-input="file type" data-action="choose folder">A file belongs in one folder or another</button>
-          </div>
-        </div>
+      </div>
+      <div class="moire-visual" id="moire-visual">
+        <svg class="moire-svg" viewBox="0 0 720 520" role="img" aria-label="An abstract moiré field whose hidden form appears as two line layers move across one another.">
+          <defs>
+            <radialGradient id="moire-fade" cx="54%" cy="48%" r="62%">
+              <stop offset="0%" stopColor="white" />
+              <stop offset="52%" stopColor="white" stopOpacity="0.94" />
+              <stop offset="82%" stopColor="white" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="black" stopOpacity="0" />
+            </radialGradient>
+            <mask id="moire-lens">
+              <rect width="720" height="520" fill="black" />
+              <ellipse cx="410" cy="255" rx="225" ry="172" fill="url(#moire-fade)" />
+            </mask>
+          </defs>
+          <g class="moire-parallax-a"><g class="moire-field" data-field="a"></g></g>
+          <g class="moire-parallax-b"><g class="moire-field" data-field="b"></g></g>
+          <g mask="url(#moire-lens)" class="moire-lens"><g class="moire-lens-field" data-field="b"></g></g>
+        </svg>
       </div>
     </section>
 
@@ -411,13 +427,45 @@
   </main>
 
   <footer class="site-footer">
-    <div class="site-footer__inner">
+    <div class="site-footer__media no-save" aria-hidden="true">
+      <img src="/astronaut.jpg" alt="" class="site-footer__image" loading="lazy" decoding="async" draggable="false" />
+    </div>
+    <div class="site-footer__overlay">
       <div class="site-footer__grid">
-        <div><p class="site-footer__column-title">Alignment</p><div class="site-footer__column-stack"><a href="https://alignment.id" class="site-footer__column-link">Home</a><a href="https://gray.alignment.id" class="site-footer__column-link">Gray</a><a href="https://alignment.id/#research" class="site-footer__column-link">Research</a><a href="/" class="site-footer__column-link">Kolibri</a></div></div>
-        <div><p class="site-footer__column-title">Kolibri</p><div class="site-footer__column-stack"><a href="https://vstal.in/portfolio" class="site-footer__column-link">Portfolio</a><a href="mailto:hi@alignment.id" class="site-footer__column-link">Contact</a></div></div>
-        <div><p class="site-footer__column-title">Policies</p><div class="site-footer__column-stack"><a href="https://alignment.id/policies/tos" class="site-footer__column-link">Terms</a><a href="https://alignment.id/policies/privacy" class="site-footer__column-link">Privacy</a></div></div>
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Products</p>
+          <div class="site-footer__column-stack"><a href="https://gray.alignment.id" class="site-footer__column-link" target="_blank" rel="noreferrer">Gray</a></div>
+        </div>
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Research</p>
+          <span class="site-footer__column-note">Coming soon</span>
+        </div>
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Contact</p>
+          <a href="mailto:hi@alignment.id" class="site-footer__column-link">hi@alignment.id</a>
+        </div>
       </div>
-      <p class="site-footer__meta">© 2026 Alignment.</p>
+      <div class="site-footer__grid site-footer__grid--secondary">
+        <div class="site-footer__column site-footer__column-stack">
+          <p class="site-footer__column-title">Policies</p>
+          <a href="https://alignment.id/policies/tos" class="site-footer__column-link">Terms of Service</a>
+          <a href="https://alignment.id/policies/privacy" class="site-footer__column-link">Privacy Policy</a>
+          <a href="https://alignment.id/policies/refund" class="site-footer__column-link">Refund Policy</a>
+        </div>
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Blog</p>
+          <span class="site-footer__column-note">Coming soon</span>
+        </div>
+      </div>
+      <div class="site-footer__social-row">
+        <div class="site-footer__social-links">
+          <a href="https://x.com/alignmentid" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/xwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">X</span></a>
+          <a href="https://youtube.com/@alignmentid" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/youtubewhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">YouTube</span></a>
+          <a href="https://instagram.com/alignmentid" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/instagramwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">Instagram</span></a>
+          <a href="https://discord.gg/sE4CSm4wWQ" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/discordwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">Discord</span></a>
+        </div>
+        <p class="site-footer__meta">© 2026 Alignment. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
@@ -425,6 +473,6 @@
     <style>.lesson-shell textarea{display:none}</style>
     <p class="noscript-note">JavaScript is required for the interactive lesson demonstration. The rest of this page remains readable without it.</p>
   </noscript>
-  <script type="module" src="/app.js?v=58bf02e101"></script>
+  <script type="module" src="/app.js?v=aa93da35fe"></script>
 </body>
 </html>

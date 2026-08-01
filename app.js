@@ -294,19 +294,112 @@ function initLesson() {
   renderExpensePreview(null);
 }
 
-function initConceptMap() {
-  const map = document.getElementById('concept-map');
-  if (!map) return;
-  const situations = map.querySelectorAll('[data-situation]');
-  const update = (btn) => {
-    situations.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-    const input = btn.dataset.input || '';
-    const action = btn.dataset.action || '';
-    map.querySelector('[data-decision-input]').textContent = input;
-    map.querySelector('[data-decision-action]').textContent = action;
+// The moiré follows the sidstuff/moire technique: two nearly parallel line
+// gratings — different pitch (11.8 vs 12.3) and field B rotated ~1.6° against
+// field A — so interference bands are always visible (window-screen moiré),
+// then both gratings are warped row-wise by slow waves carrying a time phase,
+// which makes those bands swim. Each frame is a snapshot at t = f/frames * 2π;
+// the warp is 2π-periodic in t, so the loop is seamless by construction.
+// `phase` exists only so the server selftest can prove that periodicity.
+function makeMoireFrames({ width, height, spacing, step, vertical, useCos, warpAmp, rotationDeg = 0, frames, phase = 0 }) {
+  const lines = Math.ceil((vertical ? width : height) / spacing) + 8;
+  const length = vertical ? height : width;
+  const perLine = Math.ceil(length / step) + 2;
+  const cx = width / 2;
+  const cy = height / 2;
+  const theta = (rotationDeg * Math.PI) / 180;
+  const cosT = Math.cos(theta);
+  const sinT = Math.sin(theta);
+  const all = [];
+  for (let f = 0; f < frames; f += 1) {
+    const t = phase + (f / frames) * Math.PI * 2;
+    const frame = [];
+    for (let i = -4; i < lines - 4; i += 1) {
+      const base = i * spacing;
+      const points = [];
+      for (let k = -1; k <= perLine + 1; k += 1) {
+        const s = -20 + k * step;
+        const wave = Math[useCos ? 'cos' : 'sin'](s / 100 + t);
+        const warp = warpAmp * (wave * wave * wave + Math[useCos ? 'cos' : 'sin']((Math.PI * s) / 200));
+        let x = vertical ? base + warp : s;
+        let y = vertical ? s : base + warp;
+        if (rotationDeg) {
+          const dx = x - cx;
+          const dy = y - cy;
+          x = cx + dx * cosT - dy * sinT;
+          y = cy + dx * sinT + dy * cosT;
+        }
+        points.push(`${points.length === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`);
+      }
+      frame.push(points.join(' '));
+    }
+    all.push(frame);
+  }
+  return all;
+}
+
+const MOIRE_FRAMES = 64;        // one full 2π warp cycle
+const MOIRE_FRAME_MS = 375;     // ~24s per cycle
+const MOIRE_BREATHE_MS = 5000;
+
+const MOIRE_FRAME_DATA = {
+  a: makeMoireFrames({ width: 720, height: 520, spacing: 11.8, step: 20, vertical: true, useCos: false, warpAmp: 16, frames: MOIRE_FRAMES }),
+  b: makeMoireFrames({ width: 720, height: 520, spacing: 12.3, step: 20, vertical: true, useCos: true, warpAmp: 16, rotationDeg: 1.6, frames: MOIRE_FRAMES }),
+};
+
+// The moiré is driven from JS, not CSS keyframes, for the same reason the
+// hummingbirds are: a prefers-reduced-motion request halves the rate instead
+// of freezing the visual (the birds halve their flap rate for the same
+// request). Motion stays on path `d` (the warp) and opacity (lens breathe).
+function initMoire() {
+  const visual = document.getElementById('moire-visual');
+  if (!visual) return;
+
+  const lens = visual.querySelector('.moire-lens');
+  const groups = [
+    visual.querySelector('.moire-parallax-a [data-field="a"]'),
+    visual.querySelector('.moire-parallax-b [data-field="b"]'),
+    visual.querySelector('.moire-lens [data-field="b"]'),
+  ];
+  if (!lens || groups.some((g) => !g)) return;
+
+  const paths = groups.map((group, index) => {
+    const frames = index === 0 ? MOIRE_FRAME_DATA.a : MOIRE_FRAME_DATA.b;
+    group.innerHTML = frames[0].map((d) => `<path d="${d}" />`).join('');
+    return { frames, els: [...group.querySelectorAll('path')] };
+  });
+
+  const rate = reduceMotion ? 0.5 : 1;
+  // Anchor to the first rAF timestamp, not performance.now(): in restored or
+  // headless documents the two clocks can disagree, which sent `frame`
+  // negative and crashed the loop. Same-clock anchoring is immune.
+  let start = null;
+  const tick = (now) => {
+    if (start === null) start = now;
+    const elapsed = (now - start) * rate;
+    const frame = Math.floor(elapsed / MOIRE_FRAME_MS) % MOIRE_FRAMES;
+    for (const { frames, els } of paths) {
+      const dStrings = frames[frame];
+      for (let i = 0; i < els.length; i += 1) els[i].setAttribute('d', dStrings[i]);
+    }
+    const v = (elapsed / MOIRE_BREATHE_MS) % 1;
+    lens.style.opacity = (0.5 + 0.42 * Math.sin(Math.PI * v)).toFixed(3);
+    requestAnimationFrame(tick);
   };
-  situations.forEach((btn) => btn.addEventListener('click', () => update(btn)));
-  update(situations[0]);
+  requestAnimationFrame(tick);
+
+  if (reduceMotion) return;
+  visual.addEventListener('pointermove', (e) => {
+    const rect = visual.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    visual.style.setProperty('--mx', x.toFixed(3));
+    visual.style.setProperty('--my', y.toFixed(3));
+  });
+  visual.addEventListener('pointerleave', () => {
+    visual.style.setProperty('--mx', '0');
+    visual.style.setProperty('--my', '0');
+  });
 }
 
 // The armature diagram is optional: without WebGL (or IntersectionObserver) the
@@ -412,7 +505,7 @@ function initWaitlist() {
 initAsciiFit();
 initBirds();
 initLesson();
-initConceptMap();
+initMoire();
 initArmature();
 initNav();
 initWaitlist();

@@ -5,12 +5,12 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/gray/repo/course
+WorkingDirectory=/home/ubuntu/gray/kolibri
 Environment=PORT=3001
 Environment=HOST=127.0.0.1
 # Shared production env. DISCORD_WEBHOOK_URL must be the same value used by
 # the vstal.in/form service; no webhook secret belongs in this unit.
-EnvironmentFile=/home/ubuntu/gray/repo/.env
+EnvironmentFile=/home/ubuntu/gray/kolibri/.env
 ExecStart=/usr/bin/node server.js
 Restart=always
 RestartSec=2
