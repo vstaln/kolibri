@@ -15,10 +15,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=eb405a63e4" />
+  <link rel="stylesheet" href="/styles.css?v=a021e79e4f" />
   <!-- Ships with the markup so a stale cached stylesheet can never let the
        painting escape its section and cover the hero. -->
-  <style>#lessons{position:relative;overflow:hidden}.lesson-painting{position:absolute;inset:0;z-index:0}#lessons>h2,.lesson-stage{position:relative;z-index:1}</style>
+  <style>#lessons{position:relative;overflow:hidden}.lesson-painting{position:absolute;inset:0;z-index:0}#lessons>h2,.ide{position:relative;z-index:1}</style>
 </head>
 <body>
   <header class="nav-shell">
@@ -26,13 +26,9 @@
       <a href="https://alignment.id" class="nav-logo"><span class="sr-only">Alignment</span><img src="/assets/alignmentlogo.svg" alt="Alignment" width="120" height="32" /></a>
       <div class="nav-primary">
         <div class="nav-links">
-          <a href="https://alignment.id/gray" class="nav-link">GRAY</a>
-          <a href="https://alignment.id/#research" class="nav-link">RESEARCH</a>
-          <span class="nav-separator" aria-hidden="true"></span>
-          <a href="#how" class="nav-link" data-nav>How it works</a>
-          <a href="#lessons" class="nav-link" data-nav>Lessons</a>
-          <a href="#projects" class="nav-link" data-nav>Projects</a>
-          <a href="#current-state" class="nav-link" data-nav>Current state</a>
+          <a href="https://kolibri.alignment.id" class="nav-link">KOLIBRI</a>
+          <a href="https://alignment.id/hire" class="nav-link">HIRE</a>
+          <a href="https://vstal.in" class="nav-link">VSTAL.IN</a>
         </div>
         <a href="https://gray.alignment.id" class="nav-cta" target="_blank" rel="noreferrer">
           <span class="sr-only">Open Gray workspace</span><img src="/assets/grayaiwhitenotspinning.svg" alt="" width="20" height="20" class="nav-cta__icon" aria-hidden="true" />
@@ -41,12 +37,9 @@
       <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-menu-panel">Menu</button>
     </nav>
     <div class="nav-menu-panel" id="nav-menu-panel" hidden>
-      <a href="https://alignment.id/gray" class="nav-link">GRAY</a>
-      <a href="https://alignment.id/#research" class="nav-link">RESEARCH</a>
-      <a href="#how" class="nav-link" data-nav>How it works</a>
-      <a href="#lessons" class="nav-link" data-nav>Lessons</a>
-      <a href="#projects" class="nav-link" data-nav>Projects</a>
-      <a href="#current-state" class="nav-link" data-nav>Current state</a>
+      <a href="https://kolibri.alignment.id" class="nav-link">KOLIBRI</a>
+      <a href="https://alignment.id/hire" class="nav-link">HIRE</a>
+      <a href="https://vstal.in" class="nav-link">VSTAL.IN</a>
       <a href="https://gray.alignment.id" class="nav-cta nav-cta--panel" target="_blank" rel="noreferrer">
         <span class="sr-only">Open Gray workspace</span><img src="/assets/grayaiwhitenotspinning.svg" alt="" width="20" height="20" class="nav-cta__icon" aria-hidden="true" />
       </a>
@@ -54,9 +47,9 @@
   </header>
 
   <main>
-    <section class="hero" aria-labelledby="hero-title">
+    <section class="hero" aria-labelledby="hero-title" data-reveal="fade">
       <div class="hero-grid">
-        <div class="bird-column">
+        <div class="bird-column" data-reveal="left">
           <div class="bird-wrap" id="bird-wrap">
             <pre class="bird" id="bird" aria-hidden="true" data-ascii-fit data-ascii-max="11">                                                                                               
                                                                                                
@@ -98,17 +91,19 @@
                                                                                                
                                                                                              ..</pre>
           </div>
-          <button type="button" class="motion-toggle" id="motion-toggle" aria-pressed="false" aria-label="Hummingbird motion">Motion</button>
         </div>
-        <div class="hero-text">
+        <div class="hero-text" data-reveal style="--reveal-delay:140ms">
           <h1 class="tagline" id="hero-title">Learn programming by solving a problem you already have.</h1>
           <p class="bio">Kolibri is an interactive course about the ideas underneath programming and what those ideas let you do. You will work with examples, change working systems, investigate mistakes, and then look for somewhere the same idea could be useful in your own life. The point is not to remember the example. It is to understand it well enough to use the concept somewhere the course did not choose for you.</p>
         </div>
       </div>
     </section>
 
-    <section class="section moire-section" id="how" aria-labelledby="concepts-title">
-      <div class="moire-copy">
+    <section class="section moire-section" id="how" aria-labelledby="concepts-title" data-reveal="fade">
+      <div class="moire-visual" id="moire-visual" aria-hidden="true">
+        <canvas class="moire-canvas" id="moire-canvas"></canvas>
+      </div>
+      <div class="moire-copy" data-reveal>
         <p class="moire-eyebrow">How Kolibri teaches</p>
         <h2 id="concepts-title" class="moire-title">AI can write the code.<br />You still have to make the decisions.</h2>
         <div class="moire-body">
@@ -118,28 +113,9 @@
           <p class="moire-closing">The prompt disappears. The problem remains yours.</p>
         </div>
       </div>
-      <div class="moire-visual" id="moire-visual">
-        <svg class="moire-svg" viewBox="0 0 720 520" role="img" aria-label="An abstract moiré field whose hidden form appears as two line layers move across one another.">
-          <defs>
-            <radialGradient id="moire-fade" cx="54%" cy="48%" r="62%">
-              <stop offset="0%" stopColor="white" />
-              <stop offset="52%" stopColor="white" stopOpacity="0.94" />
-              <stop offset="82%" stopColor="white" stopOpacity="0.28" />
-              <stop offset="100%" stopColor="black" stopOpacity="0" />
-            </radialGradient>
-            <mask id="moire-lens">
-              <rect width="720" height="520" fill="black" />
-              <ellipse cx="410" cy="255" rx="225" ry="172" fill="url(#moire-fade)" />
-            </mask>
-          </defs>
-          <g class="moire-parallax-a"><g class="moire-field" data-field="a"></g></g>
-          <g class="moire-parallax-b"><g class="moire-field" data-field="b"></g></g>
-          <g mask="url(#moire-lens)" class="moire-lens"><g class="moire-lens-field" data-field="b"></g></g>
-        </svg>
-      </div>
     </section>
 
-    <section class="section section-wide" id="lessons" aria-labelledby="lesson-title">
+    <section class="section section-wide" id="lessons" aria-labelledby="lesson-title" data-reveal="fade">
       <!-- Claude Monet, Impression, Sunrise (1872).
            Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Monet_-_Impression,_Sunrise.jpg
            Public domain (PD-old-95-1996, CC-PD-Mark, attribution not required);
@@ -148,196 +124,230 @@
       <div class="lesson-painting" aria-hidden="true">
         <img src="/assets/monet-impression-sunrise.webp" alt="" width="1400" height="1086" loading="lazy" decoding="async" />
       </div>
-      <h2 id="lesson-title">The example is only the beginning</h2>
-      <div class="lesson-stage">
-        <div class="lesson-shell">
-        <article class="lesson-panel">
-          <p class="panel-kicker">Concept</p>
-          <p>A condition represents a decision. This small expense tool should treat food, transport, and housing differently from optional spending.</p>
-          <div class="task-box"><strong>YOUR TASK</strong><p id="expense-task"></p></div>
-          <div class="lesson-tools">
-            <button type="button" class="concept-button" id="expense-hint">Reveal a hint</button>
-            <button type="button" class="concept-button" id="expense-reset">Reset task</button>
+      <h2 id="lesson-title" data-reveal>The example is only the beginning.</h2>
+      <div class="lesson-intro" data-reveal style="--reveal-delay:60ms">
+        <p>Kolibri starts with a short explanation beside a program you can run. There are no videos to sit through. You read the idea, change the code, and see what happens.</p>
+        <p>Each lesson introduces a programming concept inside something concrete: a condition that classifies an expense, state that changes after an action, or a function used in several places. The AI assistant can explain a line, suggest an approach, or generate a draft. Every change still appears inside the editor, where you can inspect it, edit it, and run it yourself.</p>
+        <p>Later lessons give you less instruction. Sometimes you add a feature. Sometimes you are shown a broken result and have to find the cause. At the end, Kolibri gives you a project with a clear scope, not a finished recipe. You decide how to build it, use AI when it helps, and remain responsible for the code you submit.</p>
+      </div>
+      <div class="ide" data-reveal style="--reveal-delay:120ms">
+        <div class="ide-topbar" role="tablist" aria-label="Course stages">
+          <button type="button" class="ide-tab is-active" data-stage-tab="learn" aria-pressed="true"><span>01</span> Learn</button>
+          <button type="button" class="ide-tab" data-stage-tab="debug" aria-pressed="false"><span>02</span> Build &amp; Debug</button>
+          <button type="button" class="ide-tab" data-stage-tab="project" aria-pressed="false"><span>03</span> Final Project</button>
+        </div>
+        <div class="ide-body" data-mobile-view="code">
+          <div class="ide-mobile-tabs" aria-label="Workspace views">
+            <button type="button" class="ide-tab is-active" data-mobile-tab="code">Code</button>
+            <button type="button" class="ide-tab" data-mobile-tab="output">Output</button>
+            <button type="button" class="ide-tab" data-mobile-tab="chat">AI</button>
           </div>
-          <p class="hint-text" id="expense-hint-text" aria-live="polite"></p>
-        </article>
-        <div class="lesson-workspace">
-          <div class="workspace-tabs" role="tablist" aria-label="Lesson workspace">
-            <span class="workspace-tab" role="tab" aria-selected="true">expenses.js</span>
-            <span class="workspace-tab" role="tab" aria-selected="false">Preview</span>
+          <aside class="ide-rail" aria-label="Lesson rail">
+            <div class="rail-pane" data-rail="learn">
+              <p class="rail-heading">Lesson</p>
+              <ol class="rail-list">
+                <li><span class="rail-dot" aria-hidden="true"></span>Concept</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Change code</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Run check</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Explain result</li>
+              </ol>
+              <p class="rail-heading">Files</p>
+              <ul class="file-tree">
+                <li class="file-folder">src
+                  <ul>
+                    <li class="file-file is-open">expenses.js</li>
+                    <li class="file-file">app.js</li>
+                    <li class="file-file">styles.css</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="rail-pane" data-rail="debug" hidden>
+              <p class="rail-heading">Project</p>
+              <ol class="rail-list">
+                <li><span class="rail-dot" aria-hidden="true"></span>Reproduce bug</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Find cause</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Make change</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Run tests</li>
+              </ol>
+              <p class="rail-heading">Files</p>
+              <ul class="file-tree">
+                <li class="file-folder">src
+                  <ul>
+                    <li class="file-file is-open">reminders.js</li>
+                    <li class="file-file">scheduler.js</li>
+                    <li class="file-file">dates.js</li>
+                  </ul>
+                </li>
+                <li class="file-folder">tests
+                  <ul>
+                    <li class="file-file">reminders.test.js</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="rail-pane" data-rail="project" hidden>
+              <p class="rail-heading">Project scope</p>
+              <p class="rail-sub">Requirements</p>
+              <ol class="rail-list">
+                <li class="is-done"><span class="rail-dot" aria-hidden="true"></span>Core input</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Main behavior</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Useful output</li>
+              </ol>
+              <p class="rail-sub">Not required</p>
+              <ul class="scope-list">
+                <li>extra feature</li>
+                <li>automation</li>
+                <li>integration</li>
+              </ul>
+              <p class="rail-heading">Files</p>
+              <ul class="file-tree">
+                <li class="file-file">README.md</li>
+                <li class="file-file is-open">app.js</li>
+              </ul>
+              <p class="rail-progress">Progress <strong data-progress>1/4</strong> complete</p>
+            </div>
+          </aside>
+
+          <div class="ide-workspace">
+            <div class="workspace-tabs" aria-label="Open files">
+              <span class="js-badge" aria-hidden="true"><img src="/assets/javascript.svg" alt="" width="18" height="18" /></span>
+              <div class="workspace-file-tabs" data-file-tabs>
+                <span class="workspace-tab is-active">expenses.js</span>
+              </div>
+            </div>
+            <pre class="code-render" id="demo-code" aria-label="Project code"></pre>
+            <div class="output-panel" id="demo-output"></div>
+            <div class="diff-actions" id="demo-diff-actions" hidden>
+              <span class="diff-action">Apply change</span>
+              <span class="diff-action">Edit manually</span>
+              <span class="diff-action diff-action--reject">Reject</span>
+            </div>
           </div>
-          <label for="expense-code" class="sr-only">Expense rule code</label>
-          <textarea class="code-editor" id="expense-code" spellcheck="false"></textarea>
-          <div class="output-panel">
-            <strong>Expense data</strong>
-            <pre class="expense-data" id="expense-preview">Run the check to preview how each expense is classified.</pre>
-            <div class="lesson-tools"><button type="button" class="concept-button primary" id="expense-run">Run check</button></div>
-            <p class="check-result" id="expense-result" role="status">Not checked yet. Change the rule, then run the check.</p>
-            <div id="expense-reflection" hidden>
-              <p class="reflection-q"></p>
-              <p class="reflection-follow"></p>
+
+          <div class="ide-chat">
+            <div class="chat-log" id="demo-chat" aria-live="polite">
+              <div class="chat-msg chat-msg--ai">
+                <p>Kolibri starts with a short explanation beside a program you can run. There are no videos to sit through. You read the idea, change the code, and see what happens.</p>
+                <p>Each lesson introduces a programming concept inside something concrete: a condition that classifies an expense, state that changes after an action, or a function used in several places. The AI assistant can explain a line, suggest an approach, or generate a draft. Every change still appears inside the editor, where you can inspect it, edit it, and run it yourself.</p>
+                <p>Later lessons give you less instruction. Sometimes you add a feature. Sometimes you are shown a broken result and have to find the cause. At the end, Kolibri gives you a project with a clear scope, not a finished recipe. You decide how to build it, use AI when it helps, and remain responsible for the code you submit.</p>
+              </div>
+            </div>
+            <div class="chat-prompts" id="demo-prompts"></div>
+            <div class="chat-input-row">
+              <div class="attach-chip" id="demo-attach" hidden></div>
+              <div class="chat-input" aria-hidden="true">Ask about the code&hellip;</div>
+              <div class="chat-send" aria-hidden="true">Send &rarr;</div>
             </div>
           </div>
         </div>
-        </div>
+        <div class="ide-statusbar" id="demo-status">STATUS: expenses.js selected &middot; check not run</div>
       </div>
     </section>
 
-    <section class="section section-narrow" id="application" aria-labelledby="application-title">
-      <h2 id="application-title">A lesson should leave the lesson</h2>
-      <p>Completing the provided example is not enough. After a concept has been introduced in a controlled setting, Kolibri asks the learner to look for another place where it could matter. A repeated decision, an annoying manual task, information that keeps getting lost, or a process that depends on copying the same things between several places may all be useful starting points.</p>
-      <p>The first response does not always need to be a complete application. It may be a description of the inputs and outputs, a rough flow, a small script, or one working part of a larger idea. Kolibri should help the learner make the next practical step rather than encouraging every observation to become an oversized product.</p>
-      <p>The course can provide examples, constraints, and questions, but it should not make the final connection on the learner's behalf.</p>
-      <div class="tool-examples" aria-label="Modest personal tools">
-        <div class="tool-example">File organizer</div>
-        <div class="tool-example">Spending rule</div>
-        <div class="tool-example">Reading-list tool</div>
-        <div class="tool-example">Study reminder</div>
-        <div class="tool-example">Student organization form</div>
-      </div>
-    </section>
-
-    <section class="section section-dark" id="independent" aria-labelledby="independent-title">
-      <h2 id="independent-title">Eventually, nobody tells you which concept applies</h2>
-      <p>Early lessons can identify the relevant file, concept, and expected result. Later work should provide less of that structure. A learner may receive a system that behaves incorrectly without being told where the problem is. Another task may have several reasonable solutions. A project may begin with a situation rather than a technical instruction.</p>
-      <p>Outside a course, problems rarely arrive with a task description that names the correct concept. Part of learning to program is learning how to create that structure yourself. You need to decide what the problem is, what information matters, what can be ignored for now, and what a useful first version would prove.</p>
-      <p>Kolibri should become less helpful as the learner becomes more capable. It should not disappear completely, but the responsibility for making decisions should gradually move from the course to the learner.</p>
-      <figure class="armature-plate" id="armature-plate">
-        <div class="armature-viewport">
-          <canvas id="armature-canvas" aria-hidden="true"></canvas>
-        </div>
-        <div class="armature-scale" aria-hidden="true"><span>guided</span><span>partial</span><span>open</span></div>
-        <figcaption>Diagram: the support structure is withdrawn as you scroll, and the instrument keeps turning without it.</figcaption>
-      </figure>
-      <div class="guidance-composition">
-        <!-- Vincent van Gogh, Starry Night Over the Rhône (1888).
-             Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg
-             Public Domain Mark 1.0; local 1280px derivative, decorative use. -->
-        <div class="painting-atmosphere painting-starry" aria-hidden="true">
-          <img src="/assets/van-gogh-starry-night-rhone.webp" alt="" width="1280" height="989" loading="lazy" decoding="async" />
-        </div>
-        <div class="guidance-stages" id="guidance-stages" aria-label="How lesson guidance is gradually removed">
-          <article class="guidance-panel guidance-panel-guided">
-            <h3>Guided</h3>
-            <ul><li>Relevant file highlighted</li><li>Detailed task</li><li>Visible expected output</li><li>Clear automated check</li></ul>
-          </article>
-          <article class="guidance-panel guidance-panel-partial">
-            <h3>Partial</h3>
-            <ul><li>Description of incorrect behavior</li><li>Several files without naming which one matters</li><li>Test result</li><li>Optional hints</li></ul>
-          </article>
-          <article class="guidance-panel guidance-panel-open">
-            <h3>Open</h3>
-            <ul><li>Short account of a person's problem</li><li>Imperfect existing system</li><li>No named programming concept</li><li>No prescribed implementation</li></ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-quiet" id="help" aria-labelledby="help-title">
-      <h2 id="help-title">Help without taking over</h2>
-      <p>When something fails, Kolibri should help the learner investigate before revealing a finished answer. It may explain which requirement was not met, ask what the learner expected to happen, or direct attention toward a relevant part of the system. Later hints can become more specific when the learner remains stuck.</p>
-      <p>An AI assistant can use the current lesson, code, attempts, and error output as context. It can explain an unfamiliar message, question an assumption, compare two approaches, or create a smaller example. It should not respond to every difficulty by rewriting the project.</p>
-      <p>Some lessons should place AI-generated code in front of the learner and ask whether it is correct, appropriate, or needlessly complicated. The learner still has to decide whether the output belongs in the system.</p>
-      <div class="help-dialogue" aria-label="Assistant interaction example">
-        <div class="help-turn"><strong>Learner</strong><p>The test still fails, but the output looks right to me.</p></div>
-        <div class="help-turn"><strong>Kolibri</strong><p>Which expense categories does your rule currently treat as essential? Compare that list with the requirement before changing the code again.</p></div>
-        <div class="help-turn"><strong>Learner</strong><p>I included food and housing, but not transport.</p></div>
-        <div class="help-turn"><strong>Kolibri</strong><p>Then the output may look right for the examples you noticed while still failing the full requirement. Check the transport record and run it again.</p></div>
-      </div>
-    </section>
-
-    <section class="section" id="projects" aria-labelledby="projects-title">
-      <h2 id="projects-title">Projects begin with a problem</h2>
-      <p>Kolibri projects should begin with something the learner noticed rather than a list of technologies that must be included. The problem may be personal, connected to a group they belong to, or based on work they already do. It does not have to be original enough to become a company. It has to be specific enough that a small working version would be useful.</p>
-      <p>The learner then has to decide what the project should accept, what it should do, what it should produce, and what can be postponed. Concepts from earlier lessons become available tools, but the course does not prescribe which combination must be used.</p>
-      <p>A finished project should be small enough to explain. The learner should know what problem it addresses, which decisions they made, what failed during development, and what remains unresolved.</p>
-      <div class="project-record-flow" aria-label="Project record fields">
-        <span>The problem the learner noticed</span>
-        <span>The first proposed approach</span>
-        <span>A small working version</span>
-        <span>A failed or discarded approach</span>
-        <span>The current code</span>
-        <span>A public result when appropriate</span>
-        <span>A short explanation of the decisions</span>
-        <span>What the learner would change next</span>
-      </div>
-    </section>
-
-    <section class="section section-overlap" id="project-record" aria-labelledby="record-title">
-      <h2 id="record-title">The work should show how it changed</h2>
-      <p>A project is more useful to another person when it includes more than the final screen. Kolibri should preserve enough of the process to show where the idea came from, how the first version differed from the current one, which assumptions failed, and why certain decisions were made.</p>
-      <p>A completed project may eventually have a public page containing the result, repository, notes, and development history. Another learner should be able to understand the work without having been present while it was made.</p>
-      <p>For now, this is a format for presenting projects clearly. Do not describe it as a feed, network, social platform, community, creator system, or social media for code.</p>
-      <article class="project-concept" aria-label="Shared expense checker product concept">
-        <p class="concept-label">PRODUCT CONCEPT</p>
-        <h3>SHARED EXPENSE CHECKER</h3>
-        <p class="project-problem">Three housemates record shared expenses in different places, then disagree about who paid for what at the end of the month.</p>
-        <dl class="project-stages">
-          <div><dt>Observation</dt><dd>Expenses are spread across chat messages, receipts, and individual notes.</dd></div>
-          <div><dt>First idea</dt><dd>A shared form that stores each expense and calculates the current balance.</dd></div>
-          <div><dt>Reduced version</dt><dd>One page where a person can add an expense, assign who paid, and see a simple balance.</dd></div>
-          <div><dt>Discarded approach</dt><dd>Automatic receipt scanning was removed from the first version because it added setup and error cases before the basic record worked.</dd></div>
-          <div><dt>Current result</dt><dd>A working shared ledger with manual entries and a monthly summary.</dd></div>
-          <div><dt>Still unresolved</dt><dd>Editing mistakes and handling expenses shared by only part of the group.</dd></div>
-        </dl>
-      </article>
-    </section>
-
-    <section class="section" id="progress" aria-labelledby="progress-title">
-      <h2 id="progress-title">Progress is becoming less dependent on the course</h2>
-      <p>Finishing lessons matters, but it is not the final measure of progress. A learner is making progress when they can recognize an idea in a new setting, investigate a failure without immediately asking for the answer, reduce an oversized plan, and complete a useful version of something they chose.</p>
-      <p>Kolibri can still remember completed lessons, saved work, project status, and where someone stopped. Those records should help the learner return to the work. They should not become the reason the learner continues.</p>
-      <p>Do not add daily streaks, points, rankings, completion pressure, artificial scarcity, or engagement notifications.</p>
-      <div class="progress-composition">
-        <div class="progress-view" aria-label="Progress records concept">
-          <div class="work-item"><span>Recognize a condition in a new setting</span><span>IN PROGRESS</span></div>
-          <div class="work-item"><span>Shared expense checker draft</span><span>SAVED</span></div>
-          <div class="work-item"><span>Return to unfinished lesson</span><span>RESUME</span></div>
-        </div>
-        <!-- Claude Monet, Water Lilies (1922).
-             Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Claude_Monet_-_Water_Lilies_-_Google_Art_Project.jpg
-             Public Domain Mark 1.0; local 1280px derivative, decorative use. -->
-        <div class="painting-atmosphere painting-monet" aria-hidden="true">
-          <img src="/assets/monet-water-lilies.webp" alt="" width="1280" height="1202" loading="lazy" decoding="async" />
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="current-state" aria-labelledby="state-title">
+    <section class="section" id="current-state" aria-labelledby="state-title" data-reveal="fade">
       <div class="state-grid">
-        <div>
+        <div data-reveal>
           <h2 id="state-title">What exists now</h2>
-          <p>Kolibri is still being built. The material comes from programming lessons I have taught directly and from helping people turn rough ideas into portfolio projects. Those sessions have made certain problems difficult to ignore. People can often generate code before they know how to inspect it, choose a reasonable scope, or decide what should happen after the first version works.</p>
-          <p>The next work is turning those observations into an online course with interactive lessons, useful feedback, and projects that gradually require more independent judgment. The final curriculum, interface, price, and release plan have not been decided yet.</p>
+          <p>Alignment is currently run by one person.</p>
+          <p>Gray shipped and reached real use before being parked. Small programming sessions have been running in person. Kolibri now has a public site, a curriculum direction, and several interface experiments. The course itself still has to be built.</p>
+          <p>There are also deployments, internal tools, teaching materials, abandoned approaches, and smaller technical projects. Some are polished. Others are useful mainly because they show what happened.</p>
           <div class="state-links">
             <a class="portfolio-link" href="https://vstal.in/portfolio">See previous work</a>
             <a class="portfolio-link" href="https://alignment.id">Alignment</a>
           </div>
         </div>
-        <figure class="poster-figure">
-          <img src="/assets/vibe-coding-dari-nol-poster.png" alt="Poster from earlier programming teaching that informed Kolibri" width="1080" height="1350" loading="lazy" decoding="async" />
-          <figcaption>Earlier teaching material used while developing Kolibri</figcaption>
-        </figure>
+        <div class="teaching-gallery" data-carousel data-reveal="right" style="--reveal-delay:160ms" aria-label="Recent teaching sessions">
+          <div class="teaching-stage">
+            <ul class="teaching-track" data-carousel-track>
+              <li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-06.jpg" alt="Teaching session — Jun 6, 2026" width="1836" height="3264" loading="eager" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 6, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-07-1.jpg" alt="Teaching session — Jun 7, 2026" width="1600" height="715" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 7, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-07-2.jpg" alt="Teaching session — Jun 7, 2026" width="1600" height="715" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 7, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-17-1.jpg" alt="Teaching session — Jun 17, 2026" width="1280" height="720" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 17, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-17-2.jpg" alt="Teaching session — Jun 17, 2026" width="1280" height="720" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 17, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-05-1.jpg" alt="Teaching session — Jul 5, 2026" width="1080" height="2412" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 5, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-05-2.jpg" alt="Teaching session — Jul 5, 2026" width="3024" height="4032" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 5, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-16.jpg" alt="Teaching session — Jul 16, 2026" width="3264" height="2448" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 16, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-20.webp" alt="Teaching session — Jul 20, 2026" width="1280" height="960" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 20, 2026</p>
+</li>
+            </ul>
+            <button type="button" class="carousel-arrow carousel-arrow--prev" data-carousel-prev aria-label="Previous teaching session">&lsaquo;</button>
+            <button type="button" class="carousel-arrow carousel-arrow--next" data-carousel-next aria-label="Next teaching session">&rsaquo;</button>
+          </div>
+          <ol class="carousel-dots" data-carousel-dots aria-label="Teaching session slides"></ol>
+        </div>
       </div>
     </section>
 
-    <section class="section waitlist-section" id="waitlist" aria-labelledby="waitlist-title">
-      <div class="waitlist-layout">
-        <div class="waitlist-main">
-          <h2 id="waitlist-title">Follow the online course build</h2>
-          <p class="waitlist-copy">Kolibri is still being developed. Join the existing update list to hear when the browser-based course is ready to try. We will only use this address for Kolibri product updates.</p>
-          <form class="waitlist" id="waitlist-form" action="/api/waitlist" method="post" novalidate>
-            <label for="waitlist-email">Email address</label>
-            <div class="waitlist-row">
-              <input id="waitlist-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required maxlength="254" />
-              <button type="submit">Join early access</button>
-            </div>
-          </form>
-          <p class="privacy">We will only email you about Kolibri product updates.</p>
-          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+    <section class="section section-bloom" id="final" aria-labelledby="final-title" data-reveal="fade">
+      <div class="bloom-grid">
+        <div class="bloom-wrap" data-reveal="left">
+          <pre class="bloom-art" id="bloom" aria-hidden="true" data-ascii-fit data-ascii-max="11">                                                                                          
+                                                                                          
+                                                                                          
+                                                                                          
+                                           ..:---: .-:-:                                  
+                                       .::::::::.  -+==-:---:   .                         
+                                    .:            .-:     :...  . .:                      
+                                   ::.           .--:.... ::::-:    :::                   
+                       ....       -:             :----===---.--=.     .::                 
+                      :=:::--... .:           ... .--=+=:.:: -===--=-. :-                 
+                      :===-:..:: .:             .:=+++=---: :=++*++===+#*:                
+                        .:--.    .--:      ..  :=======--:.-=+**##-.*####+:               
+                          :==:.---:::::::......---------=-+++##*+: =######+               
+                         ...::.:------------:.......:--=+****=. .-*#%%###%+               
+                         :.      .::---=====--:...-=+++*#####+-=*###%%%%%#=               
+                            .....-=-=+=====++++==+****##########**#%@@@%%+                
+                                 .=+==++++++*******##%####******###@%%%#:                 
+                                  .:--:-=+++****##%%%#*#**##########*-                    
+                                    -=====++**#%%@@@%##%%%%####*###*=                     
+                                    -=+*+++++++*#%@@@##*+***#####**=                      
+                                     :-=+++******++#@#-. .-**#**+-                        
+                                       .-==+**#**##*###*+=+#**=                           
+                                                -****@#.-                                 
+                                                     %@* -                                
+                                                     .%%                                  
+                                                      +@-                                 
+                                                      :@#                                 
+                                                       #@.                                
+                                                       =@=                                </pre>
         </div>
-        <div class="waitlist-wave" aria-hidden="true">
-          <pre class="waitlist-wave-art" data-ascii-fit>⠀⠀⠀⢲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣤⣤⡴⠶⠶⠶⠶⠶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+        <div class="bloom-copy" data-reveal="right" style="--reveal-delay:140ms">
+          <h2 id="final-title">The course should make itself less necessary</h2>
+          <p>Kolibri will have succeeded when a learner can encounter a problem, decide whether code could help, and make a reasonable first attempt without waiting for a course to describe every step. They may still need documentation, other people, or AI. The difference is that those tools support their judgment instead of replacing it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section waitlist-section" id="waitlist" aria-labelledby="waitlist-title" data-reveal="fade">
+      <div class="waitlist-wave" aria-hidden="true">
+        <pre class="waitlist-wave-art">⠀⠀⠀⢲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣤⣤⡴⠶⠶⠶⠶⠶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⣤⡀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⡶⠞⠋⠉⠉⠁⠁⠀⠀⠀⠀⠀⠀⢀⣀⣠⣿⣻⣦⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠁⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⡶⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣶⠿⠋⠉⠛⢿⣎⠀⠈⠉⠳⠦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠶⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⡠⢾⡿⡖⠀⠀⠀⠀⠀⠈⢳⠘⢶⣄⠀⠘⠲⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -381,47 +391,19 @@
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡛⠋⠀⠘⢛⣿⣿⣿⣿⢰⣿⣶⣿⣿⠿⠟⣿⣾⣿⣷⣽⣿⣿⣿⣗⣄⣀⣀⠰⠀⠀⠈⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿⣾⣷⣦⣭⣤⣬⣭⣵⣮⣷⣬⣥⣾⣷⣿⣯⡿⠿⠿⠛⠛⠉⠉⠀⠀⠀⠘⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠋⠁⠀⠀⠀⠀⠀
 ⣿⣿⣿⣿⣿⣿⣿⣿⣯⣻⣿⣿⣿⣿⣿⣿⣿⣭⣿⣿⣿⣿⣿⣿⣯⣽⣧⢀⣴⣾⣿⣿⣼⣿⣿⠠⣿⡿⡏⢀⣀⠂⠀⠋⠉⠉⠙⢿⣿⣿⣯⣿⣿⣄⣀⡀⠀⣠⣄⣀⣴⣭⠍⢿⣛⣿⣿⡿⣿⠿⡿⣿⠿⢿⢿⠿⠿⠟⠛⠛⠋⠉⠁⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠉⠉⠉⢉⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⡀⠀⠀⡀⠀⠄⢀⠀
 </pre>
-        </div>
       </div>
-    </section>
-
-    <section class="section section-final" id="final" aria-labelledby="final-title">
-      <div class="final-grid">
-        <div class="final-copy">
-          <h2 id="final-title">The course should make itself less necessary</h2>
-          <p>Kolibri will have succeeded when a learner can encounter a problem, decide whether code could help, and make a reasonable first attempt without waiting for a course to describe every step. They may still need documentation, other people, or AI. The difference is that those tools support their judgment instead of replacing it.</p>
-        </div>
-        <div class="bird-closing-wrap">
-          <pre class="bird-small" id="bird-closing" aria-hidden="true" data-ascii-fit data-ascii-max="8">                                                                                          
-                                                                                          
-                                                                                          
-                                                                                          
-                                           ..:---: .-:-:                                  
-                                       .::::::::.  -+==-:---:   .                         
-                                    .:            .-:     :...  . .:                      
-                                   ::.           .--:.... ::::-:    :::                   
-                       ....       -:             :----===---.--=.     .::                 
-                      :=:::--... .:           ... .--=+=:.:: -===--=-. :-                 
-                      :===-:..:: .:             .:=+++=---: :=++*++===+#*:                
-                        .:--.    .--:      ..  :=======--:.-=+**##-.*####+:               
-                          :==:.---:::::::......---------=-+++##*+: =######+               
-                         ...::.:------------:.......:--=+****=. .-*#%%###%+               
-                         :.      .::---=====--:...-=+++*#####+-=*###%%%%%#=               
-                            .....-=-=+=====++++==+****##########**#%@@@%%+                
-                                 .=+==++++++*******##%####******###@%%%#:                 
-                                  .:--:-=+++****##%%%#*#**##########*-                    
-                                    -=====++**#%%@@@%##%%%%####*###*=                     
-                                    -=+*+++++++*#%@@@##*+***#####**=                      
-                                     :-=+++******++#@#-. .-**#**+-                        
-                                       .-==+**#**##*###*+=+#**=                           
-                                                -****@#.-                                 
-                                                     %@* -                                
-                                                     .%%                                  
-                                                      +@-                                 
-                                                      :@#                                 
-                                                       #@.                                
-                                                       =@=                                </pre>
-        </div>
+      <div class="waitlist-main" data-reveal>
+        <h2 id="waitlist-title">Follow the online course build</h2>
+        <p class="waitlist-copy">Kolibri is still being developed. Join the existing update list to hear when the browser-based course is ready to try. We will only use this address for Kolibri product updates.</p>
+        <form class="waitlist" id="waitlist-form" action="/api/waitlist" method="post" novalidate>
+          <label for="waitlist-email">Email address</label>
+          <div class="waitlist-row">
+            <input id="waitlist-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required maxlength="254" />
+            <button type="submit">Join early access</button>
+          </div>
+        </form>
+        <p class="privacy">We will only email you about Kolibri product updates.</p>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
       </div>
     </section>
   </main>
@@ -470,9 +452,8 @@
   </footer>
 
   <noscript>
-    <style>.lesson-shell textarea{display:none}</style>
-    <p class="noscript-note">JavaScript is required for the interactive lesson demonstration. The rest of this page remains readable without it.</p>
+    <p class="noscript-note">JavaScript is required for the lesson demonstration. The rest of this page remains readable without it.</p>
   </noscript>
-  <script type="module" src="/app.js?v=aa93da35fe"></script>
+  <script type="module" src="/app.js?v=00a01af856"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 :root {
-  --bg-dark: #050505;
+  --bg-dark: #000000;
   --text-primary: #f4f1ea;
   --text-muted: #9a958c;
   --accent-gold: #c9a962;
@@ -8,6 +8,10 @@
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
   --page-pad: clamp(1.25rem, 4vw, 2.5rem);
   --max: 1120px;
+  /* One type scale for all page copy: display titles, section headers, body. */
+  --type-display: clamp(1.85rem, 3.6vw + 0.5vh, 3.35rem);
+  --type-heading: clamp(1.55rem, 2.8vw, 2.15rem);
+  --type-body: clamp(0.95rem, 0.9vw + 0.45vh, 1.05rem);
   /* The art is drawn in Braille glyphs, which no mono webfont covers, so the
      browser substitutes a system font whose advance varies by platform (~0.74em
      on Chrome/Windows). 0.8 is the safe no-JS baseline; app.js measures the real
@@ -18,6 +22,43 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
+
+/* Site-wide slim scrollbar, matching the marketing pages (alignment.id). */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
 
 body {
   font-family: var(--font-sans);
@@ -50,8 +91,7 @@ a { color: inherit; }
   top: 0;
   z-index: 100;
   padding: 0.65rem var(--page-pad);
-  background: rgba(5, 5, 5, 0.86);
-  border-bottom: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.86);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -159,13 +199,19 @@ a { color: inherit; }
 .nav-menu-panel .nav-link { font-size: 0.85rem; }
 
 .hero {
-  padding: clamp(2.5rem, 7vh, 4.5rem) var(--page-pad) clamp(3rem, 8vh, 5rem);
+  box-sizing: border-box;
+  min-height: calc(100dvh - 4.05rem);
+  height: calc(100dvh - 4.05rem);
+  display: grid;
+  align-items: center;
+  padding: clamp(4.5rem, 8vh, 6rem) var(--page-pad);
   overflow: hidden;
 }
 
 .hero-grid {
   container-type: inline-size;
   max-width: var(--max);
+  width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
@@ -193,26 +239,6 @@ a { color: inherit; }
   will-change: transform;
 }
 
-/* Opt-in for visitors whose system asks for reduced motion but who want the
-   hummingbird to fly anyway. Deliberately quiet and never over the art. */
-.motion-toggle {
-  border: 1px solid rgba(201, 169, 98, 0.28);
-  background: transparent;
-  /* Full-strength gold: the control stays quiet through its size and faint
-     border, not through low contrast. */
-  color: var(--accent-gold);
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.55rem;
-  cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.motion-toggle:hover,
-.motion-toggle:focus-visible { color: #e2d3a4; border-color: rgba(201, 169, 98, 0.75); }
-
 /* Hero bird: the feeding-at-flower frames are 95 columns wide. Weight,
    line-height and the blue glow below come from the source viewer; app.js
    repaints each glyph with its own brightness-scaled shade of the same hue, so
@@ -228,19 +254,19 @@ a { color: inherit; }
   white-space: pre;
   display: inline-block;
   margin: 0;
+  transform: translateY(-2.9em);
   color: hsl(200, 95%, 62%);
   text-shadow: 0 0 0.24em currentColor;
-  user-select: none;
 }
 
 .hero-text { max-width: 34rem; }
 
 .tagline {
-  font-size: clamp(2rem, 4.2vw, 3.35rem);
+  font-size: var(--type-display);
   font-weight: 600;
   line-height: 1.12;
   letter-spacing: -0.03em;
-  margin-bottom: 1.35rem;
+  margin-bottom: clamp(0.85rem, 2vh, 1.35rem);
 }
 
 .tagline::after {
@@ -248,25 +274,53 @@ a { color: inherit; }
   display: block;
   width: 3.2rem;
   height: 2px;
-  margin-top: 1rem;
+  margin-top: clamp(0.7rem, 1.5vh, 1rem);
   background: var(--accent-gold);
+  transform-origin: left center;
+}
+
+/* Scroll / entrance reveals. Hidden only after JS marks <html class="js">
+   so no-JS visitors still see everything. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 1.15rem, 0);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js [data-reveal="left"] { transform: translate3d(-1.35rem, 0, 0); }
+.js [data-reveal="right"] { transform: translate3d(1.35rem, 0, 0); }
+.js [data-reveal="fade"] { transform: none; }
+
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.js .hero-text:not(.is-in) .tagline::after { transform: scaleX(0); }
+.js .hero-text.is-in .tagline::after {
+  transform: scaleX(1);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
 }
 
 .bio {
-  font-size: 1.05rem;
+  font-size: var(--type-body);
   color: var(--text-muted);
   margin: 0 0 1.1rem;
+  line-height: 1.55;
 }
 
 .section {
   max-width: var(--max);
   margin: 0 auto;
   padding: clamp(2.75rem, 6vh, 4.25rem) var(--page-pad);
-  border-top: 1px solid var(--line);
 }
 
 .section h2 {
-  font-size: clamp(1.55rem, 2.8vw, 2.15rem);
+  font-size: var(--type-heading);
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -275,40 +329,61 @@ a { color: inherit; }
 }
 
 .section p {
-  font-size: 1.02rem;
+  font-size: var(--type-body);
   color: var(--text-muted);
   max-width: 42rem;
   margin: 0 0 1.05rem;
+  line-height: 1.55;
 }
 
 .section-wide { max-width: none; padding-inline: var(--page-pad); }
 .section-wide > h2 { max-width: var(--max); margin-inline: auto; padding-inline: 0; }
-.section-narrow h2 { max-width: 28ch; }
-.section-dark { background: linear-gradient(180deg, rgba(201, 169, 98, 0.04), transparent); }
-.section-quiet { background: rgba(255, 255, 255, 0.015); }
-.section-overlap { padding-top: clamp(3.5rem, 8vh, 5rem); }
-.section-final { padding-bottom: clamp(3rem, 8vh, 5rem); }
 
-/* Moiré concepts section — ported from the section's React prototype. The
-   --kolibri-* tokens below are that design's knobs, mapped onto site tokens. */
+/* Closing bloom: full-viewport statement — flower left, copy right.
+   Not the top hero (that one is the hummingbird). */
+.section-bloom {
+  box-sizing: border-box;
+  max-width: none;
+  width: 100%;
+  min-height: 100dvh;
+  height: 100dvh;
+  display: grid;
+  align-items: center;
+  margin: 0;
+  padding: clamp(4.5rem, 10vh, 6rem) var(--page-pad) clamp(2rem, 5vh, 3.5rem);
+  overflow: hidden;
+}
+
+/* Moiré concepts section — full-viewport field with copy overlaid. */
 .moire-section {
   --kolibri-bg: var(--bg-dark);
   --kolibri-fg: var(--text-primary);
   --kolibri-muted: var(--text-muted);
-  --kolibri-line: rgba(244, 241, 234, 0.5);
-  --kolibri-line-soft: rgba(244, 241, 234, 0.32);
   --kolibri-accent: var(--accent-gold);
 
+  position: relative;
+  max-width: none;
+  width: 100%;
+  min-height: 100dvh;
+  height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
   align-items: center;
-  gap: clamp(3rem, 7vw, 8rem);
+  grid-template-columns: minmax(0, var(--max));
+  justify-content: center;
+  padding: clamp(4.5rem, 9vh, 6.5rem) var(--page-pad);
+  overflow: hidden;
+  isolation: isolate;
 }
 
-.moire-copy { max-width: 38rem; }
+.moire-copy {
+  position: relative;
+  z-index: 1;
+  max-width: min(36rem, 92vw);
+  padding: clamp(0.85rem, 1.8vh, 1.35rem) clamp(0.9rem, 2vw, 1.5rem) clamp(0.85rem, 1.8vh, 1.35rem) 0;
+}
 
 .moire-eyebrow {
-  margin: 0 0 1.35rem;
+  margin: 0 0 clamp(0.7rem, 1.4vh, 1.1rem);
   color: var(--kolibri-accent);
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -321,7 +396,7 @@ a { color: inherit; }
   max-width: 22ch;
   margin: 0;
   color: var(--kolibri-fg);
-  font-size: clamp(2.2rem, 4.4vw, 4.4rem);
+  font-size: var(--type-display);
   font-weight: 500;
   letter-spacing: -0.045em;
   line-height: 1.02;
@@ -330,12 +405,12 @@ a { color: inherit; }
 
 .moire-body {
   display: grid;
-  gap: 1.35rem;
-  max-width: 35rem;
-  margin-top: clamp(2rem, 4vw, 3rem);
+  gap: clamp(0.65rem, 1.35vh, 1.1rem);
+  max-width: 34rem;
+  margin-top: clamp(1rem, 2.4vh, 1.85rem);
   color: var(--kolibri-muted);
-  font-size: clamp(1rem, 1.2vw, 1.15rem);
-  line-height: 1.72;
+  font-size: var(--type-body);
+  line-height: 1.55;
 }
 
 .moire-body p { margin: 0; }
@@ -343,99 +418,53 @@ a { color: inherit; }
 .moire-closing { color: color-mix(in srgb, var(--kolibri-fg) 78%, var(--kolibri-muted)); }
 
 .moire-visual {
-  --mx: 0;
-  --my: 0;
-
-  position: relative;
-  min-height: clamp(29rem, 43vw, 39rem);
-  overflow: hidden;
-  isolation: isolate;
-  background:
-    radial-gradient(circle at 58% 49%, rgba(255, 255, 255, 0.035), transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.012), rgba(255, 255, 255, 0));
-  border: 1px solid rgba(240, 236, 229, 0.12);
-  border-radius: 0.4rem;
-}
-
-.moire-visual::before {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--kolibri-bg);
+  border: 0;
+  border-radius: 0;
   pointer-events: none;
-  content: "";
-  background:
-    linear-gradient(90deg, var(--kolibri-bg), transparent 10%, transparent 90%, var(--kolibri-bg)),
-    linear-gradient(180deg, var(--kolibri-bg), transparent 10%, transparent 89%, var(--kolibri-bg));
-  opacity: 0.66;
 }
 
+/* Soft left→right dissolve — long ramp, no hard mid-screen wall. */
 .moire-visual::after {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 1;
   pointer-events: none;
   content: "";
-  background-image:
-    repeating-radial-gradient(
-      circle at 0 0,
-      rgba(255, 255, 255, 0.025) 0 1px,
-      transparent 1px 3px
-    );
-  mix-blend-mode: soft-light;
-  opacity: 0.18;
+  background: linear-gradient(
+    90deg,
+    var(--kolibri-bg) 0%,
+    color-mix(in srgb, var(--kolibri-bg) 92%, transparent) 22%,
+    color-mix(in srgb, var(--kolibri-bg) 55%, transparent) 48%,
+    color-mix(in srgb, var(--kolibri-bg) 18%, transparent) 72%,
+    transparent 100%
+  );
 }
 
-.moire-svg {
+.moire-canvas {
   display: block;
   width: 100%;
   height: 100%;
-  min-height: inherit;
-  overflow: visible;
-}
-
-.moire-parallax-a {
-  transform: translate(calc(var(--mx) * 10px), calc(var(--my) * 6px));
-  rotate: calc(var(--mx) * -0.5deg);
-  transition: transform 180ms ease-out, rotate 180ms ease-out;
-}
-
-.moire-parallax-b {
-  transform: translate(calc(var(--mx) * -14px), calc(var(--my) * -9px));
-  rotate: calc(var(--mx) * 0.4deg);
-  transition: transform 180ms ease-out, rotate 180ms ease-out;
-}
-
-.moire-field {
-  transform-origin: 50% 50%;
-}
-
-.moire-field path {
-  fill: none;
-  stroke: var(--kolibri-line-soft);
-  stroke-width: 1.3;
-  vector-effect: non-scaling-stroke;
-}
-
-.moire-parallax-b .moire-field {
-  mix-blend-mode: screen;
-}
-
-.moire-parallax-b .moire-field path { stroke: var(--kolibri-line); }
-
-.moire-lens {
-  opacity: 0.72;
-  mix-blend-mode: screen;
-}
-
-.moire-lens-field {
-  transform-origin: 57% 49%;
-}
-
-.moire-lens-field path {
-  fill: none;
-  stroke: rgba(240, 236, 229, 0.62);
-  stroke-width: 1.4;
-  vector-effect: non-scaling-stroke;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.15) 28%,
+    rgba(0, 0, 0, 0.55) 52%,
+    black 78%,
+    black 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.15) 28%,
+    rgba(0, 0, 0, 0.55) 52%,
+    black 78%,
+    black 100%
+  );
 }
 
 /* The painting is a child of this section and the section clips it, so the
@@ -447,20 +476,103 @@ a { color: inherit; }
 }
 
 #lessons > h2,
-.lesson-stage {
+.ide {
   position: relative;
   z-index: 1;
 }
 
-.lesson-stage {
-  max-width: var(--max);
-  margin: 1.5rem auto 0;
+/* The lessons section fits one desktop viewport. It now holds a single IDE
+   frame — lesson rail, workspace, AI chat — that the scripted demo drives. */
+#lessons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100dvh - 4.05rem);
+  padding-top: clamp(1.75rem, 4vh, 3rem);
+  padding-bottom: clamp(1.75rem, 4vh, 3rem);
 }
 
-/* Monet sits behind the lesson panel as atmosphere only: pushed dark, warmed
-   toward the page gold, and scrimmed so its edges dissolve into the background
-   instead of ending in a rectangle. Legibility of the panel wins over the
-   effect — if this ever competes with the code, lower the opacity. */
+#lessons > h2 { margin-bottom: 1rem; }
+
+/* Section copy above the demo frame, aligned with the frame's width. */
+.lesson-intro {
+  max-width: var(--max);
+  margin: 0 auto 1.25rem;
+}
+
+.ide {
+  max-width: var(--max);
+  margin: 1.5rem auto 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(10, 10, 9, 0.88);
+  backdrop-filter: blur(16px) saturate(0.85);
+  -webkit-backdrop-filter: blur(16px) saturate(0.85);
+  display: flex;
+  flex-direction: column;
+}
+
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .ide { background: #0a0a09; }
+}
+
+/* Stage tabs along the top of the frame. */
+.ide-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+}
+
+.ide-tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: #8f8a82;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.ide-tab span { color: #6f6a63; margin-right: 0.35rem; }
+.ide-tab:hover { color: #ddd8cf; }
+.ide-tab:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 2px; }
+
+.ide-tab.is-active {
+  color: #f4f1ea;
+  border-color: rgba(201, 169, 98, 0.4);
+  background: rgba(201, 169, 98, 0.06);
+}
+.ide-tab.is-active span { color: #d0bc7b; }
+
+/* Three-pane body: rail / workspace / chat. The frame keeps one locked height
+   per monitor — more text never grows it; the columns scroll internally. The
+   rem line is the fallback: the vh clamp only varies with the viewport, so the
+   demo can animate as much as it likes without ever expanding the frame. */
+.ide-body {
+  display: grid;
+  grid-template-columns: 18fr 52fr 30fr;
+  /* An fr row instead of the implicit auto row: auto would size to the
+     panes' content (code + output + diff actions) and overflow the frame;
+     minmax(0, 1fr) pins the row to the locked height, so the demo can only
+     ever scroll inside its columns. */
+  grid-template-rows: minmax(0, 1fr);
+  height: 34rem;
+  height: clamp(34rem, calc(100vh - 17rem), 52rem);
+  min-height: 0;
+}
+
+.ide-mobile-tabs { display: none; }
+
+/* Monet sits behind the lesson panel: a uniform scrim keeps the demo and
+   text readable while the painting reads as atmosphere. */
 .lesson-painting {
   position: absolute;
   inset: 0;
@@ -469,96 +581,154 @@ a { color: inherit; }
   pointer-events: none;
 }
 
+.lesson-painting::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 9, 0.72);
+}
+
 .lesson-painting img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 42%;
-  filter: grayscale(0.28) sepia(0.38) saturate(0.8) contrast(0.88) brightness(0.72);
-  opacity: 0.8;
+  filter: grayscale(0.25) sepia(0.35) saturate(0.85) contrast(0.9) brightness(0.72);
+  opacity: 0.55;
 }
 
-.lesson-painting::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(105% 105% at 50% 50%, rgba(5, 5, 5, 0) 22%, rgba(5, 5, 5, 0.45) 62%, rgba(5, 5, 5, 1) 92%),
-    linear-gradient(180deg, rgba(5, 5, 5, 1) 1%, rgba(5, 5, 5, 0) 24%, rgba(5, 5, 5, 0) 76%, rgba(5, 5, 5, 1) 99%),
-    linear-gradient(90deg, rgba(5, 5, 5, 1), rgba(5, 5, 5, 0) 14%, rgba(5, 5, 5, 0) 86%, rgba(5, 5, 5, 1));
-}
-
-.lesson-shell {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(12rem, 0.42fr) minmax(0, 1.58fr);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 4px;
-  overflow: hidden;
-  background: rgba(10, 10, 9, 0.82);
-  backdrop-filter: blur(16px) saturate(0.85);
-  -webkit-backdrop-filter: blur(16px) saturate(0.85);
-}
-
-@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
-  .lesson-shell { background: #0a0a09; }
-}
-
-.lesson-panel {
-  padding: 1rem;
+/* Lesson rail: persistent structure only — stage, progress, files, scope. */
+.ide-rail {
+  min-width: 0;
   border-right: 1px solid var(--line);
-  font-size: 0.92rem;
-  color: #aaa59c;
+  padding: 0.9rem 0.85rem;
+  overflow: auto;
 }
 
-.task-box {
-  margin: 1rem 0;
-  padding: 0.75rem;
-  border: 1px dashed rgba(201, 169, 98, 0.35);
-  font-size: 0.88rem;
-}
-
-.task-box strong {
-  display: block;
+.rail-heading {
+  margin: 0 0 0.45rem;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #d0bc7b;
-  margin-bottom: 0.45rem;
 }
 
-.lesson-tools { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.rail-sub + .rail-heading,
+.rail-list + .rail-heading { margin-top: 1.1rem; }
 
-.concept-button {
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: transparent;
-  color: #ddd8cf;
+.rail-sub {
+  margin: 1.1rem 0 0.35rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  padding: 0.45rem 0.65rem;
-  cursor: pointer;
-  min-height: 44px;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8f8a82;
 }
 
-.concept-button.primary {
+.rail-list,
+.scope-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rail-list li,
+.scope-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #9f9a91;
+}
+
+.rail-dot {
+  flex: none;
+  align-self: center;
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 1px solid #6f6a63;
+  border-radius: 50%;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.rail-list li.is-done { color: #ddd8cf; }
+.rail-list li.is-done .rail-dot {
   background: var(--accent-gold);
   border-color: var(--accent-gold);
-  color: #16130d;
-  font-weight: 600;
 }
 
-.hint-text {
-  margin-top: 0.75rem;
+.scope-list--muted li { color: #6f6a63; }
+
+.file-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: #9f9a91;
-  white-space: pre-wrap;
+  font-size: 0.72rem;
+  color: #8f8a82;
 }
 
-.lesson-workspace { display: flex; flex-direction: column; min-width: 0; }
+.file-tree ul {
+  list-style: none;
+  margin: 0.35rem 0 0 0.9rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.file-folder { color: #6f6a63; }
+.file-file.is-open { color: #f4f1ea; }
+
+.rail-progress {
+  margin: 1rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: #9f9a91;
+}
+.rail-progress strong { color: #d0bc7b; }
+
+.ide-workspace {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.workspace-file-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* Diff controls near the editor during a proposed change. Static in the demo:
+   the script decides what happens next. */
+.diff-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid var(--line);
+}
+.diff-actions[hidden] { display: none; }
+
+.diff-action {
+  border: 1px solid rgba(201, 169, 98, 0.45);
+  color: #d0bc7b;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.6rem;
+}
+
+.diff-action--reject {
+  border-color: rgba(248, 113, 113, 0.4);
+  color: #f87171;
+}
 
 .workspace-tabs {
   display: flex;
@@ -575,30 +745,33 @@ a { color: inherit; }
   padding: 0.2rem 0.35rem;
 }
 
-.workspace-tab[aria-selected="true"] { color: #f4f1ea; }
+.workspace-tab.is-active { color: #f4f1ea; }
 
-.code-editor {
-  width: 100%;
-  min-height: 14rem;
-  border: 0;
-  background: rgba(7, 7, 6, 0.96);
-  color: #e8e4dc;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 1.55;
-  padding: 0.85rem;
-  resize: vertical;
-  outline: none;
+/* JS badge: the workspace speaks JavaScript (real logo, local copy). */
+.js-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  width: 1.4rem;
+  height: 1.4rem;
 }
+.js-badge img { display: block; width: 100%; height: 100%; }
+
+/* Scripted selection and patch-diff highlighting inside the editor. */
+.code-line--selected { background: rgba(201, 169, 98, 0.14); }
+.code-line--add { background: rgba(208, 188, 123, 0.16); }
+.code-line--del { background: rgba(248, 113, 113, 0.13); color: #e2b4b4; }
 
 .output-panel {
   border-top: 1px solid var(--line);
   padding: 0.85rem;
   font-size: 0.88rem;
   color: #aaa59c;
+  overflow: auto;
 }
 
-.expense-data {
+.expense-data,
+.test-data {
   margin: 0.5rem 0 0.75rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -616,294 +789,215 @@ a { color: inherit; }
 .check-result[data-status="pass"] { color: #d0bc7b; }
 .check-result[data-status="fail"] { color: #f87171; }
 
-.reflection-q, .reflection-follow {
-  margin-top: 0.75rem;
-  font-size: 0.88rem;
-  color: #c7c2b9;
-}
+/* Transfer stage test verdicts match the example's check-result colors. */
+.test-data[data-status="fail"] { color: #f87171; }
+.test-data[data-status="pass"] { color: #d0bc7b; }
 
-.tool-examples {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 0.55rem;
-  margin-top: 1.5rem;
-}
-
-.tool-example {
-  border: 1px solid var(--line);
-  padding: 0.65rem 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: #b5b0a7;
-}
-
-.armature-plate {
-  margin: 1.75rem 0 0;
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(120% 90% at 50% 45%, rgba(201, 169, 98, 0.05), transparent 70%),
-    #070706;
-}
-
-.armature-viewport {
-  position: relative;
-  aspect-ratio: 3 / 1;
-  min-height: 11rem;
-}
-
-.armature-viewport canvas {
-  position: absolute;
-  inset: 0;
+/* Autoplay check beat: preview rows settle in one at a time. */
+.output-row {
   display: block;
-  width: 100%;
-  height: 100%;
+  animation: demo-in 0.35s ease both;
 }
 
-/* Static reference marks while three.js has not taken over (or cannot). */
-.armature-plate:not([data-ready]) .armature-viewport::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8rem;
-  height: 8rem;
-  max-width: 60%;
-  max-height: 60%;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgba(201, 169, 98, 0.3);
-  border-radius: 50%;
+@keyframes demo-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.armature-scale {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid var(--line);
+/* Rendered code replaces the old editable textarea. */
+.code-render {
+  margin: 0;
+  min-height: 14rem;
+  border: 0;
+  background: rgba(7, 7, 6, 0.96);
+  color: #e8e4dc;
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(201, 169, 98, 0.7);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  padding: 0.85rem;
+  overflow: auto;
+  white-space: pre;
 }
 
-.armature-scale span { padding: 0.5rem 0.75rem; }
-.armature-scale span + span { border-left: 1px solid var(--line); }
+.code-line { display: block; }
 
-.armature-plate figcaption {
-  padding: 0.6rem 0.75rem;
-  border-top: 1px solid var(--line);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--text-muted);
+.code-line--diff { animation: diff-flash 1.6s ease both; }
+@keyframes diff-flash {
+  from { background: rgba(201, 169, 98, 0.3); }
+  to { background: transparent; }
 }
 
-.guidance-composition {
-  display: grid;
-  grid-template-columns: minmax(16rem, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(1rem, 3vw, 2rem);
-  align-items: stretch;
-  margin-top: 1.75rem;
-}
-
-.painting-atmosphere {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(201, 169, 98, 0.2);
-  background: #090908;
-}
-
-.painting-atmosphere::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(5, 5, 5, 0.08), rgba(5, 5, 5, 0.5)),
-    rgba(201, 169, 98, 0.08);
-  mix-blend-mode: multiply;
-}
-
-.painting-atmosphere img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(0.78) sepia(0.28) saturate(0.58) contrast(1.08) brightness(0.58);
-  opacity: 0.72;
-}
-
-.painting-starry { min-height: 24rem; }
-
-.guidance-stages {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--line);
-  background: #0a0a09;
-}
-
-.guidance-panel {
-  position: relative;
+/* AI chat column: the lesson lives here. */
+.ide-chat {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  padding: 1rem;
-  font-size: 0.82rem;
-  color: #aaa59c;
+  border-left: 1px solid var(--line);
 }
 
-.guidance-panel + .guidance-panel { border-left: 1px solid var(--line); }
-
-.guidance-panel h3 {
-  margin-bottom: 0.8rem;
-  color: #f4f1ea;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.chat-log {
+  flex: 1;
+  overflow: auto;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-height: 0;
 }
 
-.guidance-panel ul { padding-left: 1.05rem; }
-.guidance-panel li { margin-bottom: 0.5rem; }
-.guidance-panel-partial { background: rgba(255, 255, 255, 0.015); }
-.guidance-panel-open {
-  background: rgba(201, 169, 98, 0.055);
-  color: #c7c2b9;
-}
-
-.guidance-panel::before {
-  display: block;
-  margin-bottom: 0.75rem;
-  color: rgba(201, 169, 98, 0.72);
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-}
-
-.guidance-panel-guided::before { content: "course decides"; }
-.guidance-panel-partial::before { content: "learner investigates"; }
-.guidance-panel-open::before { content: "learner frames"; }
-
-.help-dialogue {
-  margin-top: 1.5rem;
-  border: 1px solid var(--line);
+.chat-msg {
+  max-width: 94%;
+  padding: 0.6rem 0.7rem;
   border-radius: 4px;
-  overflow: hidden;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #ddd8cf;
+  background: rgba(255, 255, 255, 0.04);
+  animation: demo-in 0.35s ease both;
 }
 
-.help-turn {
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 0.92rem;
-  color: #aaa59c;
+.chat-msg p { margin: 0 0 0.5rem; }
+.chat-msg p:last-child { margin-bottom: 0; }
+
+.chat-msg--user {
+  align-self: flex-end;
+  background: rgba(201, 169, 98, 0.12);
+  color: #f4f1ea;
 }
 
-.help-turn strong {
+.chat-task {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed rgba(201, 169, 98, 0.35);
+  color: #d0bc7b;
+}
+
+/* Brief "thinking" indicator before a message block lands. */
+.chat-typing {
+  display: flex;
+  gap: 0.3rem;
+  padding: 0.55rem 0.7rem;
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+}
+.chat-typing span {
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: #8f8a82;
+  animation: typing-dot 1s ease-in-out infinite;
+}
+.chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+.chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+
+/* AI patch card in the chat. */
+.patch-card {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(201, 169, 98, 0.45);
+  background: rgba(201, 169, 98, 0.06);
+}
+.patch-card strong {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: #d0bc7b;
   margin-bottom: 0.35rem;
 }
-
-.project-record-flow {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-}
-
-.project-record-flow span {
-  border: 1px solid var(--line);
-  padding: 0.55rem 0.65rem;
+.patch-card p { margin: 0 0 0.4rem; font-size: 0.78rem; color: #c7c2b9; }
+.patch-preview {
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  color: #b5b0a7;
+  color: #9f9a91;
 }
 
-.project-concept {
-  margin-top: 1.5rem;
-  padding: 1.25rem;
+/* Suggested prompts under the first AI message. */
+.chat-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0 0.85rem 0.6rem;
+}
+
+.chat-chip {
   border: 1px solid rgba(201, 169, 98, 0.35);
-  background: rgba(201, 169, 98, 0.04);
+  background: transparent;
+  color: #c7c2b9;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+.chat-chip:hover { color: #f4f1ea; border-color: rgba(201, 169, 98, 0.6); }
+.chat-chip:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 2px; }
+
+/* Input row: decorative in the demo, nothing types here. */
+.chat-input-row {
+  border-top: 1px solid var(--line);
+  padding: 0.7rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.concept-label {
+.attach-chip {
+  align-self: flex-start;
+  border: 1px solid rgba(201, 169, 98, 0.4);
+  background: rgba(201, 169, 98, 0.08);
+  color: #d0bc7b;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 0.3rem 0.55rem;
+}
+
+.chat-input {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  color: #8f8a82;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.chat-send {
+  align-self: flex-end;
+  color: #d0bc7b;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+/* Status bar along the bottom of the frame. */
+.ide-statusbar {
+  border-top: 1px solid var(--line);
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: #6f6a63;
+}
+
+.caret {
   display: inline-block;
-  margin-bottom: 0.75rem;
-  padding: 0.28rem 0.5rem;
-  border: 1px solid rgba(201, 169, 98, 0.5);
-  color: #ddc481;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
+  width: 0.55em;
+  height: 1.05em;
+  vertical-align: text-bottom;
+  background: var(--accent-gold);
+  animation: caret-blink 1.1s steps(1) infinite;
 }
+@keyframes caret-blink { 50% { opacity: 0; } }
 
-.project-concept h3 {
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.75rem;
-}
-
-.project-problem { color: #c7c2b9; margin-bottom: 1rem; max-width: 40rem; }
-
-.project-stages {
-  display: grid;
-  gap: 0.65rem;
-}
-
-.project-stages dt {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #d0bc7b;
-}
-
-.project-stages dd {
-  margin: 0.2rem 0 0;
-  font-size: 0.9rem;
-  color: #aaa59c;
-}
-
-.work-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.75rem;
-  padding: 0.65rem 0;
-  color: #aaa59c;
-  font-size: 0.8rem;
-}
-
-.work-item + .work-item { border-top: 1px solid rgba(255, 255, 255, 0.08); }
-.work-item span:last-child {
-  color: #d0bc7b;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-}
-
-.progress-composition {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(18rem, 1.2fr);
-  gap: clamp(1rem, 3vw, 2rem);
-  align-items: stretch;
-  margin-top: 1.5rem;
-}
-
-.progress-view {
-  align-self: center;
-  padding: 0.25rem 1rem;
-  border-left: 1px solid rgba(201, 169, 98, 0.35);
-}
-
-.painting-monet {
-  min-height: 14rem;
-  max-height: 20rem;
-}
-
-.painting-monet img { object-position: center 48%; }
+/* The code column holds one file at a time, plus output beneath. */
+#demo-code { min-height: 0; flex: 1; }
 
 .state-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(15rem, 0.58fr);
+  grid-template-columns: minmax(0, 0.95fr) minmax(20rem, 1.05fr);
   gap: clamp(2rem, 5vw, 4rem);
   align-items: start;
 }
@@ -915,20 +1009,144 @@ a { color: inherit; }
   margin-top: 1.25rem;
 }
 
-.poster-figure { margin: 0; }
-.poster-figure img {
-  display: block;
-  width: 100%;
-  height: auto;
+/* Teaching-session carousel. Scroll-snap carries the swipe; the arrows and
+   dots drive the same scroll. Autoplay lives in app.js and pauses on hover,
+   focus, touch, and reduced motion. */
+.teaching-gallery { min-width: 0; }
+
+.teaching-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
   border: 1px solid var(--line);
   background: #111;
 }
 
-.poster-figure figcaption {
-  margin-top: 0.7rem;
+.teaching-track {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teaching-track::-webkit-scrollbar { display: none; }
+
+.teaching-slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.teaching-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.teaching-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 2.75rem 1rem 0.8rem;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.88));
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: rgba(244, 241, 234, 0.45);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: rgba(244, 241, 234, 0.92);
+  pointer-events: none;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--text-primary);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.carousel-arrow:hover { border-color: rgba(201, 169, 98, 0.6); background: rgba(0, 0, 0, 0.8); }
+.carousel-arrow:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 2px; }
+.carousel-arrow--prev { left: 0.75rem; }
+.carousel-arrow--next { right: 0.75rem; }
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.85rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carousel-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  padding: 0;
+  border: 1px solid rgba(244, 241, 234, 0.35);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.carousel-dot.is-active { background: var(--accent-gold); border-color: var(--accent-gold); }
+
+/* Desktop coverflow: the active slide is front and centre, its neighbours
+   peek out at the edges, and anything further out recedes to nearly
+   invisible. app.js sets each slide's transform/opacity/z-index (and the
+   data-offset it keys off); this block stages the space, masks the peeked
+   previews into the page background, and hides captions on non-active
+   slides. Gated on html.js so no-JS keeps the scroll-snap track above;
+   below 901px the track is the whole carousel. */
+@media (min-width: 901px) {
+  html.js .teaching-stage {
+    overflow: visible;
+    perspective: 1100px;
+  }
+
+  html.js .teaching-track {
+    position: relative;
+    display: block;
+    overflow: visible;
+    scroll-snap-type: none;
+    /* The previews extend past the stage; fade them into the page background
+       at the gallery edges instead of cutting them off against the copy. */
+    mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+  }
+
+  html.js .teaching-slide {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 62%;
+    height: 100%;
+    flex: none;
+    transition: transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.65s ease;
+    will-change: transform;
+  }
+
+  html.js .teaching-slide.is-clickable { cursor: pointer; }
+
+  html.js .teaching-slide .teaching-caption { transition: opacity 0.25s ease; }
+  html.js .teaching-slide:not([data-offset="0"]) .teaching-caption { opacity: 0; }
 }
 
 .portfolio-link {
@@ -941,11 +1159,39 @@ a { color: inherit; }
 
 .portfolio-link:hover { color: #f4f1ea; border-color: rgba(244, 241, 234, 0.55); }
 
-.waitlist-layout {
+.waitlist-section {
+  --cols: 121;
+  --rows: 43;
+  position: relative;
+  box-sizing: border-box;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  /* Room for the wave to breathe above and below the copy. */
+  padding: clamp(4rem, 9vh, 7rem) 0;
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: clamp(1.5rem, 4vw, 3rem);
-  align-items: start;
+  overflow: hidden;
+  /* No divider between the bloom section and the wave. */
+  border-top: none;
+  /* The section must be tall enough to hold the whole art; the vertical fade
+     hides any crop on small screens. */
+  min-height: calc(36.4vw + clamp(8rem, 18vh, 14rem));
+}
+
+@keyframes waitlist-fade {
+  from { opacity: 0.06; }
+  to { opacity: 0.12; }
+}
+
+.waitlist-main {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max);
+  margin: auto;
+  padding: clamp(3rem, 8vh, 5.5rem) var(--page-pad);
+  display: grid;
+  justify-items: center;
+  text-align: center;
 }
 
 .waitlist-main h2 { max-width: none; }
@@ -957,6 +1203,7 @@ a { color: inherit; }
   gap: 0.45rem;
   margin-top: 1.25rem;
   max-width: 28rem;
+  width: 100%;
 }
 
 .waitlist label {
@@ -964,7 +1211,7 @@ a { color: inherit; }
   color: #c7c2b9;
 }
 
-.waitlist-row { display: flex; gap: 0.65rem; }
+.waitlist-row { display: flex; gap: 0.65rem; justify-content: center; }
 
 .waitlist input {
   flex: 1;
@@ -1009,65 +1256,158 @@ a { color: inherit; }
 .form-status.ok { color: var(--accent-gold); }
 .form-status.err { color: #f87171; }
 
-/* ASCII art is sized from its own character grid so it always fits its column:
-   columns x advance width x font-size = container width. No scrollbars, no
-   cropping, no scaleX squashing — see --ascii-advance in :root. */
+/* The great wave: a full-bleed dark background behind the waitlist copy. The
+   art fills the section's width; the section grows to hold the art's height so
+   the whole wave (121x43) shows — never cropped, no scrollbars, no scaleX
+   squashing. */
 .waitlist-wave {
-  container-type: inline-size;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* Query container for the wave's own width (used by the font-size calc). */
+  container-type: size;
   min-width: 0;
-  max-width: 100%;
+  width: 100%;
+  /* Center the art both ways when the section is taller than the wave. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Fade the wave's edges top, bottom, left and right so it blends into the
+     section background instead of ending in a hard line. */
+  overflow: hidden;
+  mask-image:
+    linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%),
+    linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%),
+    linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+  /* Keep the wave deep in the background: dim, so the copy stays readable.
+     The flicker still shows because flipped bits flash bright against it. */
+  opacity: 0.12;
+  /* The wave itself breathes in and out; the copy above it stays readable
+     at full opacity. */
+  animation: waitlist-fade 7s ease-in-out infinite alternate;
+  will-change: opacity;
 }
 
 .waitlist-wave-art {
-  --cols: 121;
   display: block;
-  margin: 0;
   padding: 0;
   font-family: var(--font-mono);
-  font-size: clamp(4px, 0.55vw, 7px);
-  font-size: calc(100cqw / (var(--cols) * var(--ascii-advance)));
+  /* Keep the art at a natural sub-width. The same formula applies before and
+     after JS replaces the braille with bits. */
+  font-size: max(
+    4px,
+    min(
+      calc(100cqw / (var(--cols) * var(--ascii-advance)) * 0.70),
+      calc(100cqh / (var(--rows) * 1.3) * 0.70),
+      16px
+    )
+  );
   line-height: 1.3;
   white-space: pre;
   color: rgba(210, 202, 188, 0.72);
-  user-select: none;
   pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  /* No extra tracking: the font-size formula controls the grid width. */
+  letter-spacing: 0;
 }
 
-.final-grid {
+/* The wave animates as bits: filled cells render a 1/0 glyph, empty cells stay
+   blank. Bits flip on a timer and flash white — a cold glow that settles back
+   to the warm rest color — with per-glyph halos, so the shimmer reads as lit
+   digits. */
+.bit {
+  --bit-rest: rgba(220, 213, 200, 0.9);
+  color: var(--bit-rest);
+  /* Faint halo so the wave reads as lit glyphs even at rest. */
+  text-shadow: 0 0 0.08em currentColor;
+}
+
+.bit--pulse {
+  animation: bit-pulse 0.65s ease-out;
+}
+
+@keyframes bit-pulse {
+  0% { color: #fff; text-shadow: 0 0 1.2em currentColor, 0 0 0.45em currentColor, 0 0 0.12em currentColor; }
+  40% { color: hsl(0, 0%, 88%); text-shadow: 0 0 0.6em currentColor, 0 0 0.2em currentColor; }
+  100% { color: var(--bit-rest); text-shadow: 0 0 0.08em currentColor; }
+}
+
+/* Match the site's motion convention (app.js): reduce, don't freeze. */
+@media (prefers-reduced-motion: reduce) {
+  .waitlist-wave { animation-duration: 30s; }
+  /* Bits still flip, but the flash is a quick soft glow, not a bright pulse. */
+  .bit--pulse { animation: bit-pulse-quiet 0.4s ease-out; }
+  /* Chat typing indicator holds still; the script's pacing handles the rest. */
+  .chat-typing span { animation: none; opacity: 0.5; }
+  /* Coverflow swaps instantly instead of flying. */
+  html.js .teaching-slide { transition: none; }
+}
+
+@keyframes bit-pulse-quiet {
+  0% { color: #fff; text-shadow: 0 0 0.4em currentColor; }
+  100% { color: var(--bit-rest); text-shadow: 0 0 0.08em currentColor; }
+}
+
+.bloom-grid {
   container-type: inline-size;
+  max-width: var(--max);
+  width: 100%;
+  margin: 0 auto;
   display: grid;
-  /* Both tracks are bounded: an `auto` second track would be sized to the ASCII
-     block's max-content and let the closing bird push the grid wider than the
-     section. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
-  gap: clamp(1.5rem, 4vw, 3rem);
-  align-items: end;
+  /* Bloom left (larger), copy right — both tracks bounded so ASCII can't blow width. */
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
 }
 
-.bird-closing-wrap {
+.bloom-copy {
+  min-width: 0;
+  max-width: 34rem;
+}
+
+.bloom-copy h2 {
+  font-size: var(--type-display);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  margin-bottom: clamp(0.85rem, 2vh, 1.35rem);
+  max-width: 18ch;
+}
+
+.bloom-copy p {
+  font-size: var(--type-body);
+  color: var(--text-muted);
+  line-height: 1.55;
+  max-width: 36rem;
+  margin: 0;
+}
+
+.bloom-wrap {
   container-type: inline-size;
   min-width: 0;
-  justify-self: end;
+  justify-self: start;
   width: 100%;
 }
 
-/* Closing bird: the hovering-in-flight frames are 90 columns wide and carry the
-   same blue glow as the hero, a shade quieter so the section still ends on the
-   copy. app.js repaints each glyph from its own brightness once the dataset
-   arrives; this rule is what a visitor without JavaScript sees. */
-.bird-small {
+/* Closing bloom: flower frames are 90 cols. Blue glow matches the hero bird;
+   sized to fill its column so the section reads as its own full screen. */
+.bloom-art {
   --cols: 90;
   font-family: var(--font-mono);
-  font-size: clamp(3.5px, 0.7vw, 9px);
-  /* Sized against the wrap, not the section: 100cqw of .bird-closing-wrap. */
-  font-size: min(8px, calc(100cqw / (var(--cols) * var(--ascii-advance))));
+  font-size: clamp(4.5px, 1.05vw, 11px);
+  /* Fill the bloom column (≈ half the bloom grid after gap). */
+  font-size: min(11px, calc(100cqw / (var(--cols) * var(--ascii-advance))));
   font-weight: 700;
   line-height: 0.96;
   white-space: pre;
   display: inline-block;
   color: hsl(200, 95%, 56%);
   text-shadow: 0 0 0.24em currentColor;
-  user-select: none;
   margin: 0;
 }
 
@@ -1242,35 +1582,76 @@ a { color: inherit; }
 }
 
 @media (max-width: 900px) {
+  .hero {
+    height: auto;
+    min-height: calc(100dvh - 4.05rem);
+    padding: clamp(4.25rem, 6.5vh, 5.5rem) var(--page-pad);
+  }
   .hero-grid,
-  .lesson-shell,
   .state-grid,
-  .waitlist-layout,
-  .final-grid,
-  .guidance-composition,
-  .progress-composition {
+  .bloom-grid {
     grid-template-columns: 1fr;
   }
+  /* The IDE stacks: rail, then Code / Output / AI as switchable views. */
+  .ide-body {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+  .ide-mobile-tabs {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+  }
+  .ide-rail {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .ide-chat {
+    border-left: 0;
+    height: 26rem;
+  }
+  /* The stacked workspace gets a locked height too: the demo appends output
+     rows and diff actions as it runs, and without a bound they would grow
+     the workspace and push the section taller. */
+  .ide-workspace {
+    height: 28rem;
+    min-height: 0;
+  }
+  .ide-body[data-mobile-view="output"] .code-render,
+  .ide-body[data-mobile-view="output"] .workspace-tabs,
+  .ide-body[data-mobile-view="code"] #demo-output,
+  .ide-body[data-mobile-view="code"] .ide-chat,
+  .ide-body[data-mobile-view="output"] .ide-chat,
+  .ide-body[data-mobile-view="chat"] .ide-workspace { display: none; }
+  .ide-body[data-mobile-view="chat"] .ide-chat { display: flex; }
+  .section-bloom {
+    height: auto;
+    min-height: 100dvh;
+    padding: clamp(4.25rem, 8vh, 5.5rem) var(--page-pad) clamp(2.5rem, 5vh, 3.5rem);
+  }
   .moire-section {
-    grid-template-columns: 1fr;
-    gap: 3.25rem;
+    height: auto;
+    min-height: 100dvh;
+    padding: clamp(4rem, 8vh, 5.5rem) var(--page-pad);
   }
   .moire-copy { max-width: 44rem; }
   .moire-title { max-width: 24ch; }
-  .moire-visual { min-height: clamp(23rem, 75vw, 34rem); }
   .bird-column { justify-items: center; margin-left: 0; order: -1; }
   .bird { font-size: min(9px, calc(96cqw / (var(--cols) * var(--ascii-advance)))); }
-  .lesson-panel { border-right: 0; border-bottom: 1px solid var(--line); }
   .nav-primary { display: none; }
   .nav-menu-btn { display: inline-flex; }
-  .bird-closing-wrap { justify-self: center; }
-  .bird-small {
-    font-size: min(7px, calc(100cqw / (var(--cols) * var(--ascii-advance))));
+  .bloom-wrap { justify-self: center; }
+  .bloom-copy { max-width: 44rem; }
+  .bloom-art {
+    font-size: min(9px, calc(100cqw / (var(--cols) * var(--ascii-advance))));
   }
-  .painting-starry { min-height: 18rem; max-height: 24rem; }
-  .armature-viewport { aspect-ratio: 2 / 1; }
-  .lesson-painting img { opacity: 0.3; }
-  .lesson-shell { background: rgba(10, 10, 9, 0.88); }
+  .lesson-painting img { opacity: 0.2; }
 }
 
 @media (max-width: 768px) {
@@ -1299,21 +1680,16 @@ a { color: inherit; }
 @media (max-width: 560px) {
   .waitlist-row { flex-direction: column; }
   .waitlist button { width: 100%; }
-  .code-editor { min-height: 12rem; }
-  .guidance-stages { grid-template-columns: 1fr; }
-  .guidance-panel + .guidance-panel {
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
-  .painting-starry, .painting-monet { min-height: 12rem; max-height: 15rem; }
-  .armature-viewport { aspect-ratio: 5 / 4; }
-  .moire-section { padding: 4.5rem 0; }
-  .moire-title { font-size: clamp(2.3rem, 11vw, 3.6rem); }
-  .moire-body { font-size: 1rem; line-height: 1.64; }
-  .moire-visual { min-height: 22rem; }
+  .code-render { min-height: 12rem; }
+  .moire-section { padding: clamp(3.75rem, 7vh, 4.5rem) var(--page-pad); }
+  .moire-title { font-size: clamp(2rem, 9vw, 3.1rem); }
+  .moire-body { font-size: 0.95rem; line-height: 1.55; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .bird-wrap:not([data-motion="on"]) { transform: none !important; }
+@media (max-height: 720px) {
+  .hero,
+  .moire-section {
+    height: auto;
+    min-height: calc(100dvh - 4.05rem);
+  }
 }
