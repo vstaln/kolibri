@@ -29,9 +29,10 @@ jobs:
 
       - name: Run checks
         run: |
-          node --check app.js
-          node --check build-page.js
-          node --check server.js
+          for file in app.js build-page.js server.js course-app.mjs course-content.mjs course-evaluator.mjs course-state.mjs course-validate.mjs course-markup-smoke.mjs course-runner-smoke.mjs course-state-smoke.mjs; do
+            node --check "$file"
+          done
+          node course-validate.mjs
           node server.js --selftest
           node demo-smoke.mjs
 
