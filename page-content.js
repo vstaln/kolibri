@@ -4,8 +4,10 @@
 export const lessonDemo = {
   learn: {
     file: 'expenses.js',
-    // The lesson copy sits above the demo; the chat opens with a short lead-in.
+    // The lesson copy sits above the demo; the chat opens by teaching the
+    // concept, then points at the code.
     intro: [
+      'The concept is a condition: a true-or-false decision that changes what the program does. isEssential() is the condition in this file — the program asks it about every expense.',
       'Read the idea, change the code, and see what happens. The relevant file is already open.',
     ],
     task: 'Change the rule so food, transport, and housing are recognized as essential expenses.',
@@ -101,34 +103,28 @@ function upcomingList(today) {
 
   project: {
     file: 'app.js',
-    readme: `# Invoice follow-up
-
-Track which invoices still need a follow-up.`,
-    brief: [
-      'Your project: an invoice follow-up tracker. Requirements: accept a list of invoices, show which still need a follow-up, and mark one as paid. Anything else — email integration, automatic reminders, a monthly summary — is not required.',
-    ],
+    // Simulated: the learner types the problem that bothers them; the scope
+    // drafts itself from their words. The AI answers with a plan, not a chat.
+    problem: 'Invoices I keep forgetting to follow up on.',
+    reply: "That's enough to start — I'm drafting the README and the data model now.",
     plan: [
-      '1. List the invoices you have.',
-      '2. Mark each one paid or still open.',
+      '1. List the things you have.',
+      '2. Mark each one done or still open.',
       '3. Show only the open ones.',
-    ],
-    qa: [
-      { attach: null, q: 'Help me plan the first version.', a: null },
-      { attach: 'app.js · new file', q: 'Start with step one.', a: null },
     ],
     patch: { file: 'app.js', summary: 'data model' },
     // Lines appended below the README when the data model is drafted.
     patchAdd: [
-      `const invoices = [
-  { id: 1, from: 'Gray Design', due: '2026-08-05', paid: false },
-  { id: 2, from: 'Kolibri Hosting', due: '2026-08-12', paid: false },
+      `const items = [
+  { id: 1, note: 'First thing', done: false },
+  { id: 2, note: 'Second thing', done: false },
 ];`,
     ],
-    // The learner's manual edit: invoice 1 is already paid.
+    // The learner's manual edit: item 1 is already done.
     manualLine: 2,
-    manualText: `  { id: 1, from: 'Gray Design', due: '2026-08-05', paid: true },`,
+    manualText: `  { id: 1, note: 'First thing', done: true },`,
     previewBefore: 'First incomplete version',
-    previewAfter: '1 open invoice · 1 paid',
+    previewAfter: '1 open item · 1 done',
     status: 'STATUS: app.js · 1/4 requirements complete',
   },
 };

@@ -90,8 +90,8 @@ if (!byId['demo-code'].innerHTML.includes("return 'overdue'")) throw new Error('
 click(tabs[2]);
 await sleep(1200);
 if (status() !== 'STATUS: app.js · 1/4 requirements complete') throw new Error(`project: ${status()}`);
-if (!byId['demo-code'].innerHTML.includes('paid: true')) throw new Error('project editor missing manual edit');
-if (!byId['demo-output'].innerHTML.includes('1 open invoice')) throw new Error('project preview not updated');
+if (!byId['demo-code'].innerHTML.includes('done: true')) throw new Error('project editor missing manual edit');
+if (!byId['demo-output'].innerHTML.includes('1 open item')) throw new Error('project preview not updated');
 
 // Mobile tabs toggle.
 click(mobileTabs[2]);

@@ -32,10 +32,25 @@ const bloomFrame0 = fs.readFileSync(path.join(ROOT, 'assets/hummingbird-hover-fr
 const wave = fs.readFileSync(path.join(ROOT, 'assets/kolibri-closing-art.txt'), 'utf8');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
+// One footer for every alignment.id site: link data lives in the shared
+// footer-links.json that the React marketing footer also renders from.
+const footerLinks = JSON.parse(
+  fs.readFileSync(path.join(ROOT, '..', 'src', 'app', 'components', 'footer-links.json'), 'utf8')
+);
+const footerProductLinks = footerLinks.products
+  .map((p) => `            <a href="${p.href}" class="site-footer__column-link" target="_blank" rel="noreferrer">${p.label}</a>`)
+  .join('\n');
+const footerPolicyLinks = footerLinks.policies
+  .map((p) => `            <a href="${p.href}" class="site-footer__column-link">${p.label}</a>`)
+  .join('\n');
+const footerSocialLinks = footerLinks.socials
+  .map((s) => `          <a href="${s.href}" target="_blank" rel="noreferrer" class="site-footer__social-link"><img src="${s.logo}" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">${s.label}</span></a>`)
+  .join('\n');
+
 // In-person vibe-coding sessions, one slide each. Dims are the real source
 // sizes so the browser can reserve the stage before the file arrives.
 const teachingSessions = [
-  ['teaching-2026-06-06.jpg', 'Teaching session — Jun 6, 2026', 1836, 3264],
+  ['teaching-2026-06-06.jpg', 'Teaching session — Jun 6, 2026', 1836, 3264, 'teaching-slide--people'],
   ['teaching-2026-06-07-1.jpg', 'Teaching session — Jun 7, 2026', 1600, 715],
   ['teaching-2026-06-07-2.jpg', 'Teaching session — Jun 7, 2026', 1600, 715],
   ['teaching-2026-06-17-1.jpg', 'Teaching session — Jun 17, 2026', 1280, 720],
@@ -134,7 +149,7 @@ const html = `<!doctype html>
       <div class="lesson-painting" aria-hidden="true">
         <img src="/assets/monet-impression-sunrise.webp" alt="" width="1400" height="1086" loading="lazy" decoding="async" />
       </div>
-      <h2 id="lesson-title" data-reveal>The example is only the beginning.</h2>
+      <h2 id="lesson-title" data-reveal>Lessons give you less help as you go.</h2>
       <div class="lesson-intro" data-reveal style="--reveal-delay:60ms">
         <p>Kolibri starts with a short explanation beside a program you can run. There are no videos to sit through. You read the idea, change the code, and see what happens.</p>
         <p>Each lesson introduces a programming concept inside something concrete: a condition that classifies an expense, state that changes after an action, or a function used in several places. The AI assistant can explain a line, suggest an approach, or generate a draft. Every change still appears inside the editor, where you can inspect it, edit it, and run it yourself.</p>
@@ -246,8 +261,8 @@ const html = `<!doctype html>
             <div class="chat-prompts" id="demo-prompts"></div>
             <div class="chat-input-row">
               <div class="attach-chip" id="demo-attach" hidden></div>
-              <div class="chat-input" aria-hidden="true">Ask about the code&hellip;</div>
-              <div class="chat-send" aria-hidden="true">Send &rarr;</div>
+              <input class="chat-input" id="demo-input" type="text" placeholder="What bothers you? Type it here&hellip;" aria-label="Describe a problem from your own life for the final project" autocomplete="off" disabled />
+              <button type="button" class="chat-send" id="demo-send" disabled>Send &rarr;</button>
             </div>
           </div>
         </div>
@@ -270,8 +285,8 @@ const html = `<!doctype html>
         <div class="teaching-gallery" data-carousel data-reveal="right" style="--reveal-delay:160ms" aria-label="Recent teaching sessions">
           <div class="teaching-stage">
             <ul class="teaching-track" data-carousel-track>
-              ${teachingSessions.map(([file, caption, width, height], i) => [
-                '<li class="teaching-slide">',
+              ${teachingSessions.map(([file, caption, width, height, modifier = ''], i) => [
+                `<li class="teaching-slide${modifier ? ` ${modifier}` : ''}">`,
                 `  <img src="/assets/${file}" alt="${caption}" width="${width}" height="${height}" loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async" />`,
                 `  <p class="teaching-caption">${caption}</p>`,
                 '</li>',
@@ -298,9 +313,6 @@ const html = `<!doctype html>
     </section>
 
     <section class="section waitlist-section" id="waitlist" aria-labelledby="waitlist-title" data-reveal="fade">
-      <div class="waitlist-wave" aria-hidden="true">
-        <pre class="waitlist-wave-art">${esc(wave)}</pre>
-      </div>
       <div class="waitlist-main" data-reveal>
         <h2 id="waitlist-title">Follow the online course build</h2>
         <p class="waitlist-copy">Kolibri is still being developed. Join the existing update list to hear when the browser-based course is ready to try. We will only use this address for Kolibri product updates.</p>
@@ -314,6 +326,9 @@ const html = `<!doctype html>
         <p class="privacy">We will only email you about Kolibri product updates.</p>
         <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
       </div>
+      <div class="waitlist-wave" aria-hidden="true">
+        <pre class="waitlist-wave-art">${esc(wave)}</pre>
+      </div>
     </section>
   </main>
 
@@ -325,35 +340,30 @@ const html = `<!doctype html>
       <div class="site-footer__grid">
         <div class="site-footer__column">
           <p class="site-footer__column-title">Products</p>
-          <div class="site-footer__column-stack"><a href="https://gray.alignment.id" class="site-footer__column-link" target="_blank" rel="noreferrer">Gray</a></div>
+${footerProductLinks}
         </div>
         <div class="site-footer__column">
           <p class="site-footer__column-title">Research</p>
-          <span class="site-footer__column-note">Coming soon</span>
+          <span class="site-footer__column-note">${footerLinks.researchNote}</span>
         </div>
         <div class="site-footer__column">
           <p class="site-footer__column-title">Contact</p>
-          <a href="mailto:hi@alignment.id" class="site-footer__column-link">hi@alignment.id</a>
+          <a href="${footerLinks.contact.href}" class="site-footer__column-link">${footerLinks.contact.label}</a>
         </div>
       </div>
       <div class="site-footer__grid site-footer__grid--secondary">
         <div class="site-footer__column site-footer__column-stack">
           <p class="site-footer__column-title">Policies</p>
-          <a href="https://alignment.id/policies/tos" class="site-footer__column-link">Terms of Service</a>
-          <a href="https://alignment.id/policies/privacy" class="site-footer__column-link">Privacy Policy</a>
-          <a href="https://alignment.id/policies/refund" class="site-footer__column-link">Refund Policy</a>
+${footerPolicyLinks}
         </div>
         <div class="site-footer__column">
           <p class="site-footer__column-title">Blog</p>
-          <span class="site-footer__column-note">Coming soon</span>
+          <span class="site-footer__column-note">${footerLinks.blogNote}</span>
         </div>
       </div>
       <div class="site-footer__social-row">
         <div class="site-footer__social-links">
-          <a href="https://x.com/alignmentid" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/xwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">X</span></a>
-          <a href="https://youtube.com/@alignmentid" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/youtubewhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">YouTube</span></a>
-          <a href="https://instagram.com/alignmentid" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/instagramwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">Instagram</span></a>
-          <a href="https://discord.gg/sE4CSm4wWQ" class="site-footer__social-link" target="_blank" rel="noreferrer"><img src="/logos/discordwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">Discord</span></a>
+${footerSocialLinks}
         </div>
         <p class="site-footer__meta">© 2026 Alignment. All rights reserved.</p>
       </div>

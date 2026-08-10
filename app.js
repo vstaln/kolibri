@@ -81,6 +81,7 @@ function makeBird(el, slug) {
   let timer = 0;
   let index = 0;
   let wanted = false;
+  let onScreen = true;
   const tick = () => {
     el.innerHTML = renderBirdFrame(frames[index]);
     index = (index + 1) % frames.length;
@@ -91,8 +92,17 @@ function makeBird(el, slug) {
   };
   const sync = () => {
     clearInterval(timer);
-    timer = frames && wanted ? setInterval(tick, FRAME_MS) : 0;
+    timer = frames && wanted && onScreen ? setInterval(tick, FRAME_MS) : 0;
   };
+  // Pause off-screen: the hero bird's 24fps glyph-grid rebuild must not
+  // compete with the lesson demo's typing timers further down the page.
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      onScreen = entries.some((e) => e.isIntersecting);
+      sync();
+    }, { rootMargin: '200px' });
+    observer.observe(el);
+  }
   return {
     set(on) { wanted = on; sync(); },
     load() {
@@ -140,7 +150,9 @@ function initBirds() {
 
   if (!reduceMotion && birdWrap) {
     let mx = 0, my = 0, sx = 0, sy = 0;
+    let running = false;
     const apply = () => {
+      if (!running) return;
       sx += (mx - sx) * 0.08;
       sy += (my - sy) * 0.08;
       birdWrap.style.transform = `translate3d(${sx.toFixed(2)}px, ${sy.toFixed(2)}px, 0)`;
@@ -152,7 +164,15 @@ function initBirds() {
       mx = ((e.clientX - cx) / cx) * 10;
       my = ((e.clientY - cy) / cy) * 6;
     }, { passive: true });
-    requestAnimationFrame(apply);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        running = entries.some((e) => e.isIntersecting);
+        if (running) requestAnimationFrame(apply);
+      }, { rootMargin: '200px' }).observe(birdWrap);
+    } else {
+      running = true;
+      requestAnimationFrame(apply);
+    }
   }
 }
 
@@ -189,8 +209,9 @@ function renderCodeTyping(el, lines, typingLine, typingText) {
 
 // Three-stage IDE demonstration: Learn -> Build & Debug -> Final Project.
 // Plays once on scroll into view; clicking a stage tab or a suggested prompt
-// stops the script and shows that stage's populated static state. Nothing in
-// the demo is interactive beyond those read-only clicks.
+// stops the script and shows that stage's populated static state. The final
+// project stage is fully simulated: the learner's problem is typed into the
+// chat by the demo itself and the scope drafts from it — no AI exchange.
 function initLessonDemo() {
   const section = document.getElementById('lessons');
   const tabs = [...document.querySelectorAll('[data-stage-tab]')];
@@ -207,6 +228,26 @@ function initLessonDemo() {
   const statusEl = document.getElementById('demo-status');
   const ideBody = document.querySelector('.ide-body');
   const mobileTabs = [...document.querySelectorAll('[data-mobile-tab]')];
+  const inputEl = document.getElementById('demo-input');
+  const sendEl = document.getElementById('demo-send');
+  const setChatInputEnabled = (enabled) => {
+    if (inputEl) inputEl.disabled = !enabled;
+    if (sendEl) sendEl.disabled = !enabled;
+  };
+  // Simulated typing into the chat input: the demo types the learner's problem
+  // itself, character by character, then hands it to the stage flow.
+  const typeIntoInput = (text, pace, done) => {
+    if (!inputEl) return done?.();
+    inputEl.value = '';
+    let i = 0;
+    const step = () => {
+      i += 1;
+      inputEl.value = text.slice(0, i);
+      if (i < text.length) later(pace, step);
+      else done?.();
+    };
+    step();
+  };
 
   let timers = [];
   let stopped = false;
@@ -381,8 +422,12 @@ function initLessonDemo() {
   };
 
   // --- stages ---
+  // Global demo pace: 1 = original pacing, 0 = instant (static tab view).
+  // 0.3 keeps the typing effect visible but moves the three stages along fast.
+  const PACE = 0.3;
+
   const playLearn = (staticMode) => {
-    const T = staticMode ? 0 : 1;
+    const T = staticMode ? 0 : PACE;
     const { learn } = lessonDemo;
     const from = learn.code.starter.split('\n')[9];
     const to = learn.code.solved.split('\n')[9];
@@ -391,6 +436,7 @@ function initLessonDemo() {
     setFileTabs([learn.file], learn.file);
     setAttach(null);
     hideDiffActions();
+    setChatInputEnabled(false);
     renderCode(codeEl, learn.code.starter);
     clearOutput();
     setStatus('STATUS: expenses.js selected · check not run');
@@ -424,19 +470,20 @@ function initLessonDemo() {
         railDone('learn', 3);
         railDone('learn', 4);
         setStatus(learn.status);
-        if (T) later(1400, playDebug);
+        if (T) later(1400 * T, playDebug);
       }, T);
     });
   };
 
   const playDebug = (staticMode) => {
-    const T = staticMode ? 0 : 1;
+    const T = staticMode ? 0 : PACE;
     const { debug } = lessonDemo;
     clearTimers();
     setStage('debug');
     setFileTabs(debug.files, debug.file);
     setAttach(null);
     hideDiffActions();
+    setChatInputEnabled(false);
     renderCode(codeEl, debug.code.starter);
     outputTest(`${debug.tests.fail}\n${debug.tests.failDetail}`, 'fail');
     setStatus('STATUS: reminders.js · 1 failed · 4 passed');
@@ -461,56 +508,66 @@ function initLessonDemo() {
           outputTest(debug.tests.pass, 'pass');
           railDone('debug', 4);
           setStatus(debug.status);
-          if (T) later(1400, playProject);
+          if (T) later(1400 * T, playProject);
         });
       }, T);
     });
   };
 
   const playProject = (staticMode) => {
-    const T = staticMode ? 0 : 1;
+    const T = staticMode ? 0 : PACE;
     const { project } = lessonDemo;
-    const readmeLines = project.readme.split('\n');
     clearTimers();
     setStage('project');
     setFileTabs(['README.md', project.file], 'README.md');
     setAttach(null);
     hideDiffActions();
-    renderCode(codeEl, project.readme);
+    renderCode(codeEl, '# What bothers you?\n\nType it in the chat — the project starts here.');
     outputPreview(project.previewBefore);
-    setStatus('STATUS: README.md · 0/4 requirements complete');
+    setStatus('STATUS: README.md · waiting');
     chatLog.innerHTML = '';
     promptsEl.innerHTML = '';
+    setChatInputEnabled(true);
 
-    chatTyping(500 * T, 'chat-msg--ai', `<p>${project.brief.map(escapeHtml).join('</p><p>')}</p>`);
-    later(1800 * T, () => chatMsg('chat-msg--user', escapeHtml(project.qa[0].q)));
-    later(2900 * T, () => chatTyping(700 * T, 'chat-msg--ai', `<p>${project.plan.map(escapeHtml).join('</p><p>')}</p>`));
-    later(4000 * T, () => {
-      setAttach(project.qa[1].attach);
-      chatMsg('chat-msg--user', escapeHtml(project.qa[1].q));
-    });
-    later(4800 * T, () => {
-      patchCard(project.patch.file, project.patch.summary);
-      setFileTabs(['README.md', project.file], project.file);
-      renderRows(renderPatch(codeFromLines(project.readme), { add: project.patchAdd }));
-      showDiffActions();
-    });
-    later(5900 * T, () => {
-      hideDiffActions();
-      // Apply: the data model becomes part of the file.
-      const appRows = [...codeFromLines(project.readme), ...project.patchAdd.map((text) => ({ text }))];
-      renderRows(appRows);
-      // The learner edits one line manually.
-      const manualIndex = readmeLines.length + project.manualLine;
-      const appLines = appRows.map((r) => r.text);
-      typeLine(codeEl, appLines, manualIndex, project.manualText, () => {
-        appLines[manualIndex - 1] = project.manualText;
-        renderCode(codeEl, appLines.join('\n'), [manualIndex]);
-        later(500 * T, () => {
-          outputPreview(project.previewAfter);
-          setStatus(project.status);
-        });
-      }, T);
+    // Simulated: the learner types the problem that bothers them; the AI
+    // answers with a plan, then the scope drafts itself from their words.
+    const problem = project.problem;
+    const buildFromProblem = () => {
+      setChatInputEnabled(false);
+      const title = problem.trim().slice(0, 48);
+      const readme = `# ${title}\n\n${project.plan.join('\n')}`;
+      renderCode(codeEl, readme);
+      setStatus('STATUS: README.md · scope drafted');
+      later(900 * T, () => {
+        setFileTabs(['README.md', project.file], project.file);
+        renderRows(renderPatch(codeFromLines(readme), { add: project.patchAdd }));
+        showDiffActions();
+      });
+      later(2000 * T, () => {
+        hideDiffActions();
+        // Apply: the data model becomes part of the file.
+        const appRows = [...codeFromLines(readme), ...project.patchAdd.map((text) => ({ text }))];
+        renderRows(appRows);
+        // The learner edits one line manually.
+        const manualIndex = codeFromLines(readme).length + project.manualLine;
+        const appLines = appRows.map((r) => r.text);
+        typeLine(codeEl, appLines, manualIndex, project.manualText, () => {
+          appLines[manualIndex - 1] = project.manualText;
+          renderCode(codeEl, appLines.join('\n'), [manualIndex]);
+          later(500 * T, () => {
+            outputPreview(project.previewAfter);
+            setStatus(project.status);
+          });
+        }, T);
+      });
+    };
+
+    later(500 * T, () => {
+      typeIntoInput(problem, 18 * T, () => {
+        chatMsg('chat-msg--user', escapeHtml(problem));
+        if (inputEl) inputEl.value = '';
+        chatTyping(350 * T, 'chat-msg--ai', escapeHtml(project.reply), buildFromProblem);
+      });
     });
   };
 
@@ -528,9 +585,15 @@ function initLessonDemo() {
   }));
 
   // Run once when the section becomes visible; leave the final state in place.
+  // `played` makes it a single run: scrolling away and back never restarts
+  // the demonstration from the beginning.
+  let played = false;
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting) && !stopped) playLearn(false);
+      if (entries.some((e) => e.isIntersecting) && !stopped && !played) {
+        played = true;
+        playLearn(false);
+      }
     }, { rootMargin: '80px' });
     observer.observe(section);
   } else {
@@ -1031,24 +1094,26 @@ function initReveal() {
     return;
   }
 
-  // Generous margins: content fades in while it is still below the fold, so
-  // it is already fully visible by the time it scrolls on screen. Nothing
-  // fades out once in.
+  // Wide buffer both ways: items fade in well below the fold and stay
+  // visible until they are well above it, so a small scroll never
+  // replays the animation. Reveal is one-way: `is-in` is only ever added,
+  // never removed, so scrolling back up can not re-hide or replay anything.
   const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
-      entry.target.classList.toggle('is-in', entry.isIntersecting);
+      if (entry.isIntersecting) entry.target.classList.add('is-in');
     }
-  }, { rootMargin: '0px 0px 15% 0px', threshold: 0.05 });
+  }, { rootMargin: '30% 0px 30% 0px', threshold: 0.05 });
 
   nodes.forEach((el) => observer.observe(el));
 }
 
-// Teaching-session carousel. Desktop gets a flat coverflow: the active
-// slide sits front and centre, its neighbours peek out at the edges, faded
-// into the page by a gallery mask, and clicking a preview jumps to it.
-// Below 901px — and for no-JS readers — the same track is a plain scroll-snap
-// swipe. Arrows and dots drive either mode, and a timer advances it while it
-// is on screen. Hover, focus, touch, and reduced motion all stop the timer.
+// Teaching-session carousel. Desktop gets a 3D coverflow: the active slide
+// sits front and centre, its neighbours peek out at the edges tilted and
+// faded into the page by a gallery mask, and clicking a preview jumps to it.
+// Below 901px — and for no-JS readers — the same track is a scroll-snap
+// swipe that loops forever. Arrows and dots drive either mode, and a timer
+// advances it while it is on screen. Hover, focus, and touch pause the
+// timer; reduced motion snaps the transitions but keeps it running.
 function initTeachingCarousel() {
   const gallery = document.querySelector('[data-carousel]');
   if (!gallery) return;
@@ -1059,6 +1124,9 @@ function initTeachingCarousel() {
   if (!track || !prev || !next || !dotsEl) return;
   const slides = [...track.children];
   if (slides.length < 2) return;
+
+  // Every card is a uniform 4:3 frame set in styles.css; the photos are
+  // cover-cropped into it, so no per-slide ratio work is needed here.
 
   // The coverflow is desktop-only; its geometry mirrors styles.css.
   const coverflow = window.matchMedia('(min-width: 901px)');
@@ -1089,12 +1157,14 @@ function initTeachingCarousel() {
     slides.forEach((slide, i) => {
       const o = offsetOf(i);
       const d = Math.abs(o);
-      slide.style.transform = `translateX(${o * TRANSLATE_PCT}%) scale(${Math.max(0.15, 1 - d * SCALE_STEP)})`;
+      // -50% recentres the slide (CSS anchors it at left: 50%).
+      slide.style.transform = `translateX(calc(-50% + ${o * TRANSLATE_PCT}%)) rotateY(${reduceMotion ? 0 : -o * 10}deg) scale(${Math.max(0.15, 1 - d * SCALE_STEP)})`;
       slide.style.opacity = String(Math.pow(FADE_STEP, d));
       slide.style.zIndex = String(6 - d);
       slide.style.pointerEvents = d <= 1 ? 'auto' : 'none';
       slide.dataset.offset = String(o);
       slide.setAttribute('aria-hidden', o === 0 ? 'false' : 'true');
+      slide.classList.toggle('is-active', o === 0);
       slide.classList.toggle('is-clickable', d === 1);
     });
   };
@@ -1108,22 +1178,88 @@ function initTeachingCarousel() {
     });
   };
 
+  const slideWidth = () => slides[0]?.getBoundingClientRect().width || track.clientWidth;
+
+  // Mobile loop: copies of the slides sit before (reversed, so going back
+  // flows 8, 7, … 0) and behind the real set, so the swipe never dead-ends in
+  // either direction. Crossing a boundary snaps scrollLeft by one loop,
+  // instantly and invisibly.
+  const clones = [];
+  const addClones = () => {
+    removeClones();
+    const copies = slides.map((slide) => {
+      const copy = slide.cloneNode(true);
+      copy.setAttribute('aria-hidden', 'true');
+      return copy;
+    });
+    const prepended = [...copies].reverse();
+    for (const copy of prepended) track.prepend(copy);
+    for (const copy of copies) track.append(copy);
+    clones.push(...prepended, ...copies);
+  };
+  const removeClones = () => {
+    clones.splice(0).forEach((copy) => copy.remove());
+  };
+
+  // Centered-snap scroll math: slide k sits at k * w + inset, where the real
+  // set starts one loop in.
+  const scrollFor = (i) => {
+    const w = slideWidth();
+    return slides.length * w + i * w + Math.max(0, (track.clientWidth - w) / 2);
+  };
+
+  // Mobile 3D pose: every slide tilts and recedes by its distance from the
+  // centre of the stage, so the swipe reads as a real coverflow. Runs over
+  // the whole track (clones included) so the looped copies stay posed too.
+  const applyPose = () => {
+    if (coverflow.matches) return;
+    const stage = track.getBoundingClientRect();
+    const center = stage.left + stage.width / 2;
+    for (const slide of track.children) {
+      const rect = slide.getBoundingClientRect();
+      const o = (rect.left + rect.width / 2 - center) / rect.width;
+      const d = Math.abs(o);
+      const rot = reduceMotion ? 0 : Math.round(o * -28);
+      slide.style.transform = `perspective(900px) translateX(0) rotateY(${rot}deg) scale(${Math.max(0.5, 1 - d * 0.18)})`;
+      slide.style.opacity = String(Math.max(0, 1 - d * 0.85));
+      slide.style.zIndex = String(10 - Math.min(9, Math.round(d * 10)));
+      slide.style.pointerEvents = d > 1 ? 'none' : 'auto';
+      slide.classList.toggle('is-active', d < 0.5);
+    }
+  };
+
+  let poseRaf = 0;
+  const schedulePose = () => {
+    cancelAnimationFrame(poseRaf);
+    poseRaf = requestAnimationFrame(applyPose);
+  };
+
   const goTo = (i) => {
     index = (i + slides.length) % slides.length;
     if (coverflow.matches) {
       render();
     } else {
-      track.scrollTo({ left: index * track.clientWidth, behavior: reduceMotion ? 'auto' : 'smooth' });
+      track.scrollTo({ left: scrollFor(index), behavior: reduceMotion ? 'auto' : 'smooth' });
     }
     updateDots();
   };
 
   track.addEventListener('scroll', () => {
-    const i = Math.round(track.scrollLeft / track.clientWidth);
+    const w = slideWidth();
+    if (!w) return;
+    const inset = Math.max(0, (track.clientWidth - w) / 2);
+    const span = slides.length;
+    // DOM index of the centered slide; the pre-clones are reversed, so the
+    // jump must keep this DOM index aligned with the real set.
+    let dom = Math.round((track.scrollLeft - inset) / w);
+    while (dom >= 2 * span) { track.scrollLeft -= span * w; dom -= span; }
+    while (dom < span) { track.scrollLeft += span * w; dom += span; }
+    const i = dom - span;
     if (i !== index) {
       index = i;
       updateDots();
     }
+    schedulePose();
   }, { passive: true });
 
   slides.forEach((slide) => {
@@ -1137,33 +1273,58 @@ function initTeachingCarousel() {
   updateDots();
 
   if (coverflow.matches) render();
+  else {
+    addClones();
+    track.scrollTo({ left: scrollFor(0), behavior: 'auto' });
+    applyPose();
+  }
+  window.addEventListener('resize', schedulePose, { passive: true });
   coverflow.addEventListener('change', () => {
     if (coverflow.matches) {
       render();
+      removeClones();
     } else {
       clearCoverflow();
-      track.scrollTo({ left: index * track.clientWidth, behavior: 'auto' });
+      addClones();
+      track.scrollTo({ left: scrollFor(index), behavior: 'auto' });
+      applyPose();
     }
   });
 
-  if (reduceMotion) return;
-
+  // Autoplay advances while the gallery is on screen. Hover, focus, and touch
+  // pause it, but a parked cursor does not freeze it forever: after a quiet
+  // moment the timer resumes. Reduced motion keeps the timer too (the
+  // stylesheet already snaps the transitions) per the site's "reduce, don't
+  // freeze" convention.
   const AUTOPLAY_MS = 5000;
+  const IDLE_RESUME_MS = 8000;
   let timer = 0;
+  let resumeTimer = 0;
   const play = () => {
     clearInterval(timer);
+    clearTimeout(resumeTimer);
     timer = setInterval(() => goTo(index + 1), AUTOPLAY_MS);
   };
   const pause = () => clearInterval(timer);
+  const pauseWithIdleResume = () => {
+    pause();
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(play, IDLE_RESUME_MS);
+  };
 
   let touchX = 0;
-  gallery.addEventListener('mouseenter', pause);
+  gallery.addEventListener('mouseenter', pauseWithIdleResume);
   gallery.addEventListener('mouseleave', play);
-  gallery.addEventListener('focusin', pause);
-  gallery.addEventListener('focusout', play);
+  gallery.addEventListener('focusin', pauseWithIdleResume);
+  gallery.addEventListener('focusout', (e) => {
+    // Resume only when focus really left the gallery — moving between the
+    // arrows (or clicking one) must not strand the carousel paused forever.
+    if (!gallery.contains(e.relatedTarget)) play();
+  });
   gallery.addEventListener('touchstart', (e) => {
     touchX = e.touches[0].clientX;
     pause();
+    clearTimeout(resumeTimer);
   }, { passive: true });
   gallery.addEventListener('touchend', (e) => {
     play();

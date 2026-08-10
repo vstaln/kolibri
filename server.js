@@ -236,13 +236,14 @@ function selftest() {
   assert.ok(!indexHtml.includes('data-field="a"'), 'old SVG moire fields removed');
   assert.ok(!indexHtml.includes('moire-index'), 'moire instrument caption removed');
   assert.ok(!indexHtml.includes('data-situation'), 'interactive concept map removed');
-  assert.ok(indexHtml.includes('The example is only the beginning.'), 'lesson section present');
+  assert.ok(indexHtml.includes('Lessons give you less help as you go.'), 'lesson section present');
   assert.ok(indexHtml.includes('class="lesson-intro"'), 'lesson copy above the demo present');
   assert.ok(indexHtml.includes('/assets/javascript.svg'), 'real JS logo in the workspace badge');
   assert.ok(indexHtml.includes('data-stage-tab="learn"'), 'IDE learn stage present');
   assert.ok(indexHtml.includes('data-stage-tab="debug"'), 'IDE debug stage present');
   assert.ok(indexHtml.includes('data-stage-tab="project"'), 'IDE project stage present');
   assert.ok(indexHtml.includes('id="demo-chat"'), 'Kolibri AI chat present');
+  assert.ok(indexHtml.includes('id="demo-input"'), 'final project takes a typed problem');
   assert.ok(indexHtml.includes('id="demo-status"'), 'IDE status bar present');
   assert.ok(indexHtml.includes('class="js-badge"'), 'workspace JS badge present');
   assert.ok(indexHtml.includes('data-mobile-tab'), 'mobile Code/Output/AI tabs present');
@@ -255,7 +256,11 @@ function selftest() {
   assert.ok(!indexHtml.includes('SHARED EXPENSE CHECKER'), 'project concept section removed');
   assert.ok(indexHtml.includes('What exists now'), 'current state section present');
   assert.ok(indexHtml.includes('data-carousel-track'), 'teaching carousel track present');
-  assert.strictEqual((indexHtml.match(/teaching-slide/g) || []).length, 9, 'nine teaching sessions in the carousel');
+  assert.strictEqual((indexHtml.match(/<li class="teaching-slide(?:\s|">)/g) || []).length, 9, 'nine teaching sessions in the carousel');
+  assert.ok(
+    /<li class="teaching-slide teaching-slide--people">\s*<img src="\/assets\/teaching-2026-06-06\.jpg"/.test(indexHtml),
+    'June 6 session uses the people crop'
+  );
   assert.ok(!indexHtml.includes('poster-figure'), 'poster figure replaced by the teaching carousel');
   for (const file of teachingAssets) {
     assert.ok(fs.existsSync(path.join(ROOT, 'assets', file)), `${file} exists`);
@@ -282,6 +287,10 @@ function selftest() {
   assert.strictEqual((indexHtml.match(/data-nav/g) || []).length, 0, 'section scroll-spy links removed from nav');
   assert.ok(indexHtml.includes('site-footer__overlay'), 'marketing footer overlay present');
   assert.ok(indexHtml.includes('site-footer__social-row'), 'footer social row present');
+  assert.ok(
+    /site-footer__column-link[^>]*>\s*Kolibri\s*</.test(indexHtml),
+    'kolibri links itself in the shared footer'
+  );
   assert.ok(indexHtml.includes('/logos/xwhite.svg'), 'footer social icons present');
   assert.ok(!indexHtml.includes('site-footer__language'), 'language toggle omitted on EN-only page');
   assert.ok(indexHtml.includes('/astronaut.jpg'), 'footer background image present');
@@ -352,7 +361,13 @@ function selftest() {
   assert.ok(appJs.includes("const coverflow = window.matchMedia('(min-width: 901px)')"), 'coverflow is gated to desktop');
   assert.ok(appJs.includes('scale('), 'coverflow slides shrink as they recede');
   assert.ok(styles.includes('mask-image: linear-gradient(90deg'), 'coverflow previews fade into the page edges');
-  assert.ok(styles.includes('object-fit: contain'), 'teaching photos are never cropped by the frame');
+  assert.ok(/\.teaching-slide\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*3/.test(styles), 'every teaching slide is a uniform 4:3 card');
+  assert.ok(styles.includes('.teaching-slide--people img { object-position: center 30%; }'), 'June 6 crop keeps the people visible');
+  assert.ok(/\.teaching-slide\s*\{[^}]*overflow:\s*hidden/.test(styles), 'teaching captions stay clipped to their card');
+  assert.ok(!appJs.includes('slide.style.aspectRatio'), 'per-slide aspect ratios removed; the 4:3 crop is a CSS constant');
+  assert.ok(styles.includes('scroll-snap-align: center'), 'mobile snap centres the active slide for the 3D pose');
+  assert.ok(appJs.includes('perspective(900px)'), 'mobile slides get per-image 3D perspective');
+  assert.ok(appJs.includes('track.prepend(copy)'), 'the mobile loop wraps backwards through pre-cloned slides');
   assert.ok(
     /\.ide-body\s*\{[\s\S]*?height:\s*34rem;[\s\S]*?clamp\(34rem,\s*calc\(100vh - 17rem\),\s*52rem\)/.test(styles),
     'ide frame height is locked with a rem fallback so the demo cannot expand it'
@@ -369,6 +384,7 @@ function selftest() {
   assert.ok(!styles.includes('waitlist-wave-scroll'), 'wave scroll wrapper removed');
   assert.ok(/#lessons\s*\{[^}]*overflow:\s*hidden/.test(styles), 'lesson section clips its painting');
   assert.ok(appJs.includes('initLessonDemo'), 'lesson demo wiring present');
+  assert.ok(appJs.includes('typeIntoInput'), 'final project typing is simulated, not live');
   assert.ok(appJs.includes('learn.code.solved'), 'autoplay swaps in the solved rule');
   assert.ok(appJs.includes('playDebug'), 'debug stage fails then fixes itself');
   const pageContent = fs.readFileSync(path.join(ROOT, 'page-content.js'), 'utf8');

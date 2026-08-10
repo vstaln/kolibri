@@ -494,13 +494,30 @@ a { color: inherit; }
 
 #lessons > h2 { margin-bottom: 1rem; }
 
-/* Section copy above the demo frame, aligned with the frame's width. */
+/* Section copy above the demo frame, aligned with the frame's width. The
+   width is pinned (not just max-width): auto side margins would otherwise
+   defeat flex stretch and size the block to its content. The heading sits
+   centered above, so the copy centers to match. */
 .lesson-intro {
+  width: 100%;
   max-width: var(--max);
   margin: 0 auto 1.25rem;
+  text-align: center;
 }
 
+/* Centered paragraphs: without this, .section p anchors each block to the
+   left edge of the pinned intro. */
+.lesson-intro p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Same pin for the frame itself: with `margin: auto` in a flex column the
+   .ide would size itself to fit its content (the longest code line, the
+   tallest chat state), so the frame would grow and shrink as the demo
+   animates. A definite width keeps it one constant size. */
 .ide {
+  width: 100%;
   max-width: var(--max);
   margin: 1.5rem auto 0;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -606,7 +623,9 @@ a { color: inherit; }
   overflow: auto;
 }
 
-.rail-heading {
+/* The `p` prefixes out-rank the section-wide body copy rule (.section p) so
+   the IDE keeps its own sizes and colors instead of inheriting page copy. */
+p.rail-heading {
   margin: 0 0 0.45rem;
   font-family: var(--font-mono);
   font-size: 0.62rem;
@@ -618,7 +637,7 @@ a { color: inherit; }
 .rail-sub + .rail-heading,
 .rail-list + .rail-heading { margin-top: 1.1rem; }
 
-.rail-sub {
+p.rail-sub {
   margin: 1.1rem 0 0.35rem;
   font-family: var(--font-mono);
   font-size: 0.62rem;
@@ -688,13 +707,13 @@ a { color: inherit; }
 .file-folder { color: #6f6a63; }
 .file-file.is-open { color: #f4f1ea; }
 
-.rail-progress {
+p.rail-progress {
   margin: 1rem 0 0;
   font-family: var(--font-mono);
   font-size: 0.68rem;
   color: #9f9a91;
 }
-.rail-progress strong { color: #d0bc7b; }
+p.rail-progress strong { color: #d0bc7b; }
 
 .ide-workspace {
   display: flex;
@@ -856,7 +875,15 @@ a { color: inherit; }
   animation: demo-in 0.35s ease both;
 }
 
-.chat-msg p { margin: 0 0 0.5rem; }
+/* The chat bubble carries its own size, color and measure; the section-wide
+   body copy rule (.section p) must not override them. */
+.chat-msg p {
+  margin: 0 0 0.5rem;
+  font-size: 1em;
+  color: inherit;
+  line-height: inherit;
+  max-width: none;
+}
 .chat-msg p:last-child { margin-bottom: 0; }
 
 .chat-msg--user {
@@ -865,7 +892,7 @@ a { color: inherit; }
   color: #f4f1ea;
 }
 
-.chat-task {
+p.chat-task {
   margin-top: 0.6rem;
   padding-top: 0.6rem;
   border-top: 1px dashed rgba(201, 169, 98, 0.35);
@@ -937,7 +964,8 @@ a { color: inherit; }
 .chat-chip:hover { color: #f4f1ea; border-color: rgba(201, 169, 98, 0.6); }
 .chat-chip:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 2px; }
 
-/* Input row: decorative in the demo, nothing types here. */
+/* Input row: inert until the final-project stage asks for a problem; the
+   lesson demo's other stages leave it disabled. */
 .chat-input-row {
   border-top: 1px solid var(--line);
   padding: 0.7rem 0.85rem;
@@ -965,12 +993,27 @@ a { color: inherit; }
   padding: 0.55rem 0.7rem;
 }
 
+.chat-input:disabled { cursor: default; opacity: 0.5; }
+
+.chat-input:focus {
+  border-color: rgba(201, 169, 98, 0.6);
+  color: var(--text-primary);
+  outline: none;
+}
+
 .chat-send {
+  border: none;
+  background: none;
+  padding: 0;
   align-self: flex-end;
   color: #d0bc7b;
   font-family: var(--font-mono);
   font-size: 0.72rem;
+  cursor: pointer;
 }
+
+.chat-send:disabled { cursor: default; opacity: 0.5; }
+.chat-send:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 2px; }
 
 /* Status bar along the bottom of the frame. */
 .ide-statusbar {
@@ -997,8 +1040,8 @@ a { color: inherit; }
 
 .state-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(20rem, 1.05fr);
-  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: minmax(0, 0.85fr) minmax(22rem, 1.15fr);
+  gap: clamp(2.5rem, 6vw, 5rem);
   align-items: start;
 }
 
@@ -1011,15 +1054,12 @@ a { color: inherit; }
 
 /* Teaching-session carousel. Scroll-snap carries the swipe; the arrows and
    dots drive the same scroll. Autoplay lives in app.js and pauses on hover,
-   focus, touch, and reduced motion. */
+   focus, and touch; reduced motion snaps the transitions but keeps the timer. */
 .teaching-gallery { min-width: 0; }
 
 .teaching-stage {
   position: relative;
-  aspect-ratio: 4 / 3;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: #111;
 }
 
 .teaching-track {
@@ -1037,26 +1077,44 @@ a { color: inherit; }
 
 .teaching-slide {
   position: relative;
-  flex: 0 0 100%;
+  overflow: hidden;
+  flex: 0 0 78vw;
+  max-width: 420px;
+  /* Tall portrait shots stay readable: cap the slide height and let cover
+     crop the overflow rather than growing the carousel past a screen. */
+  max-height: min(72vh, 560px);
   min-width: 0;
-  scroll-snap-align: start;
+  /* Every card is one uniform 4:3 frame; the photo is cover-cropped into it,
+     so landscape and portrait shots all share the same shape. */
+  aspect-ratio: 4 / 3;
+  /* Center-snap so the active slide sits mid-stage and its neighbours peek
+     out on both sides, like the desktop coverflow. */
+  scroll-snap-align: center;
 }
 
 .teaching-slide img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  /* Anchor the crop to the photo's bottom: with a centered crop the caption
+     fade lands over a portrait photo's middle band instead of its true
+     bottom edge, which reads as a gradient floating mid-picture. */
+  object-position: center bottom;
   user-select: none;
 }
+
+.teaching-slide--people img { object-position: center 30%; }
 
 .teaching-caption {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
   margin: 0;
-  padding: 2.75rem 1rem 0.8rem;
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.88));
+  padding: 1.7rem 1rem 0.75rem;
+  /* Keep the caption readable without turning the lower half of the photo
+     into a detached black band. */
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 45%, rgba(0, 0, 0, 0.82) 82%, rgba(0, 0, 0, 0.96) 100%);
   font-family: var(--font-mono);
   font-size: 0.78rem;
   letter-spacing: 0.05em;
@@ -1108,6 +1166,15 @@ a { color: inherit; }
 
 .carousel-dot.is-active { background: var(--accent-gold); border-color: var(--accent-gold); }
 
+/* The slide that takes the focus pops once — a short brighten/settle so each
+   image animates as it becomes the active one. */
+@keyframes coverflow-active-pop {
+  from { filter: brightness(1.3) saturate(1.2); }
+  to { filter: brightness(1) saturate(1); }
+}
+
+html.js .teaching-slide.is-active { animation: coverflow-active-pop 0.55s ease-out; }
+
 /* Desktop coverflow: the active slide is front and centre, its neighbours
    peek out at the edges, and anything further out recedes to nearly
    invisible. app.js sets each slide's transform/opacity/z-index (and the
@@ -1119,6 +1186,9 @@ a { color: inherit; }
   html.js .teaching-stage {
     overflow: visible;
     perspective: 1100px;
+    /* Bigger stage so the "What exists now" section shows more of each
+       teaching session. */
+    height: clamp(300px, 52vh, 520px);
   }
 
   html.js .teaching-track {
@@ -1134,10 +1204,16 @@ a { color: inherit; }
 
   html.js .teaching-slide {
     position: absolute;
-    inset: 0;
-    margin: auto;
-    width: 62%;
+    /* Centred on the stage: left: 50% with the JS transform adding the
+       -50% recentre. Every card is one uniform 4:3 frame and the photo is
+       cover-cropped into it, so no letterboxing or squashing — the crop is
+       a CSS constant, not per-slide. */
+    top: 0;
+    bottom: 0;
+    left: 50%;
     height: 100%;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
     flex: none;
     transition: transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.65s ease;
     will-change: transform;
@@ -1164,34 +1240,34 @@ a { color: inherit; }
   --rows: 43;
   position: relative;
   box-sizing: border-box;
-  max-width: none;
+  max-width: var(--max);
   width: 100%;
-  margin: 0;
-  /* Room for the wave to breathe above and below the copy. */
-  padding: clamp(4rem, 9vh, 7rem) 0;
+  margin: 0 auto;
+  /* Copy left, the great wave art right — the wave column gets 1.2x the
+     copy's share so the art can render large. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding: clamp(4rem, 9vh, 7rem) var(--page-pad);
   display: grid;
   overflow: hidden;
   /* No divider between the bloom section and the wave. */
   border-top: none;
   /* The section must be tall enough to hold the whole art; the vertical fade
      hides any crop on small screens. */
-  min-height: calc(36.4vw + clamp(8rem, 18vh, 14rem));
+  min-height: calc(30vw + clamp(8rem, 18vh, 14rem));
 }
 
 @keyframes waitlist-fade {
-  from { opacity: 0.06; }
-  to { opacity: 0.12; }
+  from { opacity: 0.85; }
+  to { opacity: 1; }
 }
 
 .waitlist-main {
-  position: relative;
-  z-index: 1;
-  max-width: var(--max);
-  margin: auto;
-  padding: clamp(3rem, 8vh, 5.5rem) var(--page-pad);
+  padding: 0;
   display: grid;
-  justify-items: center;
-  text-align: center;
+  justify-items: start;
+  align-self: center;
+  text-align: left;
 }
 
 .waitlist-main h2 { max-width: none; }
@@ -1256,38 +1332,29 @@ a { color: inherit; }
 .form-status.ok { color: var(--accent-gold); }
 .form-status.err { color: #f87171; }
 
-/* The great wave: a full-bleed dark background behind the waitlist copy. The
-   art fills the section's width; the section grows to hold the art's height so
-   the whole wave (121x43) shows — never cropped, no scrollbars, no scaleX
-   squashing. */
+/* The great wave: a full-strength art column beside the waitlist copy. The
+   section grows to hold the art's height so the whole wave (121x43) shows —
+   never cropped, no scrollbars, no scaleX squashing. */
 .waitlist-wave {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  /* Query container for the wave's own width (used by the font-size calc). */
+  position: relative;
+  /* Query container for the wave's own size (used by the font-size calc). */
   container-type: size;
   min-width: 0;
   width: 100%;
-  /* Center the art both ways when the section is taller than the wave. */
+  /* Center the art both ways when the column is taller than the wave. */
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Fade the wave's edges top, bottom, left and right so it blends into the
-     section background instead of ending in a hard line. */
+  /* Fade the wave's top and bottom edges so it blends into the section
+     background instead of ending in a hard line; the sides stay crisp. */
   overflow: hidden;
   mask-image:
-    linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%),
-    linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+    linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
   -webkit-mask-image:
-    linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%),
-    linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
-  mask-composite: intersect;
-  -webkit-mask-composite: source-in;
-  /* Keep the wave deep in the background: dim, so the copy stays readable.
-     The flicker still shows because flipped bits flash bright against it. */
-  opacity: 0.12;
-  /* The wave itself breathes in and out; the copy above it stays readable
-     at full opacity. */
+    linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  /* The art is the column's subject, not a dim backdrop: it sits beside the
+     form at full strength and breathes softly. */
+  opacity: 0.9;
   animation: waitlist-fade 7s ease-in-out infinite alternate;
   will-change: opacity;
 }
@@ -1296,13 +1363,14 @@ a { color: inherit; }
   display: block;
   padding: 0;
   font-family: var(--font-mono);
-  /* Keep the art at a natural sub-width. The same formula applies before and
-     after JS replaces the braille with bits. */
+  /* Keep the art large: fill ~96% of the column width at the real ~0.6em mono
+     advance. The +0.08 counts the letter-spacing below; the 1.25 stretch also
+     keeps the no-JS braille (~0.74em advance) inside the column. */
   font-size: max(
     4px,
     min(
-      calc(100cqw / (var(--cols) * var(--ascii-advance)) * 0.70),
-      calc(100cqh / (var(--rows) * 1.3) * 0.70),
+      calc(100cqw / (var(--cols) * (var(--ascii-advance) + 0.08)) * 1.25),
+      calc(100cqh / (var(--rows) * 1.3)),
       16px
     )
   );
@@ -1312,8 +1380,9 @@ a { color: inherit; }
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
-  /* No extra tracking: the font-size formula controls the grid width. */
-  letter-spacing: 0;
+  /* Horizontal-only spread between bits: glyphs keep full height. Keep in
+     sync with the +0.08 in the font-size calc and the 480px override below. */
+  letter-spacing: 0.08em;
 }
 
 /* The wave animates as bits: filled cells render a 1/0 glyph, empty cells stay
@@ -1346,6 +1415,7 @@ a { color: inherit; }
   .chat-typing span { animation: none; opacity: 0.5; }
   /* Coverflow swaps instantly instead of flying. */
   html.js .teaching-slide { transition: none; }
+  html.js .teaching-slide.is-active { animation: none; }
 }
 
 @keyframes bit-pulse-quiet {
@@ -1611,10 +1681,19 @@ a { color: inherit; }
   .ide-rail {
     border-right: 0;
     border-bottom: 1px solid var(--line);
+    /* Locked like the workspace and chat below, so the stacked frame stays
+       one height no matter which stage's rail pane is showing. */
+    height: 28rem;
+    min-height: 0;
   }
   .ide-chat {
     border-left: 0;
     height: 26rem;
+  }
+  /* The longest demo status text wraps to two lines at phone width; reserving
+     the space keeps the frame one constant height through the whole demo. */
+  .ide-statusbar {
+    min-height: 3rem;
   }
   /* The stacked workspace gets a locked height too: the demo appends output
      rows and diff actions as it runs, and without a bound they would grow
@@ -1652,6 +1731,17 @@ a { color: inherit; }
     font-size: min(9px, calc(100cqw / (var(--cols) * var(--ascii-advance))));
   }
   .lesson-painting img { opacity: 0.2; }
+  /* Waitlist stacks: copy first, the wave below it — never above. */
+  .waitlist-section { grid-template-columns: minmax(0, 1fr); }
+  .waitlist-main { justify-items: center; text-align: center; order: 1; }
+  .waitlist-wave { order: 2; min-height: 10rem; }
+}
+
+/* Below 480px the wave column is ~320px wide and the 4px font-size floor
+   binds: the letter-spacing would push the art past the edge, so drop it.
+   Desktop/tablet values above stay untouched. */
+@media (max-width: 480px) {
+  .waitlist-wave-art { letter-spacing: 0; }
 }
 
 @media (max-width: 768px) {
