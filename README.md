@@ -1,36 +1,45 @@
 # Kolibri
 
-An interactive programming course about the ideas underneath programming — and what those ideas let you do.
+An interactive programming course about the ideas underneath programming — and what those ideas let you do. The foundations track teaches the way freeCodeCamp does: a short idea, a tiny challenge, a deterministic test, and clear feedback — then the next challenge unlocks.
 
 ## What it is
 
-Kolibri's tagline is **"Learn programming by solving a problem you already have."** Instead of syntax drills or video lectures, learners start from something small that already runs — a reminder that fires too late, a form that accepts the wrong thing, a tool that almost solves a real problem — and change it. The course treats AI as a normal part of modern programming: the assistant can explain a line, suggest an approach, or generate a draft, but every change appears in the editor where the learner can inspect, edit, and run it. The point is not to remember the example but to understand a concept well enough to use it somewhere the course didn't choose.
+Kolibri's tagline is **"Learn programming by solving a problem you already have."** The foundations loop comes first: one short concept, one small starter program, and one exact behavioral check per challenge. You edit the code, run the tests, read the first failure or the pass message, fix or reset, and the next challenge unlocks. No account, no model call, no hidden grading rule, and no autoplay timer decides whether you passed.
 
-**How Kolibri teaches**
+The personal-project track comes later, after the foundations loop is proven. There, learners build a tool for a problem they actually have, with AI as a pair-programmer and the learner as the author — every AI-made change ends up in a review log. That interview-first workflow is deliberately not part of onboarding.
 
-- Lessons start with a short explanation beside a runnable program. No videos.
-- Learners change working systems, trace mistakes, and keep or reject what AI produces.
-- Later lessons give less help: add a feature, fix a broken result, find the cause.
-- The course ends in projects with a clear scope but no finished recipe. The learner decides how to build it, uses AI when it helps, and stays responsible for the code.
-- The same idea returns later under another name, in another problem — Kolibri tests recognition and judgment, not syntax memory.
+**The foundations loop**
+
+1. Read a short explanation.
+2. Edit a tiny starter program.
+3. Run deterministic behavioral tests.
+4. See the first concrete failure or the pass message.
+5. Fix or reset.
+6. Unlock the next challenge.
 
 ## Current state
 
 - Public site: https://kolibrai.com
 - Legacy URL: https://kolibri.alignment.id redirects to the public site.
-- Working: curriculum direction, a three-stage lesson interface demo, and several experiments.
-- Not built yet: the actual course content.
+- Working: the JavaScript Foundations preview — 3 challenges (Print a greeting, Update a count, Render a list) with an isolated sandboxed runner, draft persistence, sequential unlock, and accessible status/focus behavior.
+- The three-stage lesson interface remains a separate read-only marketing demo.
+- The interview-first course outline is archived under `COURSE.md` and `PLAN.md` as historical material for the later project track.
 - The repo lives at https://github.com/vstaln/kolibri (was previously bundled inside the grayweb portfolio repo; that copy has been removed).
 
-## Direction being explored
+## Course contract
 
-Hands-on lessons may run in the learner's own editor rather than a browser sandbox — e.g. Zed's agent panel with the learner's own API key or a fully local model. The site stays the content layer (lessons, exercises, verification checklists) and the learner's machine is where the agent works on real code, with every change reviewable as a real diff.
+The canonical spec is `tasks/course-spec.md`: authored challenge descriptors, typed behavioral tests shared by the browser runner and the Node validator, monotonic mastery, and a strict zero-dependency verification gate. `course-validate.mjs` rejects duplicate IDs, broken prerequisites, passing starters, missing feedback, and reference solutions that fail.
 
 ## Repo layout
 
 - `index.html`, `styles.css`, `app.js` — the course site and lesson-demo interface
 - `page-content.js` — lesson demo copy
 - `build-page.js` — page build tooling
-- `demo-smoke.mjs` — smoke test for the demo
+- `course-content.mjs` — authored course hierarchy and challenge descriptors
+- `course-state.mjs` — progress normalization and state machine
+- `course-app.mjs` — course UI, sandboxed runner, persistence, and navigation
+- `course-validate.mjs` — curriculum and fixture gate
+- `course/` — author-only reference and wrong-answer fixtures
+- `demo-smoke.mjs` — zero-dependency smoke for the marketing demo and the course flow
 - `server.js` — local dev server
 - `deploy/`, `scripts/` — deployment and tooling
