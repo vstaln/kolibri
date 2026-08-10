@@ -20,6 +20,10 @@ const cssVersion = hash('styles.css');
 // of this hash: new frames must produce a new URL for the script and the data.
 const jsVersion = hash(
   'app.js',
+  'course-app.mjs',
+  'course-content.mjs',
+  'course-evaluator.mjs',
+  'course-state.mjs',
   'page-content.js',
   'assets/hummingbird-feeding_data.js',
   'assets/hummingbird-hover_data.js'
@@ -276,12 +280,13 @@ const html = `<!doctype html>
         <h2 id="course-title">Learn one idea. Use it. See what happens.</h2>
         <p>Read a short explanation, change a few lines, run the checks, and use the feedback to fix your code. Finish one small challenge before the next one opens.</p>
       </div>
-      <div class="course-layout">
+  <div class="course-layout">
         <nav class="course-map-panel" aria-label="Course map">
           <p class="course-panel-label">Course map</p>
           <ol id="course-map" data-course-map></ol>
         </nav>
         <div class="course-workspace">
+          <p class="course-storage-note" id="course-storage-note" role="status" hidden></p>
           <p class="course-breadcrumb" id="course-breadcrumb"></p>
           <h3 id="course-challenge-title">Loading challenge…</h3>
           <p class="course-concept" id="course-concept"></p>
@@ -410,5 +415,19 @@ ${footerSocialLinks}
 </body>
 </html>`;
 
-fs.writeFileSync(path.join(ROOT, 'index.html'), html, 'utf8');
-console.log('built index.html');
+const checking = process.argv.includes('--check');
+const outputPath = checking
+  ? path.join(require('os').tmpdir(), `kolibri-index-${process.pid}.html`)
+  : path.join(ROOT, 'index.html');
+fs.writeFileSync(outputPath, html, 'utf8');
+if (checking) {
+  const committed = fs.readFileSync(path.join(ROOT, 'index.html'));
+  if (!committed.equals(Buffer.from(html))) {
+    console.error('index.html is out of date; run node build-page.js');
+    process.exitCode = 1;
+  } else {
+    console.log('index.html is current');
+  }
+} else {
+  console.log('built index.html');
+}

@@ -1,4 +1,5 @@
 import { lessonDemo } from './page-content.js';
+import { initCourse } from './course-app.mjs';
 
 // This module is served as /app.js?v=<hash of its sources, the datasets included>.
 // The frame data are plain /assets URLs that Cloudflare and the browser are both
@@ -1398,3 +1399,4 @@ initBinaryWave();
 initTeachingCarousel();
 initNav();
 initWaitlist();
+initCourse();

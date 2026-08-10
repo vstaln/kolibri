@@ -16,6 +16,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT || 3001);
@@ -25,6 +26,7 @@ const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || '';
 const CONTENT_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
@@ -439,6 +441,38 @@ function selftest() {
   assert.ok(!fs.existsSync(path.join(ROOT, 'scene.js')), 'scene.js file removed');
   assert.ok(!fs.existsSync(path.join(ROOT, 'assets', 'vendor', 'three.module.min.js')), 'three.js no longer vendored');
   assert.ok(fs.existsSync(path.join(ROOT, 'assets', 'CREDITS.md')), 'asset credits recorded');
+
+  // Course gate: generated page is current, course modules are wired, and the
+  // server can serve the ES modules the page imports.
+  execFileSync(process.execPath, [path.join(ROOT, 'build-page.js'), '--check'], { cwd: ROOT, stdio: 'pipe' });
+  for (const file of [
+    'course-app.mjs',
+    'course-content.mjs',
+    'course-evaluator.mjs',
+    'course-state.mjs',
+    'course-validate.mjs',
+    'course-markup-smoke.mjs',
+    'course-runner-smoke.mjs',
+    'course-state-smoke.mjs',
+  ]) {
+    assert.ok(fs.existsSync(path.join(ROOT, file)), `${file} exists`);
+  }
+  for (const marker of [
+    'data-course-shell',
+    'id="course-map"',
+    '<label for="course-editor">',
+    'id="course-editor"',
+    'id="course-run"',
+    'id="course-reset"',
+    'id="course-next"',
+    'id="course-feedback" role="status"',
+    'id="course-hints"',
+    'id="course-completion"',
+  ]) {
+    assert.ok(indexHtml.includes(marker), `course markup missing: ${marker}`);
+  }
+  assert.strictEqual(CONTENT_TYPES['.mjs'], 'text/javascript; charset=utf-8', 'server serves .mjs modules');
+  assert.ok(appJs.includes("from './course-app.mjs'"), 'app.js wires the course runner');
 
   const poster = path.join(ROOT, 'assets', 'vibe-coding-dari-nol-poster.png');
   assert.ok(fs.existsSync(poster), 'poster file exists');
