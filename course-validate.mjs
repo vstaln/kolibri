@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { course } from './course-content.mjs';
 import { fixtures } from './course/fixtures/js-foundations.mjs';
 import { evaluateTests } from './course-evaluator.mjs';
 
+const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const errors = [];
 const fail = (message) => errors.push(message);
 const requireField = (value, label) => {
@@ -141,6 +145,7 @@ function checkFixtures() {
 
 checkShape();
 checkFixtures();
+execFileSync(process.execPath, [path.join(repoRoot, 'build-page.js'), '--check'], { cwd: repoRoot, stdio: 'pipe' });
 
 if (errors.length) {
   for (const error of errors) console.error('course validation: ' + error);
