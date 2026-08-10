@@ -1,0 +1,113 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kolibri-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run checks
+        run: |
+          node --check app.js
+          node --check build-page.js
+          node --check server.js
+          node server.js --selftest
+          node demo-smoke.mjs
+
+  deploy:
+    name: Deploy production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: kolibri-production
+      cancel-in-progress: false
+    env:
+      BASTION_HOST: ${{ vars.KOLIBRI_BASTION_HOST }}
+      ORIGIN_HOST: ${{ vars.KOLIBRI_ORIGIN_HOST }}
+      DEPLOY_PATH: ${{ vars.KOLIBRI_DEPLOY_PATH }}
+      DEPLOY_KEY: ${{ secrets.KOLIBRI_DEPLOY_KEY }}
+      BASTION_KNOWN_HOSTS: ${{ secrets.KOLIBRI_BASTION_KNOWN_HOSTS }}
+      ORIGIN_KNOWN_HOSTS: ${{ secrets.KOLIBRI_ORIGIN_KNOWN_HOSTS }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          set -eu
+          test -n "$BASTION_HOST"
+          test -n "$ORIGIN_HOST"
+          test -n "$DEPLOY_PATH"
+          test -n "$DEPLOY_KEY"
+          test -n "$BASTION_KNOWN_HOSTS"
+          test -n "$ORIGIN_KNOWN_HOSTS"
+
+          install -d -m 0700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_KEY" > "$HOME/.ssh/kolibri_deploy"
+          chmod 0600 "$HOME/.ssh/kolibri_deploy"
+          printf '%s\n%s\n' "$BASTION_KNOWN_HOSTS" "$ORIGIN_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 0644 "$HOME/.ssh/known_hosts"
+
+          cat > "$HOME/.ssh/config" <<EOF
+          Host bastion
+            HostName $BASTION_HOST
+            User opc
+            IdentityFile $HOME/.ssh/kolibri_deploy
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+
+          Host origin
+            HostName $ORIGIN_HOST
+            User ubuntu
+            ProxyJump bastion
+            IdentityFile $HOME/.ssh/kolibri_deploy
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
+          chmod 0600 "$HOME/.ssh/config"
+
+      - name: Deploy application to oracle-old
+        run: |
+          set -eu
+          rsync -az --exclude='.env' --exclude='.git' \
+            -e "ssh -F $HOME/.ssh/config" ./ "origin:${DEPLOY_PATH}/"
+          ssh -F "$HOME/.ssh/config" origin 'sudo -n /usr/local/sbin/kolibri-deploy'
+
+      - name: Update redirect on the Cloudflare origin
+        run: |
+          set -eu
+          scp -q -F "$HOME/.ssh/config" \
+            deploy/nginx.kolibri-redirect.conf \
+            bastion:/home/opc/kolibri-redirect.conf
+          ssh -F "$HOME/.ssh/config" bastion \
+            'sudo -n cp /home/opc/kolibri-redirect.conf /etc/nginx/conf.d/kolibri-redirect.conf && sudo -n nginx -t && sudo -n systemctl reload nginx'
+
+      - name: Verify production
+        run: |
+          set -eu
+          curl --fail --silent --show-error --head --max-time 20 \
+            https://kolibri.alignment.id/ \
+            | grep -i '^location: https://kolibrai.com/'
