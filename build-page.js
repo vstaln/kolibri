@@ -32,10 +32,10 @@ const bloomFrame0 = fs.readFileSync(path.join(ROOT, 'assets/hummingbird-hover-fr
 const wave = fs.readFileSync(path.join(ROOT, 'assets/kolibri-closing-art.txt'), 'utf8');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-// One footer for every alignment.id site: link data lives in the shared
-// footer-links.json that the React marketing footer also renders from.
+// Keep this standalone checkout buildable in CI; the shared site can sync this
+// small source file when its footer links change.
 const footerLinks = JSON.parse(
-  fs.readFileSync(path.join(ROOT, '..', 'src', 'app', 'components', 'footer-links.json'), 'utf8')
+  fs.readFileSync(path.join(ROOT, 'footer-links.json'), 'utf8')
 );
 const footerProductLinks = footerLinks.products
   .map((p) => `            <a href="${p.href}" class="site-footer__column-link" target="_blank" rel="noreferrer">${p.label}</a>`)

@@ -1,0 +1,20 @@
+{
+  "products": [
+    { "label": "Gray", "href": "https://gray.alignment.id" },
+    { "label": "Kolibri", "href": "https://kolibri.alignment.id" }
+  ],
+  "researchNote": "Coming soon",
+  "contact": { "label": "hi@alignment.id", "href": "mailto:hi@alignment.id" },
+  "policies": [
+    { "label": "Terms of Service", "href": "https://alignment.id/policies/tos" },
+    { "label": "Privacy Policy", "href": "https://alignment.id/policies/privacy" },
+    { "label": "Refund Policy", "href": "https://alignment.id/policies/refund" }
+  ],
+  "blogNote": "Coming soon",
+  "socials": [
+    { "label": "X", "href": "https://x.com/alignmentid", "logo": "/logos/xwhite.svg" },
+    { "label": "YouTube", "href": "https://youtube.com/@alignmentid", "logo": "/logos/youtubewhite.svg" },
+    { "label": "Instagram", "href": "https://instagram.com/alignmentid", "logo": "/logos/instagramwhite.svg" },
+    { "label": "Discord", "href": "https://discord.gg/sE4CSm4wWQ", "logo": "/logos/discordwhite.svg" }
+  ]
+}
