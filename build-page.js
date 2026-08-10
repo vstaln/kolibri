@@ -270,6 +270,39 @@ const html = `<!doctype html>
       </div>
     </section>
 
+    <section class="section course-section" id="course" aria-labelledby="course-title" data-course-shell>
+      <div class="course-header">
+        <p class="course-eyebrow">JavaScript Foundations · preview</p>
+        <h2 id="course-title">Learn one idea. Use it. See what happens.</h2>
+        <p>Read a short explanation, change a few lines, run the checks, and use the feedback to fix your code. Finish one small challenge before the next one opens.</p>
+      </div>
+      <div class="course-layout">
+        <nav class="course-map-panel" aria-label="Course map">
+          <p class="course-panel-label">Course map</p>
+          <ol id="course-map" data-course-map></ol>
+        </nav>
+        <div class="course-workspace">
+          <p class="course-breadcrumb" id="course-breadcrumb"></p>
+          <h3 id="course-challenge-title">Loading challenge…</h3>
+          <p class="course-concept" id="course-concept"></p>
+          <div class="course-explanation" id="course-explanation"></div>
+          <div class="course-task" id="course-instruction"></div>
+          <div class="course-editor-shell">
+            <label for="course-editor">Your code</label>
+            <textarea id="course-editor" rows="8" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="course-instruction"></textarea>
+          </div>
+          <div class="course-actions">
+            <button type="button" class="course-button course-button--primary" id="course-run">Run tests</button>
+            <button type="button" class="course-button" id="course-reset">Reset</button>
+            <button type="button" class="course-button" id="course-next" disabled>Next challenge</button>
+          </div>
+          <div class="course-feedback" id="course-feedback" role="status" aria-live="polite" tabindex="-1"></div>
+          <div class="course-hints" id="course-hints" aria-label="Hints"></div>
+          <p class="course-completion" id="course-completion" role="status" hidden></p>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="current-state" aria-labelledby="state-title" data-reveal="fade">
       <div class="state-grid">
         <div data-reveal>
