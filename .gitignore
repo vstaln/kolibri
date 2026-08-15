@@ -7,3 +7,7 @@ references/
 research/
 .agents/
 .claude/
+
+# local agent artifacts
+skills-lock.json
+text_modlens_*.json

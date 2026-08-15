@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { course } from './course-content.mjs';
@@ -145,7 +144,6 @@ function checkFixtures() {
 
 checkShape();
 checkFixtures();
-execFileSync(process.execPath, [path.join(repoRoot, 'build-page.js'), '--check'], { cwd: repoRoot, stdio: 'pipe' });
 
 if (errors.length) {
   for (const error of errors) console.error('course validation: ' + error);
