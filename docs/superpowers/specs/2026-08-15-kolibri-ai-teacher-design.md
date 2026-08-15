@@ -17,6 +17,8 @@ One ladder, two tracks:
 
 **The moat:** the AI is both the subject and the teacher. Deterministic tests grade code; AI feedback grades open-ended work (prompts, explanations). Khan Academy and freeCodeCamp have deterministic loops but no AI feedback; commercial courses are paywalled and passive.
 
+**AI-agnosticism (user-confirmed):** the course is deliberately **provider-agnostic**. Lesson content teaches skills that transfer to any assistant — ChatGPT, Claude, Gemini, Copilot — naming specific products only as worked examples, never as requirements. The AI *teacher* engine is a separate, swappable backend (default Claude) whose grading rubric evaluates generic AI-skill quality, not provider-specific features. Kolibri is the "driving school," not the "Toyota course": Claude 101 teaches you Claude; Kolibri teaches you AI, whatever you have.
+
 ## 2. Grading model (hybrid)
 
 | Work type | Grader | Cost | Never unfair? |
@@ -119,7 +121,7 @@ Tailwind-based. Animated components from motion-primitives/reactbits (MIT, attri
 
 ## 9. Decisions recorded
 
-1. AI teacher default = Anthropic Claude; provider-swappable behind one client interface. (User's lane: Claude 101, Manus, Anthropic courses.)
+1. AI teacher default = Anthropic Claude; provider-swappable behind one client interface. (User's lane: Claude 101, Manus, Anthropic courses.) **Content is AI-agnostic** — provider-specific features are never required, only illustrated. (User-confirmed.)
 2. v1 scope = migration + Track 1 + literacy floor port; project track next milestone. (User-approved.)
 3. No account, ever; progress in localStorage. (User-approved.)
 4. Content is original: AI-drafted, human-reviewed. Structure (not content) borrowed from Claude 101 — structure is not copyrightable; all lesson text is ours. No scraped or pirated content, ever. (User-approved.)
