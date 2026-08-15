@@ -60,6 +60,11 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
 
+      - name: Build production bundle
+        run: |
+          npm ci
+          npm run build
+
       - name: Configure SSH
         run: |
           set -eu
