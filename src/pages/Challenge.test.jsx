@@ -24,16 +24,18 @@ beforeEach(() => {
 });
 
 describe('Challenge', () => {
-  it('renders the challenge instruction and starter code', () => {
+  it('renders the course header, explanation, task and starter code', () => {
     render(<Challenge challengeId={c01} />);
-    expect(screen.getByText(/Change the greeting/i)).toBeInTheDocument();
-    expect(screen.getByLabelText('Code editor')).toHaveValue("const greeting = 'Hello';\nconsole.log(greeting);");
+    expect(screen.getByText('Learn one idea. Use it. See what happens.')).toBeInTheDocument();
+    expect(screen.getByText(/Change the greeting so the program prints exactly: Hello, Ada/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Your code')).toHaveValue("const greeting = 'Hello';\nconsole.log(greeting);");
+    expect(screen.getByText(/const: A variable binding that is not reassigned/i)).toBeInTheDocument();
   });
 
   it('shows the lock message and no editor for a locked challenge', () => {
     render(<Challenge challengeId={c02} />);
-    expect(screen.getByText(/Complete the previous challenge/i)).toBeInTheDocument();
-    expect(screen.queryByLabelText('Code editor')).not.toBeInTheDocument();
+    expect(screen.getByText('Complete the previous challenge to unlock this one.')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Your code')).not.toBeInTheDocument();
   });
 
   it('renders the failure message when the run fails', async () => {
@@ -43,8 +45,8 @@ describe('Challenge', () => {
       error: null,
     });
     render(<Challenge challengeId={c01} />);
-    fireEvent.click(screen.getByRole('button', { name: /Check your code/i }));
-    expect(await screen.findByText(/The console should contain exactly Hello, Ada/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Run tests' }));
+    expect(await screen.findByText(/Read the expected line carefully, including its punctuation\. Expected/)).toBeInTheDocument();
   });
 
   it('renders the pass message and enables Next on success', async () => {
@@ -54,19 +56,19 @@ describe('Challenge', () => {
       error: null,
     });
     render(<Challenge challengeId={c01} />);
-    fireEvent.click(screen.getByRole('button', { name: /Check your code/i }));
-    expect(await screen.findByText(/You changed a value and checked the result/i)).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole('button', { name: /Next challenge/i })).toBeEnabled());
+    fireEvent.click(screen.getByRole('button', { name: 'Run tests' }));
+    expect(await screen.findByText('The greeting is exact. You changed a value and checked the result.')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Next challenge' })).toBeEnabled());
   });
 
-  it('disables run while the runner is pending', async () => {
+  it('shows the running state and disables run while the runner is pending', async () => {
     let resolveRun;
     fakeRun.mockImplementation(() => new Promise((resolve) => { resolveRun = resolve; }));
     render(<Challenge challengeId={c01} />);
-    const runBtn = screen.getByRole('button', { name: /Check your code/i });
-    fireEvent.click(runBtn);
-    await waitFor(() => expect(screen.getByRole('button', { name: /Running/i })).toBeDisabled());
+    fireEvent.click(screen.getByRole('button', { name: 'Run tests' }));
+    await waitFor(() => expect(screen.getByText('Running tests…')).toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'Run tests' })).toBeDisabled();
     resolveRun({ ok: true, checks: [{ id: 'x', pass: true, message: 'Passed.' }], error: null });
-    await waitFor(() => expect(screen.queryByRole('button', { name: /Running/i })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText('Running tests…')).not.toBeInTheDocument());
   });
 });

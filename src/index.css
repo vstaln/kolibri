@@ -1,88 +1,225 @@
 @import "tailwindcss";
 
+/* Kolibri design system — matches the hand-built landing page:
+   black background, warm cream text, gold accent, IBM Plex Mono labels,
+   sharp corners. The .course-* rules below are the site's own course CSS,
+   kept verbatim so the React views look exactly like the main page. */
+
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --radius: 0.75rem;
+  --bg-dark: #000000;
+  --text-primary: #f4f1ea;
+  --text-muted: #9a958c;
+  --accent-gold: #c9a962;
+  --line: rgba(255, 255, 255, 0.1);
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  --page-pad: clamp(1.25rem, 4vw, 2.5rem);
+  --max: 1120px;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-}
-
+/* Tailwind v4 theme: shadcn utility names map to the Kolibri palette. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
 
-  /* Kolibri brand tokens */
-  --color-brand: oklch(0.62 0.21 255);
-  --color-brand-strong: oklch(0.52 0.23 255);
-  --color-accent-ai: oklch(0.68 0.17 155);
+  --color-background: #000000;
+  --color-foreground: #f4f1ea;
+  --color-card: #11110f;
+  --color-card-foreground: #f4f1ea;
+  --color-popover: #11110f;
+  --color-popover-foreground: #f4f1ea;
+  --color-primary: #c9a962;
+  --color-primary-foreground: #000000;
+  --color-secondary: #11110f;
+  --color-secondary-foreground: #f4f1ea;
+  --color-muted: #1a1917;
+  --color-muted-foreground: #9a958c;
+  --color-accent: #1a1917;
+  --color-accent-foreground: #f2dfab;
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #f2b4b4;
+  --color-border: rgba(255, 255, 255, 0.14);
+  --color-input: rgba(255, 255, 255, 0.2);
+  --color-ring: #c9a962;
+  --color-brand: #c9a962;
+  --color-brand-strong: #f2dfab;
+  --color-accent-ai: #c9a962;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
 }
 
-* {
-  border-color: var(--color-border);
+html {
+  background: var(--bg-dark);
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------------ */
+/* Course shell — copied verbatim from styles.css (foundations course) */
+/* ------------------------------------------------------------------ */
+
+.course-section {
+  max-width: none;
+  padding-inline: var(--page-pad);
+  background: #0b0b0a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.course-header,
+.course-layout {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+}
+
+.course-header { margin-bottom: 2rem; }
+.course-eyebrow,
+.course-panel-label,
+.course-hints-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.course-header h2 { margin-bottom: 0.9rem; }
+.course-header > p:last-child { margin-bottom: 0; }
+
+.course-layout {
+  display: grid;
+  grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
+  gap: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.course-map-panel,
+.course-workspace { background: #11110f; }
+.course-map-panel { padding: 1rem; }
+.course-map-panel ol { list-style: none; display: grid; gap: 0.5rem; }
+.course-map-panel .course-panel-label { margin-bottom: 0.75rem; }
+
+.course-map-button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3.4rem;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--text-muted);
+  text-align: left;
+  cursor: pointer;
+}
+.course-map-button:hover:not(:disabled) { border-color: rgba(201, 169, 98, 0.6); color: var(--text-primary); }
+.course-map-button:disabled { cursor: not-allowed; opacity: 0.55; }
+.course-map-button[data-state="PASSED"] { color: #d0bc7b; }
+.course-map-button[data-state="FAILED"] { border-color: rgba(248, 113, 113, 0.45); }
+.course-map-button[aria-current="step"] { border-color: var(--accent-gold); background: rgba(201, 169, 98, 0.08); color: var(--text-primary); }
+.course-map-number,
+.course-map-status { font-family: var(--font-mono); font-size: 0.65rem; }
+.course-map-number { color: #6f6a63; }
+.course-map-title { font-size: 0.84rem; line-height: 1.35; }
+.course-map-status { color: #8f8a82; white-space: nowrap; }
+
+.course-workspace { min-width: 0; padding: clamp(1rem, 2vw, 1.5rem); }
+.course-storage-note {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.08);
+  color: #f2b4b4;
+  font-size: 0.8rem;
+}
+.course-breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: #6f6a63;
+  margin-bottom: 0.9rem;
+}
+.course-workspace h3 { margin-bottom: 0.35rem; font-size: clamp(1.3rem, 2.4vw, 1.75rem); line-height: 1.25; }
+.course-concept { margin-bottom: 1rem; color: var(--accent-gold); font-family: var(--font-mono); font-size: 0.8rem; }
+.course-explanation { border-left: 2px solid rgba(201, 169, 98, 0.5); padding-left: 0.9rem; margin-bottom: 1.1rem; }
+.course-explanation p { margin-bottom: 0.55rem; font-size: 0.9rem; }
+.course-explanation p:last-child { margin-bottom: 0; }
+.course-task { margin-bottom: 0.75rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5; }
+.course-task::before {
+  content: 'Task';
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--accent-gold);
+  font: 0.68rem var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.course-editor-shell { margin-top: 1rem; }
+.course-editor-shell label { display: block; margin-bottom: 0.4rem; font-family: var(--font-mono); font-size: 0.75rem; color: #c7c2b9; }
+#course-editor {
+  display: block;
+  width: 100%;
+  min-height: 13rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  background: #070706;
+  color: #e8e4dc;
+  font: 0.92rem/1.55 var(--font-mono);
+  resize: vertical;
+  tab-size: 2;
+}
+#course-editor:focus { border-color: var(--accent-gold); outline: 2px solid rgba(201, 169, 98, 0.25); outline-offset: 2px; }
+#course-editor:read-only { color: #aaa59c; }
+
+.course-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.8rem; }
+.course-button {
+  min-height: 2.75rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: var(--text-primary);
+  font: 0.75rem var(--font-mono);
+  cursor: pointer;
+}
+.course-button:hover:not(:disabled) { border-color: var(--accent-gold); }
+.course-button--primary { border-color: var(--accent-gold); background: rgba(201, 169, 98, 0.12); color: #f2dfab; }
+.course-button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+.course-feedback {
+  min-height: 3.2rem;
+  margin-top: 1rem;
+  padding: 0.75rem 0.85rem;
+  border-left: 3px solid #8f8a82;
+  background: rgba(255, 255, 255, 0.04);
+  color: #c7c2b9;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.course-feedback--pass { border-color: var(--accent-gold); color: #f2dfab; }
+.course-feedback--fail { border-color: #f87171; color: #f2b4b4; }
+.course-feedback--running { border-color: #8f8a82; }
+
+.course-hints { margin-top: 1rem; }
+.course-hints-title { margin-bottom: 0.55rem; }
+.course-hint { border-top: 1px solid rgba(255, 255, 255, 0.12); padding: 0.5rem 0; }
+.course-hint:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
+.course-hint summary { cursor: pointer; color: #c7c2b9; font: 0.75rem var(--font-mono); }
+.course-hint p { margin: 0.55rem 0 0; font-size: 0.85rem; }
+.course-completion { margin-top: 1rem; color: #f2dfab; font-family: var(--font-mono); font-size: 0.85rem; }
+.course-runner { position: fixed; width: 1px; height: 1px; border: 0; opacity: 0; pointer-events: none; }
+
+@media (max-width: 900px) {
+  .course-layout { grid-template-columns: 1fr; }
+  .course-map-panel ol { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
 }

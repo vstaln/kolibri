@@ -14,7 +14,9 @@ export default defineConfig({
     // The repo-root index.html is the hand-authored landing served by
     // server.js; the React course app builds from its own entry.
     rollupOptions: {
-      input: fileURLToPath(new URL('./src/index.html', import.meta.url)),
+      input: {
+        index: fileURLToPath(new URL('./src/index.html', import.meta.url)),
+      },
     },
   },
   test: {

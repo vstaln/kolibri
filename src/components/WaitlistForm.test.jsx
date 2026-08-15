@@ -18,7 +18,7 @@ describe('WaitlistForm', () => {
     expect(url).toBe('/api/waitlist');
     expect(init.method).toBe('POST');
     expect(JSON.parse(init.body).email).toBe('ada@example.com');
-    expect(await screen.findByRole('status')).toHaveTextContent(/on the list/i);
+    expect(await screen.findByText(/on the list/i)).toBeInTheDocument();
   });
 
   it('shows the rate-limit message on 429', async () => {
@@ -26,7 +26,7 @@ describe('WaitlistForm', () => {
     render(<WaitlistForm />);
     fireEvent.change(screen.getByLabelText('Email address'), { target: { value: 'ada@example.com' } });
     fireEvent.click(screen.getByRole('button', { name: /Join early access/i }));
-    expect(await screen.findByRole('alert')).toHaveTextContent(/Too many attempts/i);
+    expect(await screen.findByText(/Too many attempts/i)).toBeInTheDocument();
   });
 
   it('rejects an invalid email without fetching', async () => {
@@ -35,7 +35,7 @@ describe('WaitlistForm', () => {
     render(<WaitlistForm />);
     fireEvent.change(screen.getByLabelText('Email address'), { target: { value: 'not-an-email' } });
     fireEvent.click(screen.getByRole('button', { name: /Join early access/i }));
-    expect(await screen.findByRole('alert')).toHaveTextContent(/valid email/i);
+    expect(await screen.findByText(/valid email/i)).toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

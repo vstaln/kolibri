@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { submitWaitlist } from '@/lib/api';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,25 +28,32 @@ export default function WaitlistForm() {
   };
 
   return (
-    <form onSubmit={submit} className="space-y-3" noValidate>
-      <div className="flex gap-2">
-        <Input
-          type="email"
+    <form className="waitlist" id="waitlist-form" onSubmit={submit} noValidate>
+      <label htmlFor="waitlist-email">Email address</label>
+      <div className="waitlist-row">
+        <input
+          id="waitlist-email"
           name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="you@example.com"
           value={email}
           onChange={(e) => { setEmail(e.target.value); if (status === 'error') setStatus('idle'); }}
-          placeholder="Email address"
           aria-label="Email address"
           aria-invalid={status === 'error'}
           required
+          maxLength={254}
         />
-        <Button type="submit" disabled={status === 'submitting'} className="bg-brand text-white hover:bg-brand-strong">
+        <button type="submit" disabled={status === 'submitting'}>
           {status === 'submitting' ? 'Joining…' : 'Join early access'}
-        </Button>
+        </button>
       </div>
-      {status === 'done' && <p role="status" className="text-sm text-emerald-600 dark:text-emerald-400">{message}</p>}
-      {status === 'error' && <p role="alert" className="text-sm text-destructive">{message}</p>}
-      <p className="text-xs text-muted-foreground">We will only email you about Kolibri product updates.</p>
+      <p className="privacy">We will only email you about Kolibri product updates.</p>
+      <p className="form-status" id="form-status" role="status" aria-live="polite" data-state={status}>
+        {status === 'done' && message}
+        {status === 'error' && message}
+      </p>
     </form>
   );
 }
