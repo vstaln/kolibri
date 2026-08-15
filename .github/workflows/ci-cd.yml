@@ -103,21 +103,12 @@ jobs:
           EOF
           chmod 0600 "$HOME/.ssh/config"
 
-      - name: Deploy application to oracle-old
+      - name: Deploy application
         run: |
           set -eu
           rsync -az --exclude='.env' --exclude='.git' --exclude='node_modules' \
             -e "ssh -F $HOME/.ssh/config" ./ "origin:${DEPLOY_PATH}/"
           ssh -F "$HOME/.ssh/config" origin 'sudo -n /usr/local/sbin/kolibri-deploy'
-
-      - name: Update redirect on the Cloudflare origin
-        run: |
-          set -eu
-          scp -q -F "$HOME/.ssh/config" \
-            deploy/nginx.kolibri-redirect.conf \
-            bastion:/home/opc/kolibri-redirect.conf
-          ssh -F "$HOME/.ssh/config" bastion \
-            'sudo -n cp /home/opc/kolibri-redirect.conf /etc/nginx/conf.d/kolibri-redirect.conf && sudo -n nginx -t && sudo -n systemctl reload nginx'
 
       - name: Verify production
         run: |
