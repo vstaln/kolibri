@@ -1,12 +1,494 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kolibri — Learn AI by using it, and by building with it</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kolibri | Learn programming by solving problems</title>
+  <meta name="description" content="Kolibri is an interactive programming course being developed around concepts, independent problem solving, and projects chosen by the learner." />
+  <meta property="og:title" content="Kolibri | Learn programming by solving problems" />
+  <meta property="og:description" content="Kolibri is an interactive programming course being developed around concepts, independent problem solving, and projects chosen by the learner." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://kolibri.alignment.id" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/svg+xml" href="/assets/alignmentlogo.svg" />
+  <link rel="canonical" href="https://kolibri.alignment.id/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=74690b4bfc" />
+  <!-- Ships with the markup so a stale cached stylesheet can never let the
+       painting escape its section and cover the hero. -->
+  <style>#lessons{position:relative;overflow:hidden}.lesson-painting{position:absolute;inset:0;z-index:0}#lessons>h2,.ide{position:relative;z-index:1}</style>
+</head>
+<body>
+  <header class="nav-shell">
+    <nav class="nav-bar" aria-label="Primary">
+      <a href="https://alignment.id" class="nav-logo"><span class="sr-only">Alignment</span><img src="/assets/alignmentlogo.svg" alt="Alignment" width="120" height="32" /></a>
+      <div class="nav-primary">
+        <div class="nav-links">
+          <a href="https://kolibri.alignment.id" class="nav-link">KOLIBRI</a>
+          <a href="https://alignment.id/hire" class="nav-link">HIRE</a>
+          <a href="https://vstal.in" class="nav-link">VSTAL.IN</a>
+        </div>
+        <a href="https://gray.alignment.id" class="nav-cta" target="_blank" rel="noreferrer">
+          <span class="sr-only">Open Gray workspace</span><img src="/assets/grayaiwhitenotspinning.svg" alt="" width="20" height="20" class="nav-cta__icon" aria-hidden="true" />
+        </a>
+      </div>
+      <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-menu-panel">Menu</button>
+    </nav>
+    <div class="nav-menu-panel" id="nav-menu-panel" hidden>
+      <a href="https://kolibri.alignment.id" class="nav-link">KOLIBRI</a>
+      <a href="https://alignment.id/hire" class="nav-link">HIRE</a>
+      <a href="https://vstal.in" class="nav-link">VSTAL.IN</a>
+      <a href="https://gray.alignment.id" class="nav-cta nav-cta--panel" target="_blank" rel="noreferrer">
+        <span class="sr-only">Open Gray workspace</span><img src="/assets/grayaiwhitenotspinning.svg" alt="" width="20" height="20" class="nav-cta__icon" aria-hidden="true" />
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title" data-reveal="fade">
+      <div class="hero-grid">
+        <div class="bird-column" data-reveal="left">
+          <div class="bird-wrap" id="bird-wrap">
+            <pre class="bird" id="bird" aria-hidden="true" data-ascii-fit data-ascii-max="11">                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                  .:.                          
+                                                              .:::.                            
+                                                          .:-:.                                
+                                                      .-==:                                    
+                                             :--==+**%#-                                       
+                                         :+#%%%@%@@@@*                                         
+                                        *%%%%%#%%%%%%.                                         
+                                       *@%%%%%%%@%%%#                                          
+                                      .%%%%%@@@@%%%%#                                          
+                                      :%%%@@%%@%%%%@+                                          
+                                ..:--=#%%#+=++*####*:                                          
+                                  ..-*%#%#+-::::::-:.                                          
+                             ..::--+########*+=--::::                                          
+                         ...:::::-+#*****##%##*+==-=.                                          
+                     ......:::::=*********#####**+=-                                           
+                        ....:::+***************##*+.                                           
+                             .*######*****#*******-                                            
+                            .*##############****=.                                             
+                           .##############***+=.                                               
+                          :########*##*****=:                                                  
+                         =#######**++****++.                                                   
+                        +#####***++=--=**#-                                                    
+                       *#*##***+=-.   -+=:                                                     
+                      *####++++-.                                                              
+                     *##%#+--:                                                                 
+                   .##%%+.                                                                     
+                  .#%%+                                                                        
+                  =%*:                                                                         
+                  --                                                                           
+                                                                                               
+                                                                                             ..</pre>
+          </div>
+        </div>
+        <div class="hero-text" data-reveal style="--reveal-delay:140ms">
+          <h1 class="tagline" id="hero-title">Learn programming by solving a problem you already have.</h1>
+          <p class="bio">Kolibri is an interactive course about the ideas underneath programming and what those ideas let you do. You will work with examples, change working systems, investigate mistakes, and then look for somewhere the same idea could be useful in your own life. The point is not to remember the example. It is to understand it well enough to use the concept somewhere the course did not choose for you.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section moire-section" id="how" aria-labelledby="concepts-title" data-reveal="fade">
+      <div class="moire-visual" id="moire-visual" aria-hidden="true">
+        <canvas class="moire-canvas" id="moire-canvas"></canvas>
+      </div>
+      <div class="moire-copy" data-reveal>
+        <p class="moire-eyebrow">How Kolibri teaches</p>
+        <h2 id="concepts-title" class="moire-title">AI can write the code.<br />You still have to make the decisions.</h2>
+        <div class="moire-body">
+          <p>You begin with something small that already runs: a reminder that fires too late, a form that accepts the wrong thing, or a tool that almost solves a problem you actually have.</p>
+          <p>Ask AI to change it. Watch what happens. Trace the mistake far enough to understand it. Keep what works, reject what does not, and decide what the system should do next.</p>
+          <p>Later, the same idea returns somewhere else&mdash;under another name, inside another problem. Kolibri does not test whether you remember the syntax. It tests whether you can recognize what is needed, direct the work, and notice when the answer is not good enough.</p>
+          <p class="moire-closing">The prompt disappears. The problem remains yours.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-wide" id="lessons" aria-labelledby="lesson-title" data-reveal="fade">
+      <!-- Claude Monet, Impression, Sunrise (1872).
+           Wikimedia Commons source: https://commons.wikimedia.org/wiki/File:Monet_-_Impression,_Sunrise.jpg
+           Public domain (PD-old-95-1996, CC-PD-Mark, attribution not required);
+           local 1400px derivative, decorative use behind the lesson panel.
+           Lives directly inside the section so it can never paint over the next one. -->
+      <div class="lesson-painting" aria-hidden="true">
+        <img src="/assets/monet-impression-sunrise.webp" alt="" width="1400" height="1086" loading="lazy" decoding="async" />
+      </div>
+      <h2 id="lesson-title" data-reveal>Lessons give you less help as you go.</h2>
+      <div class="lesson-intro" data-reveal style="--reveal-delay:60ms">
+        <p>Kolibri starts with a short explanation beside a program you can run. There are no videos to sit through. You read the idea, change the code, and see what happens.</p>
+        <p>Each lesson introduces a programming concept inside something concrete: a condition that classifies an expense, state that changes after an action, or a function used in several places. The AI assistant can explain a line, suggest an approach, or generate a draft. Every change still appears inside the editor, where you can inspect it, edit it, and run it yourself.</p>
+        <p>Later lessons give you less instruction. Sometimes you add a feature. Sometimes you are shown a broken result and have to find the cause. At the end, Kolibri gives you a project with a clear scope, not a finished recipe. You decide how to build it, use AI when it helps, and remain responsible for the code you submit.</p>
+      </div>
+      <div class="ide" data-reveal style="--reveal-delay:120ms">
+        <div class="ide-topbar" role="tablist" aria-label="Course stages">
+          <button type="button" class="ide-tab is-active" data-stage-tab="learn" aria-pressed="true"><span>01</span> Learn</button>
+          <button type="button" class="ide-tab" data-stage-tab="debug" aria-pressed="false"><span>02</span> Build &amp; Debug</button>
+          <button type="button" class="ide-tab" data-stage-tab="project" aria-pressed="false"><span>03</span> Final Project</button>
+        </div>
+        <div class="ide-body" data-mobile-view="code">
+          <div class="ide-mobile-tabs" aria-label="Workspace views">
+            <button type="button" class="ide-tab is-active" data-mobile-tab="code">Code</button>
+            <button type="button" class="ide-tab" data-mobile-tab="output">Output</button>
+            <button type="button" class="ide-tab" data-mobile-tab="chat">AI</button>
+          </div>
+          <aside class="ide-rail" aria-label="Lesson rail">
+            <div class="rail-pane" data-rail="learn">
+              <p class="rail-heading">Lesson</p>
+              <ol class="rail-list">
+                <li><span class="rail-dot" aria-hidden="true"></span>Concept</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Change code</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Run check</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Explain result</li>
+              </ol>
+              <p class="rail-heading">Files</p>
+              <ul class="file-tree">
+                <li class="file-folder">src
+                  <ul>
+                    <li class="file-file is-open">expenses.js</li>
+                    <li class="file-file">app.js</li>
+                    <li class="file-file">styles.css</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="rail-pane" data-rail="debug" hidden>
+              <p class="rail-heading">Project</p>
+              <ol class="rail-list">
+                <li><span class="rail-dot" aria-hidden="true"></span>Reproduce bug</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Find cause</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Make change</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Run tests</li>
+              </ol>
+              <p class="rail-heading">Files</p>
+              <ul class="file-tree">
+                <li class="file-folder">src
+                  <ul>
+                    <li class="file-file is-open">reminders.js</li>
+                    <li class="file-file">scheduler.js</li>
+                    <li class="file-file">dates.js</li>
+                  </ul>
+                </li>
+                <li class="file-folder">tests
+                  <ul>
+                    <li class="file-file">reminders.test.js</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <div class="rail-pane" data-rail="project" hidden>
+              <p class="rail-heading">Project scope</p>
+              <p class="rail-sub">Requirements</p>
+              <ol class="rail-list">
+                <li class="is-done"><span class="rail-dot" aria-hidden="true"></span>Core input</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Main behavior</li>
+                <li><span class="rail-dot" aria-hidden="true"></span>Useful output</li>
+              </ol>
+              <p class="rail-sub">Not required</p>
+              <ul class="scope-list">
+                <li>extra feature</li>
+                <li>automation</li>
+                <li>integration</li>
+              </ul>
+              <p class="rail-heading">Files</p>
+              <ul class="file-tree">
+                <li class="file-file">README.md</li>
+                <li class="file-file is-open">app.js</li>
+              </ul>
+              <p class="rail-progress">Progress <strong data-progress>1/4</strong> complete</p>
+            </div>
+          </aside>
+
+          <div class="ide-workspace">
+            <div class="workspace-tabs" aria-label="Open files">
+              <span class="js-badge" aria-hidden="true"><img src="/assets/javascript.svg" alt="" width="18" height="18" /></span>
+              <div class="workspace-file-tabs" data-file-tabs>
+                <span class="workspace-tab is-active">expenses.js</span>
+              </div>
+            </div>
+            <pre class="code-render" id="demo-code" aria-label="Project code"></pre>
+            <div class="output-panel" id="demo-output"></div>
+            <div class="diff-actions" id="demo-diff-actions" hidden>
+              <span class="diff-action">Apply change</span>
+              <span class="diff-action">Edit manually</span>
+              <span class="diff-action diff-action--reject">Reject</span>
+            </div>
+          </div>
+
+          <div class="ide-chat">
+            <div class="chat-log" id="demo-chat" aria-live="polite">
+              <div class="chat-msg chat-msg--ai">
+                <p>Kolibri starts with a short explanation beside a program you can run. There are no videos to sit through. You read the idea, change the code, and see what happens.</p>
+                <p>Each lesson introduces a programming concept inside something concrete: a condition that classifies an expense, state that changes after an action, or a function used in several places. The AI assistant can explain a line, suggest an approach, or generate a draft. Every change still appears inside the editor, where you can inspect it, edit it, and run it yourself.</p>
+                <p>Later lessons give you less instruction. Sometimes you add a feature. Sometimes you are shown a broken result and have to find the cause. At the end, Kolibri gives you a project with a clear scope, not a finished recipe. You decide how to build it, use AI when it helps, and remain responsible for the code you submit.</p>
+              </div>
+            </div>
+            <div class="chat-prompts" id="demo-prompts"></div>
+            <div class="chat-input-row">
+              <div class="attach-chip" id="demo-attach" hidden></div>
+              <input class="chat-input" id="demo-input" type="text" placeholder="What bothers you? Type it here&hellip;" aria-label="Describe a problem from your own life for the final project" autocomplete="off" disabled />
+              <button type="button" class="chat-send" id="demo-send" disabled>Send &rarr;</button>
+            </div>
+          </div>
+        </div>
+        <div class="ide-statusbar" id="demo-status">STATUS: expenses.js selected &middot; check not run</div>
+      </div>
+    </section>
+
+    <section class="section course-section" id="course" aria-labelledby="course-title" data-course-shell>
+      <div class="course-header">
+        <p class="course-eyebrow">JavaScript Foundations · preview</p>
+        <h2 id="course-title">Learn one idea. Use it. See what happens.</h2>
+        <p>Read a short explanation, change a few lines, run the checks, and use the feedback to fix your code. Finish one small challenge before the next one opens.</p>
+      </div>
+  <div class="course-layout">
+        <nav class="course-map-panel" aria-label="Course map">
+          <p class="course-panel-label">Course map</p>
+          <ol id="course-map" data-course-map></ol>
+        </nav>
+        <div class="course-workspace">
+          <p class="course-storage-note" id="course-storage-note" role="status" hidden></p>
+          <p class="course-breadcrumb" id="course-breadcrumb"></p>
+          <h3 id="course-challenge-title">Loading challenge…</h3>
+          <p class="course-concept" id="course-concept"></p>
+          <div class="course-explanation" id="course-explanation"></div>
+          <div class="course-task" id="course-instruction"></div>
+          <div class="course-editor-shell">
+            <label for="course-editor">Your code</label>
+            <textarea id="course-editor" rows="8" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="course-instruction"></textarea>
+          </div>
+          <div class="course-actions">
+            <button type="button" class="course-button course-button--primary" id="course-run">Run tests</button>
+            <button type="button" class="course-button" id="course-reset">Reset</button>
+            <button type="button" class="course-button" id="course-next" disabled>Next challenge</button>
+          </div>
+          <div class="course-feedback" id="course-feedback" role="status" aria-live="polite" tabindex="-1"></div>
+          <div class="course-hints" id="course-hints" aria-label="Hints"></div>
+          <p class="course-completion" id="course-completion" role="status" hidden></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="current-state" aria-labelledby="state-title" data-reveal="fade">
+      <div class="state-grid">
+        <div data-reveal>
+          <h2 id="state-title">What exists now</h2>
+          <p>Alignment is currently run by one person.</p>
+          <p>Gray shipped and reached real use before being parked. Small programming sessions have been running in person. Kolibri now has a public site, a curriculum direction, and several interface experiments. The course itself still has to be built.</p>
+          <p>There are also deployments, internal tools, teaching materials, abandoned approaches, and smaller technical projects. Some are polished. Others are useful mainly because they show what happened.</p>
+          <div class="state-links">
+            <a class="portfolio-link" href="https://vstal.in/portfolio">See previous work</a>
+            <a class="portfolio-link" href="https://alignment.id">Alignment</a>
+          </div>
+        </div>
+        <div class="teaching-gallery" data-carousel data-reveal="right" style="--reveal-delay:160ms" aria-label="Recent teaching sessions">
+          <div class="teaching-stage">
+            <ul class="teaching-track" data-carousel-track>
+              <li class="teaching-slide teaching-slide--people">
+  <img src="/assets/teaching-2026-06-06.jpg" alt="Teaching session — Jun 6, 2026" width="1836" height="3264" loading="eager" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 6, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-07-1.jpg" alt="Teaching session — Jun 7, 2026" width="1600" height="715" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 7, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-07-2.jpg" alt="Teaching session — Jun 7, 2026" width="1600" height="715" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 7, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-17-1.jpg" alt="Teaching session — Jun 17, 2026" width="1280" height="720" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 17, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-06-17-2.jpg" alt="Teaching session — Jun 17, 2026" width="1280" height="720" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jun 17, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-05-1.jpg" alt="Teaching session — Jul 5, 2026" width="1080" height="2412" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 5, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-05-2.jpg" alt="Teaching session — Jul 5, 2026" width="3024" height="4032" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 5, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-16.jpg" alt="Teaching session — Jul 16, 2026" width="3264" height="2448" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 16, 2026</p>
+</li>
+<li class="teaching-slide">
+  <img src="/assets/teaching-2026-07-20.webp" alt="Teaching session — Jul 20, 2026" width="1280" height="960" loading="lazy" decoding="async" />
+  <p class="teaching-caption">Teaching session — Jul 20, 2026</p>
+</li>
+            </ul>
+            <button type="button" class="carousel-arrow carousel-arrow--prev" data-carousel-prev aria-label="Previous teaching session">&lsaquo;</button>
+            <button type="button" class="carousel-arrow carousel-arrow--next" data-carousel-next aria-label="Next teaching session">&rsaquo;</button>
+          </div>
+          <ol class="carousel-dots" data-carousel-dots aria-label="Teaching session slides"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-bloom" id="final" aria-labelledby="final-title" data-reveal="fade">
+      <div class="bloom-grid">
+        <div class="bloom-wrap" data-reveal="left">
+          <pre class="bloom-art" id="bloom" aria-hidden="true" data-ascii-fit data-ascii-max="11">                                                                                          
+                                                                                          
+                                                                                          
+                                                                                          
+                                           ..:---: .-:-:                                  
+                                       .::::::::.  -+==-:---:   .                         
+                                    .:            .-:     :...  . .:                      
+                                   ::.           .--:.... ::::-:    :::                   
+                       ....       -:             :----===---.--=.     .::                 
+                      :=:::--... .:           ... .--=+=:.:: -===--=-. :-                 
+                      :===-:..:: .:             .:=+++=---: :=++*++===+#*:                
+                        .:--.    .--:      ..  :=======--:.-=+**##-.*####+:               
+                          :==:.---:::::::......---------=-+++##*+: =######+               
+                         ...::.:------------:.......:--=+****=. .-*#%%###%+               
+                         :.      .::---=====--:...-=+++*#####+-=*###%%%%%#=               
+                            .....-=-=+=====++++==+****##########**#%@@@%%+                
+                                 .=+==++++++*******##%####******###@%%%#:                 
+                                  .:--:-=+++****##%%%#*#**##########*-                    
+                                    -=====++**#%%@@@%##%%%%####*###*=                     
+                                    -=+*+++++++*#%@@@##*+***#####**=                      
+                                     :-=+++******++#@#-. .-**#**+-                        
+                                       .-==+**#**##*###*+=+#**=                           
+                                                -****@#.-                                 
+                                                     %@* -                                
+                                                     .%%                                  
+                                                      +@-                                 
+                                                      :@#                                 
+                                                       #@.                                
+                                                       =@=                                </pre>
+        </div>
+        <div class="bloom-copy" data-reveal="right" style="--reveal-delay:140ms">
+          <h2 id="final-title">The course should make itself less necessary</h2>
+          <p>Kolibri will have succeeded when a learner can encounter a problem, decide whether code could help, and make a reasonable first attempt without waiting for a course to describe every step. They may still need documentation, other people, or AI. The difference is that those tools support their judgment instead of replacing it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section waitlist-section" id="waitlist" aria-labelledby="waitlist-title" data-reveal="fade">
+      <div class="waitlist-main" data-reveal>
+        <h2 id="waitlist-title">Follow the online course build</h2>
+        <p class="waitlist-copy">Kolibri is still being developed. Join the existing update list to hear when the browser-based course is ready to try. We will only use this address for Kolibri product updates.</p>
+        <form class="waitlist" id="waitlist-form" action="/api/waitlist" method="post" novalidate>
+          <label for="waitlist-email">Email address</label>
+          <div class="waitlist-row">
+            <input id="waitlist-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required maxlength="254" />
+            <button type="submit">Join early access</button>
+          </div>
+        </form>
+        <p class="privacy">We will only email you about Kolibri product updates.</p>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </div>
+      <div class="waitlist-wave" aria-hidden="true">
+        <pre class="waitlist-wave-art">⠀⠀⠀⢲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣤⣤⡴⠶⠶⠶⠶⠶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣤⡀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⡶⠞⠋⠉⠉⠁⠁⠀⠀⠀⠀⠀⠀⢀⣀⣠⣿⣻⣦⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠁⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⡶⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣶⠿⠋⠉⠛⢿⣎⠀⠈⠉⠳⠦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠶⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣀⡠⢾⡿⡖⠀⠀⠀⠀⠀⠈⢳⠘⢶⣄⠀⠘⠲⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣾⠋⠛⢹⣧⣉⠁⠀⢀⠈⠀⠀⠀⠀⠈⠁⠀⠈⠀⠀⠀⠙⠤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⡀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡾⠋⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣴⠶⣾⣶⠀⠀⠙⠀⠀⣠⡿⢻⣿⣾⡇⠀⠂⠀⢀⡠⠂⠄⠀⠐⡂⠀⠀⠢⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠞⠉⠀⠀⠀⠀⠀⠀⠀⣠⣶⡿⢻⡆⠁⣼⣿⣿⡄⣤⣶⡄⠺⣿⣿⣿⣿⣿⣷⣤⣄⠀⠀⠀⠀⠀⠀⠀⠹⢂⣠⣄⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢀⡄⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡶⠋⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⡿⠻⠀⠈⣧⠀⢹⣿⣿⣿⣿⣿⡀⣴⣿⣿⣿⣿⣿⣿⣿⣟⡃⠀⢀⡀⠀⠀⠀⠀⠀⠀⠸⠷⣄⡀⢀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠠⡄⠀⣠⡄⠀⠀⠀⠀⠀⣠⠞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣀⣶⣦⣴⣷⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠂⠀⢃⡀⠀⠀⠒⠄⠀⠀⠀⠈⠉⠉⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢼⣿⣿⣧⣿⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣥⣶⡄⣸⣷⣄⠀⠀⠀⡰⠆⠄⠀⠀⠀⠀⠀⠀⠀⠀⠂⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣻⡟⠀⢀⠀⠀⠀⠀⠐⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⣴⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢻⣿⣿⣟⣿⣿⣿⣿⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣀⣠⡴⠟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⣹⠿⠛⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣿⣿⣿⣿⡿⠇⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠐⠀⠀⢀⡀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣶⣶⣿⠟⠋⠀⠀⠀⠀⠀⣠⣴⣶⠶⣦⣤⣤⣴⡆⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠠⢤⡄⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣾⣿⠟⠁⠀⠀⠀⠀⠐⠤⠀⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⡟⠋⠁⠀⠀⠀⠀⠀⢀⣴⡟⠀⠀⠀⠀⠀⢹⡿⠁⠀⢠⣆⡀⠀⠀⢻⡟⠲⠆⠀⠀⠀⢸⣿⣿⣿⡟⢫⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠁⣀⠀⠀⠀⠀⠀⠠⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡄⠁⠀⠂⢠⣁⠾⣧⣀⣀⠞⢻⣿⠀⢠⣾⡇⠀⠀⠀⠄⠀⠀⠉⠉⠁⠀⣸⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⡷⠦⢠⣴⡶⡤⣤⢀⣸⣿⠇⠀⠐⢰⠏⠀⢰⠇⢹⣿⡤⠾⡇⢠⣤⣄⠋⠀⠀⡁⠀⠀⠲⠄⠀⠀⠀⠉⠛⠛⠁⠈⠛⣩⣿⡿⣿⣿⣯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠃⠀⡀⠒⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⡧⠄⠛⠁⠀⠀⠿⣾⣿⣿⣿⣤⣀⣼⡀⣠⡾⠁⠀⣿⡀⠰⠷⢿⠛⣿⣶⣦⣀⣷⣤⣶⣶⣦⠀⠀⠀⠀⠀⠀⠀⣀⣤⣽⣿⣷⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠗⠀⠀⢀⠂⠀⡾⠙⢻⣿⣿⣿⣿⣿⣿⡿⠀⠀⠐⠛⣿⠗⠀⠀⠰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣆⠀⠀⢲⣾⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⣆⠀⢰⠄⠀⠀⠁⠀⣺⠛⠻⣿⣿⣿⣿⣿⣤⣀⠀⠀⠛⠀⠀⠀⠀⠀⠈⣿⠋⢑⣾⣿⣿⣿⣿⣿⣿⢿⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⡿⣿⣿⣷⢂⣤⣶⣰⢿⣿⣿⣿⣿⣿⣿⡿⠂⠅⠀⠚⠀⢷⡀⠈⠀⠀⠘⠃⡀⠀⢹⣿⣟⣿⣿⣿⣿⣿⣿⣛⣿⣿⣿⡷⣿⡿⢿⡟⢿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀
+⣇⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣇⠀⣠⣀⠁⣸⣷⣿⣄⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⢠⣿
+⠟⠉⢻⣿⡿⣿⣿⣿⣿⣿⣿⣿⣟⣟⣋⠛⣷⣿⣿⣿⣿⣿⣿⣿⣿⡷⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠻⢿⣿⣧⡉⣿⣿⣿⣟⢻⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣷⣠⣶⡟⠋
+⣠⡴⠞⢁⣀⣼⣿⣿⣿⣿⣿⣿⣟⣿⣿⣿⣿⣿⣿⣟⣿⣛⣿⣿⣿⣿⣿⣿⣻⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠈⠙⠛⠿⠿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣿⣷⣾⡿⠁⠀⠀
+⠁⠀⠀⢸⣿⠛⠛⠉⢙⣻⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣠⣴⣿⣿⣿⡿⠟⠀⠀⠀⠀
+⠂⠀⠀⠸⡟⢳⣆⣹⡟⠛⠿⢿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣌⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣿⣿⣿⣷⡁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣾⣿⣿⣿⣿⡿⠏⠁⠀⠀⠀⠀⠀
+⠀⠀⠐⢀⣸⣄⣽⣿⣷⣤⡴⠟⠂⠉⣿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⢿⡻⣿⣿⣿⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣤⣄⠀⠀⠀⠀⠀⠀⣀⣀⣀⣀⣠⣀⣀⣀⣠⣄⣤⣤⣴⣦⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀
+⣤⣶⣾⣾⣿⣿⣽⢿⣿⣿⣧⣴⣴⣶⡿⠄⠀⠀⠉⣙⢻⠿⣿⡿⠿⠿⣿⣿⣿⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⡚⠙⢳⡆⠀⠀⠀⠀⠀⠀⠈⢿⣌⠙⠻⢿⣿⣶⣴⣶⣖⣡⣴⣏⣿⣾⣷⣶⣷⣮⡱⢂⣖⡑⣆⡔⣦⣶⣾⠟⠋⠉⠛⣿⣿⣷⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣻⣿⣾⣿⠟⠋⠀⠀⢀⣀⣴⣶⣦⣄⣀⣶
+⣿⣉⣿⣇⣿⣿⣿⣦⣝⠻⣿⣿⣧⠍⠀⠀⢀⣤⠦⣿⣶⡄⢳⣴⣶⠗⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⡶⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣆⠀⠀⠉⠛⠛⢾⣿⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⣛⣻⡿⠟⠁⠀⠀⠰⢶⣏⢹⣁⣀⣘⣿⣿⣿
+⣿⣧⣿⣿⣿⣿⣿⣿⣿⣷⣄⣛⣿⣷⣿⣶⣿⣻⣿⣿⣿⣿⡾⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢲⣾⢻⠟⢻⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢷⡀⠀⢀⣠⢀⡝⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⣁⢀⣤⣀⠀⠀⠀⡀⠀⠈⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠛⢋⣁⣤⡾⠟⠉⠀⢀⠀⠀⣀⠀⠀⠙⠿⢿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣾⣿⣿⣿⡿⠿⠛⠋⠉⠛⠻⠿⠷⠖⠛⠋⠉⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣶⠀⠘⢻⣽⠿⡄⠀⠙⢳⡆⠻⣦⡀⠠⣤⣄⡀⣀⣀⠈⠻⣆⠘⣧⠀⠀⠀⢉⠻⣿⣿⣿⣿⣿⣿⣿⣿⣷⣬⣉⡙⠻⣿⣿⡿⣧⡤⣾⢿⢶⣦⣤⣀⢨⣙⣿⣿⡟⠋⠁⠀⣀⣵⡶⠟⠋⠁⠀⡀⣀⠀⢸⠛⢾⣿⣷⣤⣤⣾⣿⠿⠛⠛⠻⠿
+⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⠈⠉⠙⢳⣄⠀⠀⠀⠀⢠⣾⣿⠟⠋⠙⣷⠿⢿⠀⠁⠀⠀⠸⠗⠈⠘⢿⡄⣿⡉⠩⠉⠙⣆⠀⠻⣦⡘⣷⣄⠀⠀⢠⣀⠉⠙⠛⠿⢿⣿⣿⣿⣿⣿⣿⣶⣤⣭⣿⣟⣿⣳⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠶⠾⠛⠉⠁⠀⠀⠐⠆⢤⣦⣼⣷⣿⣿⣿⠿⠟⠛⠉⠡⠄⠒⠒⠛⠿⠿
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢁⣡⣤⣀⠀⠀⠀⠀⠀⠙⠳⣄⠀⠀⠀⢻⠷⣶⣤⣦⣨⣥⡇⠶⢿⠛⠃⠀⠀⠀⠀⢆⠀⠀⠈⢑⣆⢈⠃⠹⣿⣷⡀⠁⢻⡄⠀⠙⢷⣼⣿⣷⡀⠈⢿⣷⡄⠀⠀⣄⠀⠈⠉⠉⠙⠛⠛⠛⠿⠿⠿⠿⠿⠿⠿⠷⠟⠛⠛⠋⠉⠁⠀⢀⣀⣠⣾⣿⣭⣤⣤⣼⡶⠿⠟⠛⠉⠉⠁⠴⠒⠂⣨⣽⣷⣶⣶⣶⣶⠾
+⠀⠒⠂⠀⠐⠒⠂⠀⠀⢸⡟⠁⠈⢹⣆⠀⠀⠀⠀⢠⡶⠻⠦⠐⢀⠀⠀⣄⠈⢻⣁⠈⠉⣆⠀⠀⠀⠀⠁⠀⠀⠙⠳⠀⢀⡾⠁⣿⣀⠀⣿⣻⣷⣄⣈⣿⣶⡄⠀⠙⢿⣿⣿⣷⣄⠈⣿⣿⣧⡀⠹⣧⣀⠀⠠⢄⡀⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⠄⠤⠒⠒⠚⠒⠂⠉⠋⠉⠉⠉⠉⠉⠱⠶⣶⣤⣤⣤⣤⣤⣦⣤⣾⣽⣿⣿⣿⣿⠿⠋⠁⡰
+⣶⠶⠶⣄⣠⠐⠀⡰⣦⠸⠃⠀⠀⢀⣿⣤⡀⣠⡶⠯⠁⠀⠀⠄⡀⠀⠀⠈⣷⠀⠉⠛⠛⢻⡆⠀⠄⠀⣄⠀⠀⠀⠀⠀⣾⠁⠀⢿⣿⣷⣿⣷⡎⠻⣾⣿⣮⣿⣄⠀⠀⠉⠿⣿⣶⣘⣿⣿⣿⣦⡙⢿⣷⣄⠀⠙⢶⣄⠀⠀⠀⠀⠠⣤⣀⠀⠀⠀⠀⠀⠰⣤⣀⠀⠀⠤⢤⣤⣤⣀⡀⠀⠀⢀⣈⢉⣝⣛⣛⣛⣛⣻⣿⣿⠋⠁⠀⠰⠿⣷
+⠀⠀⠀⠈⠉⠉⣉⠀⠖⡀⠀⠀⣄⠿⣿⣿⣷⣏⠀⣄⠀⠀⠐⠀⠀⠀⠴⠞⠛⠐⠀⠀⠀⠀⣿⡀⠈⠀⠀⠀⠀⢤⠀⠀⠟⠠⡀⠘⣿⣿⣿⣿⣿⣄⠈⠹⣿⣿⣿⣷⣦⣄⠀⠈⠛⠿⣿⣿⣿⣿⣿⣎⠻⣿⣿⣦⡀⠈⠳⢄⡀⠀⠰⣤⡉⠻⢦⣄⡀⠀⠀⠈⠛⠷⣶⣤⣀⡀⠀⠉⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⢈⣵⠿
+⣤⣤⣿⣛⣒⣿⣿⣿⣿⣼⣶⣾⣿⣿⣿⣿⣿⡅⠀⠀⠀⠠⠀⠀⠀⣀⡀⠀⠀⠀⢲⠀⠀⠀⠈⢹⠁⠂⠀⠀⠀⠘⢣⡄⠀⠀⢻⡄⠘⣿⣿⣟⣿⣿⣷⣄⠀⢾⣯⣛⠿⣿⣿⣷⣦⣤⣤⣈⠻⣿⣿⣿⣷⣮⣙⣿⣿⣷⣤⣀⠈⠢⠄⠀⠻⣷⣶⣤⣀⡀⠀⠙⢶⣦⣤⣍⣛⣿⢿⣿⣶⣶⣶⣶⣴⣯⣽⣿⣿⠟⠁⠀⢀⣀⣀⣠⡾⠋⣁⣀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠀⠀⠀⠀⠀⠀⢤⠀⠀⣿⠀⠀⠀⠼⠀⠀⠀⠀⠋⢠⣤⣤⡀⢠⣶⣿⡁⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣜⠻⣿⣛⣻⣿⣧⡙⢛⠿⠿⣿⣶⣿⡛⠿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣄⣀⠀⠀⠙⠻⣿⣿⣷⣦⣄⣈⣛⡿⢿⣿⣿⣶⣤⣩⡍⢛⣿⡿⠟⠉⠀⠀⢀⣠⣾⣿⣯⣥⣤⣼⣿⣿
+⣿⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣛⣯⣤⣤⣾⣏⢻⣿⣦⣤⣈⠀⠀⠈⢻⡄⢀⡾⠂⠀⠀⠀⠄⠘⣿⣿⣷⣿⡟⢻⣷⣄⡀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣷⣌⠉⠉⠙⠿⠿⣿⣿⣿⣔⣶⣿⣿⣷⠖⠢⠍⠉⠙⠛⠻⠿⠿⡿⣿⣿⣶⣤⣀⣀⣽⣿⣿⠿⣿⣿⡿⣿⣿⠿⣿⣿⣿⠿⠛⠉⠀⠀⠀⢀⣾⡛⢁⡀⣉⠈⡉⠉⠉⠉⠹
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣿⣿⣿⣿⣾⣿⣿⣿⣿⣷⣦⡀⢹⣅⣂⣀⢀⣀⢀⣂⣀⠄⠈⢻⡿⢿⣿⣯⣿⡯⠁⠐⣦⣄⠀⠐⠀⠉⠻⢿⣿⣿⣿⣿⣿⣷⣦⡐⠀⠀⠀⢈⠈⠉⠉⠛⠛⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠁⠈⠉⠉⠉⠉⠻⢿⣬⣿⣷⣿⣿⣦⣾⣿⠿⠟⠋⠁⠀⣀⣠⣤⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⢀⠈⠉⡀⠰⣿⣄⠉⠁⠀⠀⣨⣅⣀⣙⡛⢿⣿⡸⣦⣿⣿⣧⡄⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣦⣁⡂⢄⠂⠐⡈⠁⠐⡀⠐⡀⢤⡀⠶⠀⠤⠀⣄⣀⣤⣤⣀⣤⣀⣤⣤⣼⣿⠿⠾⡟⠉⠀⠀⠀⢀⣀⣉⣭⣥⣶⣿⣭⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠟⠻
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡛⠋⠀⠘⢛⣿⣿⣿⣿⢰⣿⣶⣿⣿⠿⠟⣿⣾⣿⣷⣽⣿⣿⣿⣗⣄⣀⣀⠰⠀⠀⠈⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿⣾⣷⣦⣭⣤⣬⣭⣵⣮⣷⣬⣥⣾⣷⣿⣯⡿⠿⠿⠛⠛⠉⠉⠀⠀⠀⠘⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠋⠁⠀⠀⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣯⣻⣿⣿⣿⣿⣿⣿⣿⣭⣿⣿⣿⣿⣿⣿⣯⣽⣧⢀⣴⣾⣿⣿⣼⣿⣿⠠⣿⡿⡏⢀⣀⠂⠀⠋⠉⠉⠙⢿⣿⣿⣯⣿⣿⣄⣀⡀⠀⣠⣄⣀⣴⣭⠍⢿⣛⣿⣿⡿⣿⠿⡿⣿⠿⢿⢿⠿⠿⠟⠛⠛⠋⠉⠁⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⠀⠀⠀⠉⠉⠉⢉⠉⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⡀⠀⠀⡀⠀⠄⢀⠀
+</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__media no-save" aria-hidden="true">
+      <img src="/astronaut.jpg" alt="" class="site-footer__image" loading="lazy" decoding="async" draggable="false" />
+    </div>
+    <div class="site-footer__overlay">
+      <div class="site-footer__grid">
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Products</p>
+            <a href="https://gray.alignment.id" class="site-footer__column-link" target="_blank" rel="noreferrer">Gray</a>
+            <a href="https://kolibri.alignment.id" class="site-footer__column-link" target="_blank" rel="noreferrer">Kolibri</a>
+        </div>
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Research</p>
+          <span class="site-footer__column-note">Coming soon</span>
+        </div>
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Contact</p>
+          <a href="mailto:hi@alignment.id" class="site-footer__column-link">hi@alignment.id</a>
+        </div>
+      </div>
+      <div class="site-footer__grid site-footer__grid--secondary">
+        <div class="site-footer__column site-footer__column-stack">
+          <p class="site-footer__column-title">Policies</p>
+            <a href="https://alignment.id/policies/tos" class="site-footer__column-link">Terms of Service</a>
+            <a href="https://alignment.id/policies/privacy" class="site-footer__column-link">Privacy Policy</a>
+            <a href="https://alignment.id/policies/refund" class="site-footer__column-link">Refund Policy</a>
+        </div>
+        <div class="site-footer__column">
+          <p class="site-footer__column-title">Blog</p>
+          <span class="site-footer__column-note">Coming soon</span>
+        </div>
+      </div>
+      <div class="site-footer__social-row">
+        <div class="site-footer__social-links">
+          <a href="https://x.com/alignmentid" target="_blank" rel="noreferrer" class="site-footer__social-link"><img src="/logos/xwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">X</span></a>
+          <a href="https://youtube.com/@alignmentid" target="_blank" rel="noreferrer" class="site-footer__social-link"><img src="/logos/youtubewhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">YouTube</span></a>
+          <a href="https://instagram.com/alignmentid" target="_blank" rel="noreferrer" class="site-footer__social-link"><img src="/logos/instagramwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">Instagram</span></a>
+          <a href="https://discord.gg/sE4CSm4wWQ" target="_blank" rel="noreferrer" class="site-footer__social-link"><img src="/logos/discordwhite.svg" alt="" width="18" height="18" class="site-footer__social-icon" /><span class="sr-only">Discord</span></a>
+        </div>
+        <p class="site-footer__meta">© 2026 Alignment. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <noscript>
+    <p class="noscript-note">JavaScript is required for the lesson demonstration. The rest of this page remains readable without it.</p>
+  </noscript>
+  <script type="module" src="/app.js?v=e577a5f19f"></script>
+</body>
 </html>

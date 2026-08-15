@@ -1,7 +1,16 @@
-// Pure evaluator for challenge runs. Zero dependencies and module-scope free:
-// every helper lives inside `evaluateTests` so its .toString() body is
-// self-contained and survives minification — the sandboxed runner iframe
-// re-evaluates it by source text.
+// Pure evaluator for challenge runs. Zero dependencies. `evaluateTests` is
+// module-scope free: every helper lives inside its body so its .toString()
+// output is self-contained and survives minification — the sandboxed runner
+// iframe re-evaluates it by source text. The two normalize helpers are also
+// exported for legacy inlining (course-app.mjs) and tests.
+
+export function normalizeLines(lines) {
+  return lines.map((line) => String(line).replace(/\r\n?/g, '\n'));
+}
+
+export function normalizeText(value) {
+  return String(value).replace(/\r\n?/g, '\n');
+}
 
 export function evaluateTests(challenge, observed, error = null) {
   const normalizeLines = (lines) => lines.map((line) => String(line).replace(/\r\n?/g, '\n'));

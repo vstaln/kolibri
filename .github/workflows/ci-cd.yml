@@ -34,10 +34,14 @@ jobs:
           npm test
           node --check server.js
           node --check page-content.js
+          node --check app.js
+          node --check course-app.mjs
+          node --check build-page.cjs
           node --check course-content.mjs
           node --check course-evaluator.mjs
           node --check course-state.mjs
           node course-validate.mjs
+          node demo-smoke.mjs
           node server.js --selftest
 
   deploy:
