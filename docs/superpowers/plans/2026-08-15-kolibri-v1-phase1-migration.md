@@ -430,3 +430,11 @@ Expected: GitHub Actions runs; quality job green; deploy job pushes `dist/` and 
 
 - [ ] **Step 1: Acceptance checklist** — (a) `npm run build` clean, (b) `npm test` green, (c) `node course-validate.mjs` green, (d) `node server.js --selftest` green, (e) production site serves the React app at `/`, waitlist works, `#/course` shows the 3-challenge literacy floor with correct unlock behavior, (f) git history contains no `references/`, `research/`, `.pi/`, `.serena/`, `.agents/`, `.claude/`, or `.env` files.
 - [ ] **Step 2: Record result** — update this plan's checkbox states and note any deviations in `docs/superpowers/plans/` (no separate file needed; edit this one).
+
+## Status: COMPLETE (deployed 2026-08-15)
+
+All 7 tasks landed and verified. CI/CD: `npm ci → vite build → vitest (19) → course-validate → server selftest (dist-aware)`; deploy job now builds `dist/` before rsync (first deploy shipped the dev entry — blank site — fixed and redeployed).
+
+Notable find during acceptance: the sandboxed runner iframe was dead under minified production builds — esbuild renames module functions (evaluateTests → Nw), so `fn.toString()` inlining no longer bound the name the iframe calls. Fixed by making evaluateTests self-contained (helpers as inner functions) and inlining via `const evaluateTests = <fn>`; two regression tests reproduce the esbuild name- and helper-renaming hazards.
+
+Verified live (Chrome vs kolibrai.com): home hero → course map → challenge → solve → pass message. server.js converted to ESM (type: module); serves `dist/` when built.
