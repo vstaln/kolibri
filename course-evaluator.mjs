@@ -1,12 +1,12 @@
-export function normalizeLines(lines) {
-  return lines.map((line) => String(line).replace(/\r\n?/g, '\n'));
-}
-
-export function normalizeText(value) {
-  return String(value).replace(/\r\n?/g, '\n');
-}
+// Pure evaluator for challenge runs. Zero dependencies and module-scope free:
+// every helper lives inside `evaluateTests` so its .toString() body is
+// self-contained and survives minification — the sandboxed runner iframe
+// re-evaluates it by source text.
 
 export function evaluateTests(challenge, observed, error = null) {
+  const normalizeLines = (lines) => lines.map((line) => String(line).replace(/\r\n?/g, '\n'));
+  const normalizeText = (value) => String(value).replace(/\r\n?/g, '\n');
+
   const checks = challenge.tests.map((test) => {
     const actual = test.type === 'console-lines'
       ? normalizeLines(observed.consoleLines || [])

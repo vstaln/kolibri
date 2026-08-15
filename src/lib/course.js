@@ -8,7 +8,7 @@ import {
   normalizeProgress,
   orderedChallenges,
 } from '../../course-state.mjs';
-import { evaluateTests, normalizeLines, normalizeText } from '../../course-evaluator.mjs';
+import { evaluateTests } from '../../course-evaluator.mjs';
 
 export const MAX_OUTPUT_BYTES = 64 * 1024;
 export const RUN_TIMEOUT_MS = 2000;
@@ -33,9 +33,10 @@ export function createRunnerDocument(challenge) {
     const TESTS = ${tests};
     const MAX_CODE_BYTES = ${MAX_CODE_BYTES};
     const MAX_OUTPUT_BYTES = ${MAX_OUTPUT_BYTES};
-    ${normalizeLines.toString()}
-    ${normalizeText.toString()}
-    ${evaluateTests.toString()}
+    // Minification renames the bundled function (e.g. function Nw(...)); a
+    // bare declaration would not bind the name the runner calls below. A
+    // named function expression binds both names, so always assign.
+    const evaluateTests = ${evaluateTests.toString()};
 
     const cleanError = (error) => ({
       name: String(error?.name || 'RuntimeError').slice(0, 80),

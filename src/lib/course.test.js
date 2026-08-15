@@ -57,4 +57,5 @@ describe('runner document', () => {
     expect(isValidResult({ ...ok, ok: 'yes' }, 1, challenge.id)).toBe(false);
     expect(isValidResult(null, 1, challenge.id)).toBe(false);
   });
+
 });
