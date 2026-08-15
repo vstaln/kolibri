@@ -15,6 +15,13 @@ One ladder, two tracks:
 
 **The design principle (user-confirmed):** it is fine for AI to write all the code — that is how the industry works now, Anthropic included. What learners must gain is *understanding*: the ability to read, review, verify, and own. The "prove it worked" moment is not "write from scratch" — it is **"explain this AI-written code back."**
 
+**The philosophy (sharpened in the design grill):**
+
+- **Author = director, not typist.** The learner is the author when they hold the vision, make the decisions, and judge the output — even if they never hand-write a line. (The product itself is being built exactly this way.)
+- **Vibe coding is a skill, not its absence.** The skill is *domain knowledge + direction + judgment*, amplified by AI. The AI is a multiplier; the learner's domain knowledge is the base. The output is only as good as the context they supply.
+- **The build is the learner's own real problem.** Scoped by an interview-first prompt ("what do you do by hand every day?"), so their domain knowledge becomes the engine. This is "vibe coding with a syllabus": full vibe speed, forced directing practice.
+- **The tool scaffolds the build into rounds.** The AI will not dump an entire artifact at once — it makes one focused change per turn and pushes back with "what's the smallest version that solves your problem?" The learner must practice scoping, breaking down, and judging.
+
 **The moat:** the AI is both the subject and the teacher. Deterministic tests grade code; AI feedback grades open-ended work (prompts, explanations). Khan Academy and freeCodeCamp have deterministic loops but no AI feedback; commercial courses are paywalled and passive.
 
 **AI-agnosticism (user-confirmed):** the course is deliberately **provider-agnostic**. Lesson content teaches skills that transfer to any assistant — ChatGPT, Claude, Gemini, Copilot — naming specific products only as worked examples, never as requirements. The AI *teacher* engine is a separate, swappable backend (default Claude) whose grading rubric evaluates generic AI-skill quality, not provider-specific features. Kolibri is the "driving school," not the "Toyota course": Claude 101 teaches you Claude; Kolibri teaches you AI, whatever you have.
@@ -24,7 +31,10 @@ One ladder, two tracks:
 | Work type | Grader | Cost | Never unfair? |
 |---|---|---|---|
 | Code challenges (literacy floor) | Existing deterministic evaluator (`course-evaluator.mjs`) | zero | yes |
-| Prompts, explanations, reviews (AI 101, project track) | `/api/grade` — LLM with a hidden rubric | per-call | no (rubric designed to be as fair as possible) |
+| Prompts, explanations, reviews (AI 101, build rounds) | `/api/grade` — LLM with a hidden rubric | per-call | no (rubric designed to be as fair as possible) |
+| Build workspace chat (edits the learner's artifact) | `/api/agent` — LLM that proposes diffs; learner approves/rejects/explains each | per-call | n/a (judgment is graded, not the code) |
+
+**Pass condition for the build (user-confirmed):** the review log, graded on *judgment* — one lightweight question per key change: "does this match what you wanted? If not, what do you change?" The AI teacher scores the judgment, not code comprehension. Rubber-stamping is acceptable per the philosophy (author = director); the skill being trained is directing, and the review log is its record.
 
 `/api/grade` flow: learner submits work → server attaches the lesson's rubric + grading instructions → LLM returns `{ verdict: pass | revise, feedback, hints? }` → learner iterates until pass. Rate-limited per lesson and per IP to control cost.
 
@@ -109,9 +119,9 @@ Tailwind-based. Animated components from motion-primitives/reactbits (MIT, attri
 
 ## 7. Scope
 
-**In v1:** migration to React+Tailwind+Vite · port of landing + literacy floor · AI 101 track: **M1–M2 fully authored** (lessons with objectives, est. time, content, gradeable AI exercises) · M3–M5 appear in the course map as locked "coming soon" modules (no lesson objects — the map shows the full path without shipping half-authored lessons) · `/api/grade` with Claude · no-account progress.
+**In v1:** migration to React+Tailwind+Vite · port of landing + literacy floor · AI 101 track: **M1–M2 fully authored** (lessons with objectives, est. time, content, gradeable AI exercises) · M3–M5 appear in the course map as locked "coming soon" modules · **the mini-build finale (Path 1, user-confirmed):** the course ends with the learner building one small tool for their own problem — workspace = artifact (editor + live preview) + AI chat that edits via proposed diffs; the AI scaffolds the build into rounds; the review log is the pass condition, graded on judgment · `/api/grade` + `/api/agent` with Claude · no-account progress.
 
-**Explicitly out of v1:** Track 2 project track (diff review, review log export) · accounts/auth · payments/certificates-of-payment · video production (text-first lessons) · i18n.
+**Explicitly out of v1:** the full project track (multi-week builds, review-log export polished) · accounts/auth · payments/certificates-of-payment · video production (text-first lessons) · i18n.
 
 ## 8. Verification & quality bar
 
